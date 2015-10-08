@@ -1,0 +1,4 @@
+- install vm with vagrant
+
+*) download the vagrant file
+*) call "vagrant up"

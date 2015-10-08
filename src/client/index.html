@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang = "en">
+<head>
+   <meta charset = "utf-8">
+   <title>Landing Page</title>
+   <link rel = "stylesheet" href = "css/style.css">
+   <script data-main="js/app" src="js/lib/require.js"></script>
+</head>
+<body>
+   <h1>Hello World!</h1>
+   <form>
+      <div>
+         <p>Token: </p>
+         <textarea id = "token_textarea" cols = "100" rows = "3"
+                   placeholder = "Please enter here your token."></textarea>
+      </div>
+      <div>
+         <p>Public Key: </p>
+         <textarea id = "public_key_textarea" cols = "100" rows = "50"
+                   placeholder = "Please enter here your public key."></textarea>
+      </div>
+      <button type = "button"
+              id = "activate_pseudonym_button"> Activate Pseudonym
+      </button>
+   </form>
+
+   <script>
+    function SERVER_PUBLIC_KEY_STRING()
+    {
+      return "-----BEGIN PGP PUBLIC KEY BLOCK-----\n\
+Comment: GPGTools - https://gpgtools.org\n\
+\n\
+mQENBFYOh9UBCADePz3UaKgu7cNpZ/7TJKeZ/6iYdgeU5D+zNZ5BLOdJcPTte9zN\n\
+od4sUyaVFaHr4/Jg/H1YahrGWq5aaAimwMSv4CX4kBiJSYG3gqu3P5dmdTY6zpAM\n\
+v2dsuVBceREqjxj9NP0jFwWA1rhoFt7x2WSqYxyh7kkNIFVQ7d4QSZs8wrfi2yYQ\n\
+8U9j/EhYnMrPLHdYSW6gLZu4WaElenS4m9L94ui2A+XhcFlXyaIOEqf/JYb8YPpb\n\
+5DD59PcZg/VqRbdJLPQSVWlCmOcrUdvaQEtGCnvkh3VRZiGHKdxRWe701QQUBDYK\n\
+ZsHhnN+2RqYtCdaGzhtxWAoWG9vdi+2rJvv7ABEBAAG0CEpvaG4gRG9liQE3BBMB\n\
+CgAhBQJWDofVAhsDBQsJCAcDBRUKCQgLBRYCAwEAAh4BAheAAAoJEE2C7mH3Natq\n\
+vvwH/RzZKt1cNAPadenLn8JDMWUbUHLeajM3GMw6ESoQT5UD1HpumFxAPuHk0wlt\n\
+i+Ilg0OzbNtGI2/jyQp06ikCJR04w31gGMZG7mvr0dW67OyhMUDgB+KV54581MVt\n\
+9A4JyPuObCvmx6rCAqoYhu5XclhKS3mj+vfE3uczbAWjcMWVVycA/0bJFCvM8dcP\n\
+L1qwqooxv3nTgBE7I5ntv/LiMBE/NSsFWzxn4DikIXRip0fI6vJJe1RzmHNOFOFz\n\
+FYMBgYLL4SLVFeHlJ5JTgpwXD/mXckB/lPZNJczvN7lvOe5aUc2xwVnBA1B5inLw\n\
+YVS06Ppio1xMHf8O9+6GOJYIW6a5AQ0EVg6H1QEIAMo9D73+3xwnSsDBKxCB8Y4v\n\
+uJkpsOWIH3sRJJnWfshJeh6jqQkXUty63WMQ55BFMAvzsyswQXeGJTXsdZKYGohC\n\
+c3oWYUi28EeUPGHcR5aou+NX2aNUBA6erPJ8pamK7sQBdvQBBtdrx3mQY8YAgyEx\n\
+65xlSpj+hjscBO4ixRSFN/T9VTp7ALLVCrgubbNfi9aYhBlZAP897o/cNTiqS48s\n\
+NGcQKLhCZteW1At6WwrCLgDFVmZjbnnXFdgbnM11VCTEQCaI9+yGGMudLbvqH7mf\n\
+apCogLJqLV3sXk52E1t4TUqLCHW5wCH2rMur+e7irFexVX3Opn6eajw0sYD9dd8A\n\
+EQEAAYkBHwQYAQoACQUCVg6H1QIbDAAKCRBNgu5h9zWrat4YB/9R2VuVSesUkEyp\n\
+zag1fHH8ABQMNJIJiE/0kykhWTx89nkMoFu8urTEDYzE91avhFVSJzLh7iELwdSz\n\
+tW9w2WnGii5jGFxxTLaMoTwPXcborZ+sPxAwKicvPGVJaAYH9ERVZthEaKKSpnmN\n\
+r5DeZaB8nz0Q8xb8dWl9PsIb9yDipzwZWl8EMCHN5AnpLPvFB6MJ+4dHKolhbn7q\n\
+g2laPsJsKhbeUraP+1QJyDjK/+aGbGTYQ5X+wI7q8MDmWWW8ExRiGCPlcerOO0tj\n\
+BiBj4o9xECqtXLOLAZcOdYwkg4kYfI4OXPT6IzGF6ciMBNA0Cs35T9CczkYkIKmS\n\
++MmcRNWl\n\
+=cfAp\n\
+-----END PGP PUBLIC KEY BLOCK-----";
+    }
+  </script>
+</body>
+</html>
