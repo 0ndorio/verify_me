@@ -1,0 +1,3 @@
+[submodule "src/server/lib/OpenPGPPseudonyms"]
+	path = src/server/lib/OpenPGPPseudonyms
+	url = https://github.com/0ndorio/PyPseudonyms_OpenPGP.git
