@@ -34,13 +34,18 @@ rm -rf /etc/nginx/sites-enabled/default
 echo "Configuring Nginx: restart service"
 service nginx restart > /dev/null
 
+echo "Installing Git"
+apt-get install -y git
+
+echo "Cloning repository"
+git clone --recursive https://github.com/0ndorio/verify_me.git ${application_name}
+
 echo "Installing Python & pip"
 apt-get install -y python-dev > /dev/null
 apt-get install -y python-pip > /dev/null
 
 echo "Configure Python: virtualenv"
 pip install virtualenv
-mkdir -p ${application_name}
 virtualenv ${application_name}/virtual_env
 source ${application_name}/virtual_env/bin/activate
 
@@ -48,10 +53,5 @@ echo "Cofigure Python: install modules"
 pip install tornado > /dev/null
 pip install PyCrypto > /dev/null
 
-echo "Copy Dummy Application"
-mkdir -p ${application_name}/src
-cp -a /vagrant/src/server/* ${application_name}/src/
-cp /vagrant/src/util_scripts/run_server.sh ${application_name}/run_server.sh
-
 #echo "Run application"
-#/bin/bash ${application_name}/run_server.sh &
+#/bin/bash ${application_name}/src/util_scripts/run_server.sh &
