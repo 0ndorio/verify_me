@@ -34,23 +34,24 @@ rm -rf /etc/nginx/sites-enabled/default
 echo "Configuring Nginx: restart service"
 service nginx restart > /dev/null
 
-echo "Installing Python3 & pip3"
-apt-get install -y python3-dev > /dev/null
-apt-get install -y python3-pip > /dev/null
+echo "Installing Python & pip"
+apt-get install -y python-dev > /dev/null
+apt-get install -y python-pip > /dev/null
 
-echo "Configure Python3: virtualenv"
-pip3 install virtualenv
+echo "Configure Python: virtualenv"
+pip install virtualenv
 mkdir -p ${application_name}
 virtualenv ${application_name}/virtual_env
 source ${application_name}/virtual_env/bin/activate
 
-echo "Cofigure Python3: install modules"
-pip3 install tornado > /dev/null
+echo "Cofigure Python: install modules"
+pip install tornado > /dev/null
+pip install PyCrypto > /dev/null
 
 echo "Copy Dummy Application"
 mkdir -p ${application_name}/src
-cp /vagrant/src/DummyApplication.py ${application_name}/src/DummyApplication.py
+cp -a /vagrant/src/server/* ${application_name}/src/
 cp /vagrant/src/util_scripts/run_server.sh ${application_name}/run_server.sh
 
-echo "Run application"
-/bin/bash ${application_name}/run_server.sh &
+#echo "Run application"
+#/bin/bash ${application_name}/run_server.sh &
