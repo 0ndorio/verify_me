@@ -1,3 +1,7 @@
 .vagrant/
 .idea/
+
 .DS_Store
+*.pyc
+
+virtual_env/
