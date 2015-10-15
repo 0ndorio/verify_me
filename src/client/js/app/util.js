@@ -5,9 +5,21 @@ define(function(require) {
    var openpgp = require('openpgp');
 
    /// Converts the binary data in BigInteger into a char string.
-   function bigInt2str(m)
+   function bigInt2str(bigInteger)
    {
-      return openpgp.util.bin2str(m.toByteArray());
+      return openpgp.util.bin2str(bigInteger.toByteArray());
+   }
+   
+   /// bytes to hex
+   function bytes2hex(bytes)
+   {
+      return openpgp.util.hexstrdump(bytes);
+   }
+
+   /// hex to bytes
+   function hex2bytes(string)
+   {
+      return openpgp.util.hex2bin(string);
    }
 
    /// Converts a given armored key string into a openpgp key object.
@@ -115,6 +127,8 @@ define(function(require) {
    return {
 
       bigInt2str: bigInt2str,
+      bytes2hex: bytes2hex,
+      hex2bytes: hex2bytes,
 
       generateKeyFromString:  generateKeyFromString,
       generatePrimeNumber:    generatePrimeNumber,
