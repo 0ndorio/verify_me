@@ -5,3 +5,4 @@
 *.pyc
 
 virtual_env/
+node_modules/
