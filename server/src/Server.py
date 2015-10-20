@@ -6,18 +6,18 @@ import os
 import tornado.ioloop
 import tornado.web
 
-from lib.OpenPGPPseudonyms import crypto
-from lib.OpenPGPPseudonyms.OpenPGP import messages, packets
+from ..lib.OpenPGPPseudonyms import crypto
+from ..lib.OpenPGPPseudonyms.OpenPGP import messages, packets
 
 # --- Settings ---
 
 root = os.path.dirname(os.path.abspath(__file__))
 
-public_key_path = 'lib/OpenPGPPseudonyms/tests/testdata/foobar-bar.com_public_2048.txt'
+public_key_path = '../lib/OpenPGPPseudonyms/tests/testdata/foobar-bar.com_public_2048.txt'
 public_key_string = open(root + "/" + public_key_path, "r").read()
 public_key = messages.fromRadix64(public_key_string)
 
-secret_key_path = 'lib/OpenPGPPseudonyms/tests/testdata/foobar-bar.com_secret_2048.txt'
+secret_key_path = '../lib/OpenPGPPseudonyms/tests/testdata/foobar-bar.com_secret_2048.txt'
 secret_key_string = open(root + "/" + secret_key_path, "r").read()
 secret_key = messages.fromRadix64(secret_key_string)
 
@@ -26,7 +26,7 @@ secret_key = messages.fromRadix64(secret_key_string)
 class MainHandler(tornado.web.RequestHandler):
    def get(self):
 
-      self.render("../client/index.html", public_key = public_key_string)
+      self.render("../../client/index.html", public_key = public_key_string)
 
    def post(self):
 
@@ -45,7 +45,7 @@ class MainHandler(tornado.web.RequestHandler):
       self.write(str(signed_blinded_message))
 
 settings = {
-   "static_path": os.path.join(os.path.dirname(__file__), os.pardir, "client"),
+   "static_path": os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, "client"),
 }
 
 application = tornado.web.Application([
