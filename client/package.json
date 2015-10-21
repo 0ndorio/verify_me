@@ -11,6 +11,15 @@
   
   "devDependencies": {
     "browserify": "latest",
+    "chai": "latest",
+    "karma": "latest",
+    "karma-browserify": "latest",
+    "karma-chai": "latest",
+    "karma-mocha": "latest",
+    "karma-mocha-reporter": "latest",
+    "karma-phantomjs-launcher": "latest",
+    "mocha": "latest",
+    "phantomjs": "latest",
     "watchify": "latest"
   },
 
@@ -18,12 +27,14 @@
     "build": "browserify src/main.js -o dist/verifyme.js",
     "watch": "watchify src/main -o dist/verifyme.js -v"
   },
- 
+
   "homepage": "https://github.com/0ndorio/verify_me",
+  
   "repository": {
     "type": "git",
     "url": "https://github.com/0ndorio/verify_me.git"
   },
+
   "bugs": {
     "url": "https://github.com/0ndorio/verify_me/issues"
   }
