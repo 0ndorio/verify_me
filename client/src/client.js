@@ -1,14 +1,16 @@
-define(function(require) {
+"use strict";
 
-   var util = require('./util');
+var util = require("./util");
+
+module.exports = {
 
    /// Extract users public key from the related textarea
    ///
    /// @return
    ///      public key as openpgp.key object
-   function getPublicKey()
+   getPublicKey: function()
    {
-      var public_key_string = getPublicKeyString();
+      var public_key_string = this.getPublicKeyString();
       if (public_key_string === null) { return null; }
 
       var public_key = util.generateKeyFromString(public_key_string);
@@ -17,25 +19,25 @@ define(function(require) {
       }
 
       return public_key.keys[0];
-   }
+   },
 
    /// Extracts users public key from textarea "public_key_textarea".
    ///
    /// @return
    ///      "public_key_textarea" value as {string}
-   function getPublicKeyString()
+   getPublicKeyString: function()
    {
       var textarea_name = "public_key_textarea";
       return util.getTextAreaContent(textarea_name);
-   }
+   },
 
    /// Extract users token from textarea "token_textarea"
    ///
    /// @return
    ///   token as openpgp.MPI
-   function getToken()
+   getToken: function()
    {
-      var token_string = getTokenString();
+      var token_string = this.getTokenString();
       if (token_string === null) { return null; }
 
       var token = util.str2MPI(token_string);
@@ -45,20 +47,20 @@ define(function(require) {
       }
 
       return token;
-   }
+   },
 
    /// Extracts users token from textarea "token_textarea".
    ///
    /// @return
    ///      "token_textarea" value as {string}
-   function getTokenString()
+   getTokenString: function()
    {
       var textarea_name = "token_textarea";
       return util.getTextAreaContent(textarea_name);
-   }
+   },
 
    /// TODO
-   function getServerPublicKey()
+   getServerPublicKey: function()
    {
       var public_key_string = SERVER_PUBLIC_KEY_STRING();
       var public_key = util.generateKeyFromString(public_key_string);
@@ -68,28 +70,16 @@ define(function(require) {
       }
 
       return public_key.keys[0];
-   }
+   },
 
    /// Extracts the public MPIs from the servers public key.
-   function collectPublicBlindingInformation()
+   collectPublicBlindingInformation: function()
    {
-      var server_public_key = getServerPublicKey();
+      var server_public_key = this.getServerPublicKey();
 
       return {
          modulus:          server_public_key.primaryKey.mpi[0].data,
          public_exponent:  server_public_key.primaryKey.mpi[1].data,
       }
    }
-
-   return {
-      collectPublicBlindingInformation:   collectPublicBlindingInformation,
-
-      getPublicKey:        getPublicKey,
-      getPublicKeyString:  getPublicKeyString,
-
-      getServerPublicKey:  getServerPublicKey,
-
-      getToken:         getToken,
-      getTokenString:   getTokenString
-   };
-});
+}

@@ -35896,55 +35896,51 @@ AsyncProxy.prototype.decryptKeyPacket = function(privateKey, keyIds, password) {
 module.exports = AsyncProxy;
 
 },{"../crypto":247,"../key.js":260,"../packet":268,"../type/keyid.js":286}],291:[function(require,module,exports){
-define(function(require) {
+"use strict";
 
-   'use strict';
+var util = require("./util");
 
-   var util = require('./util');
+module.exports = {
 
-   /// TODO
-   function blind_message(message_as_string, blinding_information)
-   {
-      var message_as_MPI = util.str2MPI(message_as_string);
+  /// TODO
+  blind_message: function(message_as_string, blinding_information)
+  {
+    var message_as_MPI = util.str2MPI(message_as_string);
 
-      var m = message_as_MPI.data;
-      var r = blinding_information.blinding_factor;
-      var e = blinding_information.public_exponent;
-      var N = blinding_information.modulus;
+    var m = message_as_MPI.data;
+    var r = blinding_information.blinding_factor;
+    var e = blinding_information.public_exponent;
+    var N = blinding_information.modulus;
 
-      return m.multiply(r.modPow(e, N));
-   }
+    return m.multiply(r.modPow(e, N));
+  },
 
-   /// TODO
-   function unblind_message(message_as_mpi, blinding_information)
-   {
-      var N = blinding_information.modulus;
-      var r = blinding_information.blinding_factor;
+  /// TODO
+  unblind_message: function(message_as_mpi, blinding_information)
+  {
+    var N = blinding_information.modulus;
+    var r = blinding_information.blinding_factor;
 
-      var r_inv = r.modInverse(N);
+    var r_inv = r.modInverse(N);
+    var m = message_as_mpi;
 
-      var m = message_as_mpi;
-
-      return m.multiply(r_inv);
-   }
-
-   return {
-      blind_message:    blind_message,
-      unblind_message:  unblind_message
-   };
-});
+    return m.multiply(r_inv);
+  }
+}
 },{"./util":294}],292:[function(require,module,exports){
-define(function(require) {
+"use strict";
 
-   var util = require('./util');
+var util = require("./util");
+
+module.exports = {
 
    /// Extract users public key from the related textarea
    ///
    /// @return
    ///      public key as openpgp.key object
-   function getPublicKey()
+   getPublicKey: function()
    {
-      var public_key_string = getPublicKeyString();
+      var public_key_string = this.getPublicKeyString();
       if (public_key_string === null) { return null; }
 
       var public_key = util.generateKeyFromString(public_key_string);
@@ -35953,25 +35949,25 @@ define(function(require) {
       }
 
       return public_key.keys[0];
-   }
+   },
 
    /// Extracts users public key from textarea "public_key_textarea".
    ///
    /// @return
    ///      "public_key_textarea" value as {string}
-   function getPublicKeyString()
+   getPublicKeyString: function()
    {
       var textarea_name = "public_key_textarea";
       return util.getTextAreaContent(textarea_name);
-   }
+   },
 
    /// Extract users token from textarea "token_textarea"
    ///
    /// @return
    ///   token as openpgp.MPI
-   function getToken()
+   getToken: function()
    {
-      var token_string = getTokenString();
+      var token_string = this.getTokenString();
       if (token_string === null) { return null; }
 
       var token = util.str2MPI(token_string);
@@ -35981,20 +35977,20 @@ define(function(require) {
       }
 
       return token;
-   }
+   },
 
    /// Extracts users token from textarea "token_textarea".
    ///
    /// @return
    ///      "token_textarea" value as {string}
-   function getTokenString()
+   getTokenString: function()
    {
       var textarea_name = "token_textarea";
       return util.getTextAreaContent(textarea_name);
-   }
+   },
 
    /// TODO
-   function getServerPublicKey()
+   getServerPublicKey: function()
    {
       var public_key_string = SERVER_PUBLIC_KEY_STRING();
       var public_key = util.generateKeyFromString(public_key_string);
@@ -36004,127 +36000,114 @@ define(function(require) {
       }
 
       return public_key.keys[0];
-   }
+   },
 
    /// Extracts the public MPIs from the servers public key.
-   function collectPublicBlindingInformation()
+   collectPublicBlindingInformation: function()
    {
-      var server_public_key = getServerPublicKey();
+      var server_public_key = this.getServerPublicKey();
 
       return {
          modulus:          server_public_key.primaryKey.mpi[0].data,
          public_exponent:  server_public_key.primaryKey.mpi[1].data,
       }
    }
+}
 
-   return {
-      collectPublicBlindingInformation:   collectPublicBlindingInformation,
-
-      getPublicKey:        getPublicKey,
-      getPublicKeyString:  getPublicKeyString,
-
-      getServerPublicKey:  getServerPublicKey,
-
-      getToken:         getToken,
-      getTokenString:   getTokenString
-   };
-});
 },{"./util":294}],293:[function(require,module,exports){
-define(function (require) {
+"use strict";
 
-   var blinding = require('./blinding');
-   var client = require('./client');
-   var util = require('./util');
+var blinding = require("./blinding");
+var client = require("./client");
+var util = require("./util");
 
-   document.getElementById("activate_pseudonym_button").onclick = requestPseudonym;
+document.getElementById("activate_pseudonym_button").onclick = requestPseudonym;
 
-   /// TODO
-   function requestPseudonym()
-   {
-      var blinding_information = client.collectPublicBlindingInformation();
+/// TODO
+function requestPseudonym()
+{
+  var blinding_information = client.collectPublicBlindingInformation();
 
-      util.generatePrimeNumber(1024).then(function(prime) {
+  util.generatePrimeNumber(1024).then(function(prime) {
 
-         var token = client.getToken();
-         blinding_information.blinding_factor = token.data.multiply(prime);
-         blinding_information.hashed_token = util.bytes2hex(util.hashMessage(token.data.toRadix()));
+    var token = client.getToken();
+    blinding_information.blinding_factor = token.data.multiply(prime);
+    blinding_information.hashed_token = util.bytes2hex(util.hashMessage(token.data.toRadix()));
 
-         var public_key_string = client.getPublicKeyString();
-         var hashed_message = util.hashMessage(public_key_string);
+    var public_key_string = client.getPublicKeyString();
+    var hashed_message = util.hashMessage(public_key_string);
 
-         return blinding.blind_message(hashed_message, blinding_information);
-      })
-      .then(function(blinded_message) {
+    return blinding.blind_message(hashed_message, blinding_information);
+  })
+  .then(function(blinded_message) {
 
-         return serverRequest(blinded_message, blinding_information);
-      })
-   }
+    return serverRequest(blinded_message, blinding_information);
+  })
+}
 
-   /// Dummy for a synchronous xmlhttprequest
-   function serverRequest(blinded_message, blinding_information)
-   {
-      var xhttp = new XMLHttpRequest();
-      xhttp.onreadystatechange = function() {
-          if (xhttp.readyState === 4 && xhttp.status === 200) {
+/// Dummy for a synchronous xmlhttprequest
+function serverRequest(blinded_message, blinding_information)
+{
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+     if (xhttp.readyState === 4 && xhttp.status === 200) {
 
-             var signed_blinded_message = util.str2MPI("");
-             signed_blinded_message.data.fromRadix(xhttp.responseText);
+       var signed_blinded_message = util.str2MPI("");
+       signed_blinded_message.data.fromRadix(xhttp.responseText);
 
-             var unblinded_message
-                      = blinding.unblind_message(signed_blinded_message.data, blinding_information);
-             checkResult(unblinded_message, blinding_information)
-          }
-      }
+       var unblinded_message
+             = blinding.unblind_message(signed_blinded_message.data, blinding_information);
+       checkResult(unblinded_message, blinding_information)
+     }
+  }
 
-      xhttp.open("POST", "/");
-      xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-      xhttp.send(JSON.stringify({
-         message: blinded_message.toRadix(),
-         token_hash: blinding_information.hashed_token
-      }));
-   }
+  xhttp.open("POST", "/");
+  xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+  xhttp.send(JSON.stringify({
+    message: blinded_message.toRadix(),
+    token_hash: blinding_information.hashed_token
+  }));
+}
 
-   function checkResult(unblinded_message, blinding_information) {
+function checkResult(unblinded_message, blinding_information) {
 
-      console.log('Signed Message:');
-      console.log('---------------');
-      console.log(util.bigInt2str(unblinded_message)+'\n\n');
+  console.log('Signed Message:');
+  console.log('---------------');
+  console.log(util.bigInt2str(unblinded_message)+'\n\n');
 
-      var e = blinding_information.public_exponent;
-      var N = blinding_information.modulus;
-      var m = unblinded_message.modPow(e, N);
+  var e = blinding_information.public_exponent;
+  var N = blinding_information.modulus;
+  var m = unblinded_message.modPow(e, N);
 
-      console.log('Original Message:');
-      console.log('-----------------');
-      console.log(util.bigInt2str(m));
+  console.log('Original Message:');
+  console.log('-----------------');
+  console.log(util.bigInt2str(m));
 
-   }
-});
-
+}
 },{"./blinding":291,"./client":292,"./util":294}],294:[function(require,module,exports){
-define(function(require) {
+"use strict";
 
-   'use strict';
+var openpgp = require("openpgp");
 
-   var openpgp = require('openpgp');
+module.exports = {
 
    /// Converts the binary data in BigInteger into a char string.
-   function bigInt2str(bigInteger)
+   bigInt2str: function(bigInteger)
    {
       return openpgp.util.bin2str(bigInteger.toByteArray());
-   }
-   
+   },
+
    /// bytes to hex
-   function bytes2hex(bytes)
+   bytes2hex: function(bytes)
    {
       return openpgp.util.hexstrdump(bytes);
-   }
+   },
 
    /// hex to bytes
-   function hex2bytes(string)
+   hex2bytes: function(string)
    {
       return openpgp.util.hex2bin(string);
-   }
+   },
 
    /// Converts a given armored key string into a openpgp key object.
    ///
@@ -36133,21 +36116,21 @@ define(function(require) {
    /// @return
    ///      {object} containing the keys represented by the armored key or
    ///      {null} if sth. went wrong during conversion.
-   function generateKeyFromString(key_as_string)
+   generateKeyFromString: function(key_as_string)
    {
-      if (!isString(key_as_string)) { return null; }
+      if (!this.isString(key_as_string)) { return null; }
 
       var key = openpgp.key.readArmored(key_as_string);
-      if (!isKeyReadSuccessful(key)) {
+      if (!this.isKeyReadSuccessful(key)) {
          key = null;
       }
 
       return key;
-   }
+   },
 
    /// Generate a prime number with n bits using the rsa.generate()
    /// in lack of a real generatePrime() method.
-   function generatePrimeNumber(primeBitLength)
+   generatePrimeNumber: function(primeBitLength)
    {
       /// rsa.generate() requires a public exponent.
       /// This exponent has to be 3 or 65537 written in base 16.
@@ -36166,7 +36149,7 @@ define(function(require) {
             console.log(error);
             throw new Error("Something went wrong during prime number generation. Please retry.");
          });
-   }
+   },
 
    /// Loads content from textarea with specific id.
    ///
@@ -36175,9 +36158,9 @@ define(function(require) {
    /// @return
    ///      {string} if text area id is valid,
    ///      else {null}
-   function getTextAreaContent(text_area_name)
+   getTextAreaContent: function(text_area_name)
    {
-      if (!isString(text_area_name)) { return null; }
+      if (!this.isString(text_area_name)) { return null; }
 
       var textarea = document.getElementById(text_area_name);
 
@@ -36187,65 +36170,46 @@ define(function(require) {
       }
 
       return content;
-   }
+   },
 
    /// TODO
-   function hashMessage(message)
+   hashMessage: function(message)
    {
       return openpgp.crypto.hash.sha512(message);
-   }
+   },
 
    /// Validates if the input parameter is a string.
-   function isString(string)
+   isString: function(string)
    {
       return (typeof string === "string");
-   }
+   },
 
    /// Validates if the input parameter is probably a prime MPI.
-   function isMPIProbablyPrime(mpi)
+   isMPIProbablyPrime: function(mpi)
    {
       return mpi
             && (mpi instanceof openpgp.MPI)
             && (mpi.toBigInteger().isProbablePrime());
-   }
+   },
 
    /// Checks if the given input is the result of a successful key read operation.
-   function isKeyReadSuccessful(key)
+   isKeyReadSuccessful: function(key)
    {
       return key
             && !key.hasOwnProperty("err")
             && key.hasOwnProperty("keys");
-   }
+   },
 
    /// TODO
-   function str2MPI(string)
+   str2MPI: function(string)
    {
-      if (!isString(string)) { return null; }
+      if (!this.isString(string)) { return null; }
 
       var mpi = new openpgp.MPI();
       mpi.fromBytes(string);
 
       return mpi;
    }
-
-   return {
-
-      bigInt2str: bigInt2str,
-      bytes2hex: bytes2hex,
-      hex2bytes: hex2bytes,
-
-      generateKeyFromString:  generateKeyFromString,
-      generatePrimeNumber:    generatePrimeNumber,
-      getTextAreaContent:     getTextAreaContent,
-
-      hashMessage:   hashMessage,
-
-      isKeyReadSuccessful:    isKeyReadSuccessful,
-      isMPIProbablyPrime:     isMPIProbablyPrime,
-      isString:               isString,
-
-      str2MPI:    str2MPI
-   };
-});
+}
 
 },{"openpgp":259}]},{},[293]);
