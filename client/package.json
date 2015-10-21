@@ -10,9 +10,15 @@
   },
   
   "devDependencies": {
-    "browserify": "latest"
+    "browserify": "latest",
+    "watchify": "latest"
   },
-  
+
+  "scripts": {
+    "build": "browserify src/main.js -o dist/verifyme.js",
+    "watch": "watchify src/main -o dist/verifyme.js -v"
+  },
+ 
   "homepage": "https://github.com/0ndorio/verify_me",
   "repository": {
     "type": "git",
