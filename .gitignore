@@ -1,8 +1,19 @@
-.vagrant/
-.idea/
+#
+# Intermediate files
+#
 
 .DS_Store
 *.pyc
 
-virtual_env/
+#
+# Internal directories
+#
+
+.vagrant/
+.idea/
+
+coverage/
+coverages/
+dist/
 node_modules/
+virtual_env/
