@@ -11,10 +11,12 @@
   
   "devDependencies": {
     "browserify": "latest",
+    "browserify-istanbul": "latest",
     "chai": "latest",
     "karma": "latest",
     "karma-browserify": "latest",
     "karma-chai": "latest",
+    "karma-coverage": "latest",
     "karma-mocha": "latest",
     "karma-mocha-reporter": "latest",
     "karma-phantomjs-launcher": "latest",
