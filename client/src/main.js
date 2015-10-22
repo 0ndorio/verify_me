@@ -56,7 +56,7 @@ function checkResult(unblinded_message, blinding_information) {
 
   console.log('Signed Message:');
   console.log('---------------');
-  console.log(util.bigInt2str(unblinded_message)+'\n\n');
+  console.log(util.bigInt2ByteString(unblinded_message)+'\n\n');
 
   var e = blinding_information.public_exponent;
   var N = blinding_information.modulus;
@@ -64,6 +64,6 @@ function checkResult(unblinded_message, blinding_information) {
 
   console.log('Original Message:');
   console.log('-----------------');
-  console.log(util.bigInt2str(m));
+  console.log(util.bigInt2ByteString(m));
 
 }

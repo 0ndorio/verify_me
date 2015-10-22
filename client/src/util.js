@@ -1,13 +1,36 @@
 "use strict";
 
 var openpgp = require("openpgp");
+var BigInteger = require("../node_modules/openpgp/src/crypto/public_key/jsbn");
 
 module.exports = {
 
+  /// Converts an integer in a BigInteger.
+  ///
+  /// @parameter integer
+  ///   The integer to convert into a BigInteger object
+  /// @
+  bigIntFromInt: function(integer)
+  {
+    var bigInt = null;
+
+    if (typeof integer === "number") {
+      bigInt = new BigInteger(null);
+      bigInt.fromInt(integer);
+    }
+
+    return bigInt;
+  },
+
    /// Converts the binary data in BigInteger into a char string.
-   bigInt2str: function(bigInteger)
+   bigInt2ByteString: function(bigInteger)
    {
-      return openpgp.util.bin2str(bigInteger.toByteArray());
+     var result = null;
+     if (bigInteger instanceof BigInteger) {
+       result = openpgp.util.bin2str(bigInteger.toByteArray());
+     }
+
+     return result;
    },
 
    /// bytes to hex
