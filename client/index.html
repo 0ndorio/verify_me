@@ -22,21 +22,6 @@
       </button>
    </form>
    <pre id="server_public_key"> {{ escape(public_key) }} </pre>
-   <script>
-
-      function SERVER_PUBLIC_KEY_STRING()
-      {
-         var key_string = document.getElementById("server_public_key").innerHTML;
-
-         if (typeof key_string === "string") {
-            key_string = key_string.trim()
-         } else {
-            throw new Error("Couldn't load the server public key. Please reload.");
-         }
-
-         return key_string;
-      }
-  </script>
   <script src="{{ static_url("dist/verifyme.js") }}"></script>
 </body>
 </html>

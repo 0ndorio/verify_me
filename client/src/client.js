@@ -62,7 +62,7 @@ module.exports = {
    /// TODO
    getServerPublicKey: function()
    {
-      var public_key_string = SERVER_PUBLIC_KEY_STRING();
+      var public_key_string = this.getServerPublicKeyString();
       var public_key = util.generateKeyFromString(public_key_string);
 
       if (public_key === null) {
@@ -72,14 +72,32 @@ module.exports = {
       return public_key.keys[0];
    },
 
-   /// Extracts the public MPIs from the servers public key.
-   collectPublicBlindingInformation: function()
-   {
-      var server_public_key = this.getServerPublicKey();
+  /// TODO
+  getServerPublicKeyString: function()
+  {
+    var element_id = "server_public_key";
 
-      return {
-         modulus:          server_public_key.primaryKey.mpi[0].data,
-         public_exponent:  server_public_key.primaryKey.mpi[1].data,
-      }
+    var element = document.getElementById(element_id);
+    if (element === null) {
+      throw new Error("Couldn't load the server public key. Please reload.");
+    }
+
+    var content = element.innerHTML;
+    if (!util.isString(content)) {
+      throw new Error("Couldn't load the server public key. Please reload.");
+    }
+
+    return content.trim();
+  },
+
+  /// Extracts the public MPIs from the servers public key.
+  collectPublicBlindingInformation: function()
+  {
+    var server_public_key = this.getServerPublicKey();
+
+    return {
+      modulus:          server_public_key.primaryKey.mpi[0].data,
+      public_exponent:  server_public_key.primaryKey.mpi[1].data
+    };
    }
-}
+};
