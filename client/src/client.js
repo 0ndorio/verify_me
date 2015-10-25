@@ -4,6 +4,11 @@ var util = require("./util");
 
 module.exports = {
 
+  /// Constant element ids
+  server_public_key_element_id: "server_public_key",
+  user_public_key_element_id: "public_key_textarea",
+  user_token_element_id: "token_textarea",
+
    /// Extract users public key from the related textarea
    ///
    /// @return
@@ -24,11 +29,15 @@ module.exports = {
    /// Extracts users public key from textarea "public_key_textarea".
    ///
    /// @return
-   ///      "public_key_textarea" value as {string}
+   ///      "public_key_textarea" value as {string} or null if the id is missing
    getPublicKeyString: function()
    {
-      var textarea_name = "public_key_textarea";
-      return util.getTextAreaContent(textarea_name);
+     var content = util.getTextAreaContent(this.user_public_key_element_id);
+     if (util.isString(content)) {
+       content = content.trim();
+     }
+
+     return content;
    },
 
    /// Extract users token from textarea "token_textarea"
@@ -55,8 +64,12 @@ module.exports = {
    ///      "token_textarea" value as {string}
    getTokenString: function()
    {
-      var textarea_name = "token_textarea";
-      return util.getTextAreaContent(textarea_name);
+     var content = util.getTextAreaContent(this.user_token_element_id);
+     if (util.isString(content)) {
+       content = content.trim();
+     }
+
+     return content;
    },
 
    /// TODO
@@ -75,19 +88,12 @@ module.exports = {
   /// TODO
   getServerPublicKeyString: function()
   {
-    var element_id = "server_public_key";
-
-    var element = document.getElementById(element_id);
+    var element = document.getElementById(this.server_public_key_element_id);
     if (element === null) {
       throw new Error("Couldn't load the server public key. Please reload.");
     }
 
-    var content = element.innerHTML;
-    if (!util.isString(content)) {
-      throw new Error("Couldn't load the server public key. Please reload.");
-    }
-
-    return content.trim();
+    return element.innerHTML.trim();
   },
 
   /// Extracts the public MPIs from the servers public key.
