@@ -23,7 +23,7 @@ describe("util", function() {
     ];
 
     tests.forEach(function(test) {
-      it("should return the byte string '" + escape(test.expected) + "' when input is BigInt with " + test.arg , function(){
+      it("should return the byte string '" + test.expected + "' when input is BigInt with " + test.arg , function(){
         var bigInt = util.bigIntFromInt(test.arg);
         var result = util.bigInt2ByteString(bigInt);
 
