@@ -2,6 +2,7 @@
 
 var assert = require("chai").assert;
 var client = require("../src/client");
+var controls = require("./helper").controls;
 var openpgp = require("openpgp");
 var util = require("../src/util");
 
@@ -18,7 +19,6 @@ describe("client", function() {
   afterEach(function() {});
 
   //
-
   // test cases
   //
 
@@ -30,7 +30,7 @@ describe("client", function() {
 
     it ("must throw if id is missing from html", function () {
       controls.loadFixture("test/fixture/missing_id.html");
-      assert.throw(function() {client.getPublicKey()}, Error);
+      assert.throws(function() {client.getPublicKey()}, Error);
     });
 
     it ("must throw if string is no key representation", function () {
@@ -116,12 +116,12 @@ describe("client", function() {
 
     it ("must throw if id is missing from html", function () {
       controls.loadFixture("test/fixture/missing_id.html");
-      assert.throw(function() {client.getServerPublicKey()}, Error);
+      assert.throws(function() {client.getServerPublicKey()}, Error);
     });
 
     it ("must throw if string is no key representation", function () {
       controls.serverPublicKey = "123";
-      assert.throw(function() {client.getServerPublicKey()}, Error);
+      assert.throws(function() {client.getServerPublicKey()}, Error);
     });
   });
 
@@ -156,40 +156,4 @@ describe("client", function() {
       assert.property(client.collectPublicBlindingInformation(), "public_exponent");
     });
   });
-
-  //
-  // utility API for interacting with the page.
-  //
-
-  var controls = {
-    get serverPublicKey() {
-      return document.getElementById(client.server_public_key_element_id).innerHTML;
-    },
-    set serverPublicKey(val) {
-      document.getElementById(client.server_public_key_element_id).innerHTML = val;
-    },
-
-    get userPublicKeyString() {
-      return document.getElementById(client.user_public_key_element_id).value;
-    },
-    set userPublicKeyString(val) {
-      document.getElementById(client.user_public_key_element_id).value = val;
-    },
-
-    get userTokenString() {
-      return document.getElementById(client.user_token_element_id).value;
-    },
-    set userTokenString(val) {
-      document.getElementById(client.user_token_element_id).value = val;
-    },
-
-    loadFixture: function(fixture) {
-      if (!window.__html__) {
-        assert.fail("Missing: " + fixture);
-      }
-
-      document.body.innerHTML = window.__html__[fixture];
-      return true;
-    }
-  };
 });
