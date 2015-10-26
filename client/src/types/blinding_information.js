@@ -29,7 +29,7 @@ BlindingInformation.prototype.containsAllBlindingInformation = function()
 BlindingInformation.prototype.fromKey = function(key)
 {
   if (!util.isOpenPGPKey(key)) {
-    return null;
+    return false;
   }
 
   this.modulus = key.primaryKey.mpi[0].data;

@@ -1,7 +1,7 @@
 "use strict";
 
 var assert = require("chai").assert;
-var client = require("../src/client");
+var client = require("../../src/client");
 
 /// Utility API for html interaction.
 module.exports = {
