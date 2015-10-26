@@ -42,7 +42,7 @@ function serverRequest(blinded_message, blinding_information)
              = blinding.unblind_message(signed_blinded_message.data, blinding_information);
        checkResult(unblinded_message, blinding_information)
      }
-  }
+  };
 
   xhttp.open("POST", "/");
   xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
@@ -65,5 +65,4 @@ function checkResult(unblinded_message, blinding_information) {
   console.log('Original Message:');
   console.log('-----------------');
   console.log(util.bigInt2ByteString(m));
-
 }

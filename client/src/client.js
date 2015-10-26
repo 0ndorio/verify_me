@@ -1,5 +1,6 @@
 "use strict";
 
+var BlindingInformation= require("./types/blinding_information");
 var util = require("./util");
 
 module.exports = {
@@ -107,10 +108,9 @@ module.exports = {
   collectPublicBlindingInformation: function()
   {
     var server_public_key = this.getServerPublicKey();
+    var blinding_information = new BlindingInformation();
+    blinding_information.fromKey(server_public_key);
 
-    return {
-      modulus:          server_public_key.primaryKey.mpi[0].data,
-      public_exponent:  server_public_key.primaryKey.mpi[1].data
-    };
+    return blinding_information;
   }
 };
