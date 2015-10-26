@@ -16,7 +16,9 @@ module.exports = {
   getPublicKey: function()
   {
     var public_key_string = this.getPublicKeyString();
-    if (public_key_string === null) { return null; }
+    if (public_key_string === null) {
+      throw new Error("Couldn't read the public key input. Please reload page.");
+    }
 
     var public_key = util.generateKeyFromString(public_key_string);
     if (public_key === null) {
@@ -33,11 +35,11 @@ module.exports = {
   getPublicKeyString: function()
   {
     var content = util.getTextAreaContent(this.user_public_key_element_id);
-    if (util.isString(content)) {
-      content = content.trim();
+    if (!util.isString(content)) {
+      return null;
     }
 
-    return content;
+    return content.trim();
   },
 
   /// Extract users token from textarea "token_textarea"
@@ -47,7 +49,9 @@ module.exports = {
   getToken: function()
   {
     var token_string = this.getTokenString();
-    if (token_string === null) { return null; }
+    if (token_string === null) {
+      throw new Error("Couldn't read the token input. Please reload page.");
+    }
 
     var token = util.str2MPI(token_string);
 
@@ -65,21 +69,24 @@ module.exports = {
   getTokenString: function()
   {
     var content = util.getTextAreaContent(this.user_token_element_id);
-    if (util.isString(content)) {
-      content = content.trim();
+    if (!util.isString(content)) {
+      return null;
     }
 
-    return content;
+    return content.trim();
   },
 
   /// TODO
   getServerPublicKey: function()
   {
     var public_key_string = this.getServerPublicKeyString();
-    var public_key = util.generateKeyFromString(public_key_string);
+    if (!util.isString(public_key_string)) {
+      throw new Error("Couldn't read servers public key. Please reload page.");
+    }
 
+    var public_key = util.generateKeyFromString(public_key_string);
     if (public_key === null) {
-      throw new Error("Could not read servers public key. Please reload page.");
+      throw new Error("Couldn't convert server public key. Please reload page.");
     }
 
     return public_key.keys[0];
@@ -90,7 +97,7 @@ module.exports = {
   {
     var element = document.getElementById(this.server_public_key_element_id);
     if (element === null) {
-      throw new Error("Couldn't load the server public key. Please reload.");
+      return null;
     }
 
     return element.innerHTML.trim();
