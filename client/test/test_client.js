@@ -1,8 +1,9 @@
 "use strict";
 
 var assert = require("chai").assert;
+var BlindingInformation = require("../src/types/blinding_information");
 var client = require("../src/client");
-var controls = require("./helper").controls;
+var controls = require("./helper/helper").controls;
 var openpgp = require("openpgp");
 var util = require("../src/util");
 
@@ -151,9 +152,14 @@ describe("client", function() {
 
   describe("#collectPublicBlindingInformation()", function() {
 
+    it ("should return an BlindingInformation object", function() {
+      assert.isTrue(client.collectPublicBlindingInformation() instanceof BlindingInformation);
+    });
+
     it ("should return an object with modulus and public exponent", function () {
-      assert.property(client.collectPublicBlindingInformation(), "modulus");
-      assert.property(client.collectPublicBlindingInformation(), "public_exponent");
+      var blinding_information = client.collectPublicBlindingInformation();
+      var isValid = BlindingInformation.isValidPublicBlindingInformation(blinding_information);
+      assert.isTrue(isValid);
     });
   });
 });
