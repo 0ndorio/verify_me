@@ -33,14 +33,12 @@ function serverRequest(blinded_message, blinding_information)
 {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
-     if (xhttp.readyState === 4 && xhttp.status === 200) {
 
-       var signed_blinded_message = util.str2MPI("");
-       signed_blinded_message.data.fromRadix(xhttp.responseText);
+    if (xhttp.readyState === 4 && xhttp.status === 200) {
 
-       var unblinded_message
-             = blinding.unblind_message(signed_blinded_message.data, blinding_information);
-       checkResult(unblinded_message, blinding_information)
+       var message = xhttp.responseText;
+       var unblinded_message = blinding.unblind_message(message, blinding_information);
+       checkResult(unblinded_message, blinding_information);
      }
   };
 

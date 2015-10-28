@@ -155,6 +155,17 @@ module.exports = {
   },
 
   /// TODO
+  str2BigInt: function(string)
+  {
+    var bigInt = null;
+    if (this.isString(string)) {
+      bigInt = new BigInteger(string);
+    }
+
+    return bigInt;
+  },
+
+  /// TODO
   str2MPI: function(string)
   {
     if (!this.isString(string)) { return null; }
