@@ -5,23 +5,6 @@ var openpgp = require("openpgp");
 
 module.exports = {
 
-  /// Converts an integer in a BigInteger.
-  ///
-  /// @parameter integer
-  ///   The integer to convert into a BigInteger object
-  /// @
-  bigIntFromInt: function(integer)
-  {
-    var bigInt = null;
-
-    if (typeof integer === "number") {
-      bigInt = new BigInteger(null);
-      bigInt.fromInt(integer);
-    }
-
-    return bigInt;
-  },
-
   /// Converts the binary data in BigInteger into a char string.
   bigInt2ByteString: function(bigInteger)
   {
@@ -31,6 +14,24 @@ module.exports = {
     }
 
     return result;
+  },
+
+  /// Converts an integer in a {BigInteger}.
+  ///
+  /// @parameter {number} integer
+  ///   The integer to convert into a BigInteger object.
+  /// @return
+  ///   A {BigInteger} object IF input is a valid integer ELSE {null}
+  bigIntFromInt: function(integer)
+  {
+    var bigInt = null;
+
+    if (this.isInteger(integer)) {
+      bigInt = new BigInteger(null);
+      bigInt.fromInt(integer);
+    }
+
+    return bigInt;
   },
 
   /// bytes to hex
@@ -121,29 +122,9 @@ module.exports = {
   },
 
   /// TODO
-  isMPIWithData: function(mpi)
+  isInteger: function(integer)
   {
-    return (mpi instanceof openpgp.MPI) && (mpi.data instanceof BigInteger);
-  },
-
-  /// Validates if the input parameter is a string.
-  isString: function(string)
-  {
-    return (typeof string === "string");
-  },
-
-  /// Validates if the input parameter is probably a prime MPI.
-  isMPIProbablyPrime: function(mpi)
-  {
-    return mpi
-      && (mpi instanceof openpgp.MPI)
-      && (mpi.toBigInteger().isProbablePrime());
-  },
-
-  // TODO
-  isOpenPGPKey: function(key)
-  {
-    return (key instanceof openpgp.key.Key);
+    return (typeof integer === "number") && (integer % 1 === 0);
   },
 
   /// Checks if the given input is the result of a successful key read operation.
@@ -152,6 +133,30 @@ module.exports = {
     return key
       && !key.hasOwnProperty("err")
       && key.hasOwnProperty("keys");
+  },
+
+  /// Validates if the input parameter is probably a prime MPI.
+  isMPIProbablyPrime: function(mpi)
+  {
+    return this.isMPIWithData && (mpi.toBigInteger().isProbablePrime());
+  },
+
+  /// TODO
+  isMPIWithData: function(mpi)
+  {
+    return (mpi instanceof openpgp.MPI) && (mpi.data instanceof BigInteger);
+  },
+
+  // TODO
+  isOpenPGPKey: function(key)
+  {
+    return (key instanceof openpgp.key.Key);
+  },
+
+  /// Validates if the input parameter is a string.
+  isString: function(string)
+  {
+    return (typeof string === "string");
   },
 
   /// TODO
