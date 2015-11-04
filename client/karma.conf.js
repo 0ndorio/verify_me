@@ -87,6 +87,10 @@ module.exports = function(config) {
         {'type': 'text-summary'},
         {'type': 'lcov'}
       ]
+    },
+
+    client: {
+      captureConsole: true
     }
   })
 }
