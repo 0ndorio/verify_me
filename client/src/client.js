@@ -43,10 +43,12 @@ module.exports = {
     return content.trim();
   },
 
-  /// Extract users token from textarea "token_textarea"
-  ///
-  /// @return
-  ///   token as openpgp.MPI
+  /**
+   * Extract users token from textarea "token_textarea"
+   *
+   * @return {MPI}
+   *    token extracted from input
+   */
   getToken: function()
   {
     var token_string = this.getTokenString();

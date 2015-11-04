@@ -2,12 +2,20 @@
 
 var util = require("../util");
 
-/// TODO
+/**
+ * A rsa blinding context.
+ * @constructor
+ * @struct
+ */
 function BlindingInformation()
 {
+  /** @type {BigInteger|null} */
   this.blinding_factor = null;
+  /** @type {BigInteger|null} */
   this.hashed_token = null;
+  /** @type {BigInteger|null} */
   this.modulus = null;
+  /** @type {BigInteger|null} */
   this.public_exponent = null;
 }
 
