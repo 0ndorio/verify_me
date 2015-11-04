@@ -27,23 +27,32 @@ module.exports = {
     var bigInt = null;
 
     if (this.isInteger(integer)) {
-      bigInt = new BigInteger(null);
-      bigInt.fromInt(integer);
+      bigInt = new BigInteger(integer.toString());
     }
 
     return bigInt;
   },
 
   /// bytes to hex
-  bytes2hex: function(bytes)
+  bytes2hex: function(byte_string)
   {
-    return openpgp.util.hexstrdump(bytes);
+    var hex_string = "";
+    if (this.isString(byte_string)) {
+      hex_string = openpgp.util.hexstrdump(byte_string);
+    }
+
+    return hex_string;
   },
 
   /// hex to bytes
-  hex2bytes: function(string)
+  hex2bytes: function(hex_as_string)
   {
-    return openpgp.util.hex2bin(string);
+    var byte_string = "";
+    if (this.isString(hex_as_string)) {
+      byte_string = openpgp.util.hex2bin(hex_as_string);
+    }
+
+    return byte_string;
   },
 
   /// Converts a given armored key string into a openpgp key object.
@@ -65,22 +74,26 @@ module.exports = {
     return key;
   },
 
-  /// Generate a prime number with n bits using the rsa.generate()
+  /// Generate two prime numbers with n bits using the rsa.generate()
   /// in lack of a real generatePrime() method.
-  generatePrimeNumber: function(primeBitLength)
+  generatePrimeNumbers: function(primeBitLength)
   {
+    if (!this.isInteger(primeBitLength)) {
+      return Promise.reject("Big length parameter is no integer: " + primeBitLength);
+    }
     /// rsa.generate() requires a public exponent.
     /// This exponent has to be 3 or 65537 written in base 16.
     ///
     /// 3 => "3"
     /// 65537 => "10001"
     var public_exponent = "10001";
+    var modulus_bit_length = primeBitLength * 2;
 
     var rsa = new openpgp.crypto.publicKey.rsa();
     return rsa
-      .generate(primeBitLength, public_exponent)
+      .generate(modulus_bit_length, public_exponent)
       .then(function(key) {
-        return key.q;
+        return [key.q, key.p];
       })
       .catch(function(error) {
         console.log(error);
