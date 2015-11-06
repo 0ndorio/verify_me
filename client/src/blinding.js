@@ -12,7 +12,7 @@ module.exports = {
       return null;
     }
 
-    var message_as_MPI = util.str2MPI(message);
+    var message_as_MPI = util.bytes2MPI(message);
 
     var m = message_as_MPI.data;
     var r = blinding_information.blinding_factor;
@@ -25,7 +25,7 @@ module.exports = {
   /// TODO
   unblind_message: function(message, blinding_information)
   {
-    if (!util.isString(message) && /^[0-9]+$/.test((message))
+    if (!(util.isString(message) || /^[0-9]+$/.test(message))
           || !BlindingInformation.isValidFullBlindingInformation(blinding_information)) {
       return null;
     }

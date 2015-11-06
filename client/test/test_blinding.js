@@ -42,8 +42,8 @@ describe("blinding", function() {
     it ("should return a blinded 'BigInteger' with correct input", function () {
       var blinding_information = new BlindingInformation();
       blinding_information.fromKey(client.getPublicKey());
-      blinding_information.blinding_factor = util.bigIntFromInt(3);
-      blinding_information.hashed_token = util.bigIntFromInt(3);
+      blinding_information.blinding_factor = util.int2BigInt(3);
+      blinding_information.hashed_token = util.int2BigInt(3);
 
       assert.isTrue(util.isBigInteger(blinding.blind_message("bob", blinding_information)));
     });
@@ -61,10 +61,10 @@ describe("blinding", function() {
       it ("should return '" + test.expected + "' for sepcified input", function() {
 
         var blinding_information = new BlindingInformation();
-        blinding_information.blinding_factor = util.bigIntFromInt(test.args.blinding_factor);
-        blinding_information.modulus = util.bigIntFromInt(test.args.modulus);
-        blinding_information.public_exponent = util.bigIntFromInt(test.args.public_exponent);
-        blinding_information.hashed_token = util.bigIntFromInt(3);
+        blinding_information.blinding_factor = util.int2BigInt(test.args.blinding_factor);
+        blinding_information.modulus = util.int2BigInt(test.args.modulus);
+        blinding_information.public_exponent = util.int2BigInt(test.args.public_exponent);
+        blinding_information.hashed_token = util.int2BigInt(3);
 
         assert.equal(test.expected, blinding.blind_message(test.args.message, blinding_information).toString());
       });
@@ -90,8 +90,8 @@ describe("blinding", function() {
     it ("should return an unblinded 'BigInteger' with correct input", function () {
       var blinding_information = new BlindingInformation();
       blinding_information.fromKey(client.getPublicKey());
-      blinding_information.blinding_factor = util.bigIntFromInt(3);
-      blinding_information.hashed_token = util.bigIntFromInt(3);
+      blinding_information.blinding_factor = util.int2BigInt(3);
+      blinding_information.hashed_token = util.int2BigInt(3);
 
       assert.isTrue(util.isBigInteger(blinding.unblind_message("123", blinding_information)));
     });
@@ -109,10 +109,10 @@ describe("blinding", function() {
       it ("should return '" + test.expected + "' for sepcified input", function() {
 
         var blinding_information = new BlindingInformation();
-        blinding_information.blinding_factor = util.bigIntFromInt(test.args.blinding_factor);
-        blinding_information.modulus = util.bigIntFromInt(test.args.modulus);
-        blinding_information.public_exponent = util.bigIntFromInt(3);
-        blinding_information.hashed_token = util.bigIntFromInt(3);
+        blinding_information.blinding_factor = util.int2BigInt(test.args.blinding_factor);
+        blinding_information.modulus = util.int2BigInt(test.args.modulus);
+        blinding_information.public_exponent = util.int2BigInt(3);
+        blinding_information.hashed_token = util.int2BigInt(3);
 
         var unblinded_message = blinding.unblind_message(test.args.message, blinding_information);
         assert.equal(test.expected, unblinded_message.toString());

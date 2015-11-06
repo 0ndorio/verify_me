@@ -56,7 +56,7 @@ module.exports = {
       throw new Error("Couldn't read the token input. Please reload page.");
     }
 
-    var token = util.str2MPI(token_string);
+    var token = util.bytes2MPI(token_string);
 
     if (!util.isMPIProbablyPrime(token)) {
       throw new Error("Unsecure Token. Please check your input.");

@@ -8,7 +8,7 @@ function checkResult(unblinded_message, blinding_information) {
 
   console.log('Signed Message:');
   console.log('---------------');
-  console.log(util.bigInt2ByteString(unblinded_message)+'\n\n');
+  console.log(util.bigInt2Bytes(unblinded_message)+'\n\n');
 
   var e = blinding_information.public_exponent;
   var N = blinding_information.modulus;
@@ -16,7 +16,7 @@ function checkResult(unblinded_message, blinding_information) {
 
   console.log('Original Message:');
   console.log('-----------------');
-  console.log(util.bigInt2ByteString(m));
+  console.log(util.bigInt2Bytes(m));
 }
 
 /// Dummy for a synchronous xmlhttprequest
@@ -55,7 +55,7 @@ function requestPseudonym()
   ///   - TODO: unsure how to handle this properly
   var prime_bit_length = Math.floor(blinding_information.modulus.bitLength / 4);
 
-  util.generatePrimeNumbers(prime_bit_length).then(function(primes) {
+  util.generateTwoPrimeNumbers(prime_bit_length).then(function(primes) {
 
     var public_key_string = client.getPublicKeyString();
     var hashed_message = util.hashMessage(public_key_string);

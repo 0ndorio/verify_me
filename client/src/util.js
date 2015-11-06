@@ -5,8 +5,16 @@ var openpgp = require("openpgp");
 
 module.exports = {
 
-  /// Converts the binary data in BigInteger into a char string.
-  bigInt2ByteString: function(bigInteger)
+  /**
+   * Converts the binary data in BigInteger into a byte string.
+   *
+   * @param bigInteger
+   *    {BigInteger} to convert into byte string.
+   * @returns {string|null}
+   *    {string} representation of the given {BigInteger} or null
+   *    if input parameter is no {BigInteger}.
+   */
+  bigInt2Bytes: function(bigInteger)
   {
     var result = null;
     if (bigInteger instanceof BigInteger) {
@@ -14,23 +22,6 @@ module.exports = {
     }
 
     return result;
-  },
-
-  /// Converts an integer in a {BigInteger}.
-  ///
-  /// @parameter {number} integer
-  ///   The integer to convert into a BigInteger object.
-  /// @return
-  ///   A {BigInteger} object IF input is a valid integer ELSE {null}
-  bigIntFromInt: function(integer)
-  {
-    var bigInt = null;
-
-    if (this.isInteger(integer)) {
-      bigInt = new BigInteger(integer.toString());
-    }
-
-    return bigInt;
   },
 
   /// bytes to hex
@@ -42,6 +33,17 @@ module.exports = {
     }
 
     return hex_string;
+  },
+
+  /// TODO
+  bytes2MPI: function(byte_string)
+  {
+    if (!this.isString(byte_string)) { return null; }
+
+    var mpi = new openpgp.MPI();
+    mpi.fromBytes(byte_string);
+
+    return mpi;
   },
 
   /// hex to bytes
@@ -76,11 +78,12 @@ module.exports = {
 
   /// Generate two prime numbers with n bits using the rsa.generate()
   /// in lack of a real generatePrime() method.
-  generatePrimeNumbers: function(primeBitLength)
+  generateTwoPrimeNumbers: function(primeBitLength)
   {
     if (!this.isInteger(primeBitLength)) {
       return Promise.reject("Big length parameter is no integer: " + primeBitLength);
     }
+
     /// rsa.generate() requires a public exponent.
     /// This exponent has to be 3 or 65537 written in base 16.
     ///
@@ -96,8 +99,7 @@ module.exports = {
         return [key.q, key.p];
       })
       .catch(function(error) {
-        console.log(error);
-        throw new Error("Something went wrong during prime number generation. Please retry.");
+        throw new Error("Something went wrong during prime number generation (" + error + ") . Please retry.");
       });
   },
 
@@ -122,10 +124,39 @@ module.exports = {
     return content;
   },
 
-  /// TODO
+  /**
+   * Hashes the given message with sha512 and returns the digest.
+   *
+   * @param {string} message
+   *    Input parameter to hash.
+   * @returns {string}
+   *    Hash digest as {string} or {null} if input message is no string object.
+   */
   hashMessage: function(message)
   {
-    return openpgp.crypto.hash.sha512(message);
+    var digest = null;
+    if (this.isString(message)) {
+      digest = openpgp.crypto.hash.sha512(message);
+    }
+
+    return digest;
+  },
+
+  /// Converts an integer in a {BigInteger}.
+  ///
+  /// @parameter {number} integer
+  ///   The integer to convert into a BigInteger object.
+  /// @return
+  ///   A {BigInteger} object IF input is a valid integer ELSE {null}
+  int2BigInt: function(integer)
+  {
+    var bigInt = null;
+
+    if (this.isInteger(integer)) {
+      bigInt = new BigInteger(integer.toString());
+    }
+
+    return bigInt;
   },
 
   /// TODO
@@ -143,7 +174,8 @@ module.exports = {
   /// Checks if the given input is the result of a successful key read operation.
   isKeyReadSuccessful: function(key)
   {
-    return key
+    return this.isObject(key)
+      && !Array.isArray(key)
       && !key.hasOwnProperty("err")
       && key.hasOwnProperty("keys");
   },
@@ -151,13 +183,25 @@ module.exports = {
   /// Validates if the input parameter is probably a prime MPI.
   isMPIProbablyPrime: function(mpi)
   {
-    return this.isMPIWithData && (mpi.toBigInteger().isProbablePrime());
+    return this.isMPIWithData(mpi) && (mpi.toBigInteger().isProbablePrime());
   },
 
   /// TODO
   isMPIWithData: function(mpi)
   {
-    return (mpi instanceof openpgp.MPI) && (mpi.data instanceof BigInteger);
+    return this.isObject(mpi)
+      && (mpi instanceof openpgp.MPI)
+      && (mpi.data instanceof BigInteger);
+  },
+
+  /**
+   * Checks if the input parameter is an object.
+   * @param {Object} object
+   * @returns {boolean}
+   */
+  isObject: function(object)
+  {
+    return object === Object(object);
   },
 
   // TODO
@@ -176,21 +220,10 @@ module.exports = {
   str2BigInt: function(string)
   {
     var bigInt = null;
-    if (this.isString(string)) {
+    if (this.isString(string) && /^[0-9]+$/.test(string)) {
       bigInt = new BigInteger(string);
     }
 
     return bigInt;
-  },
-
-  /// TODO
-  str2MPI: function(string)
-  {
-    if (!this.isString(string)) { return null; }
-
-    var mpi = new openpgp.MPI();
-    mpi.fromBytes(string);
-
-    return mpi;
   }
 };
