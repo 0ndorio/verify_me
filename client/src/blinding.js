@@ -5,10 +5,11 @@ var BlindingInformation = require("./types/blinding_information");
 
 module.exports = {
 
-  /// TODO
+  /// TODO : Avoid blinding and encrpytion in one step!
   blind_message: function(message, blinding_information)
   {
-    if (!util.isString(message) || !BlindingInformation.isValidFullBlindingInformation(blinding_information)) {
+    if (!(util.isString(message) || /^[0-9]+$/.test(message))
+      || !BlindingInformation.isValidFullBlindingInformation(blinding_information)) {
       return null;
     }
 
