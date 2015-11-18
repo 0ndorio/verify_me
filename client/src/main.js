@@ -145,6 +145,9 @@ function serverRequest(blinded_message, blinding_information)
 /// TODO
 function requestPseudonym()
 {
+  var blind_signature = prepareBlindSignature();
+  var token = client.getToken();
+
   /// blinding factor and modulus must be coprime
   ///   - ensured through the use of prime numbers
   ///   - blinding factor is generated through the multiplication of prime token and two additional prime numbers
@@ -153,13 +156,9 @@ function requestPseudonym()
   ///     (https://math.stackexchange.com/questions/682618/the-maximum-number-of-digits-in-binary-multiplication)
   ///   - TODO: unsure how to handle this properly
   var blinding_information = client.collectPublicBlindingInformation();
-  var prime_bit_length = Math.floor(blinding_information.modulus.bitLength() / 4);
-
-  var blind_signature = prepareBlindSignature();
+  var prime_bit_length = Math.floor((blinding_information.modulus.bitLength() - token.data.bitLength() - 1) / 2);
 
   util.generateTwoPrimeNumbers(prime_bit_length).then(function(primes) {
-
-    var token = client.getToken();
 
     blinding_information.hashed_token = util.bytes2MPI(util.hashMessage(token.data.toRadix())).data;
     blinding_information.blinding_factor = token.data.multiply(primes[0].multiply(primes[1]));
