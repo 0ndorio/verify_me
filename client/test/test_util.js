@@ -153,18 +153,20 @@ describe("util", function() {
 
     this.timeout(0);
 
-    it("should return a rejected Promise if input parameter is no integer", function(done) {
-      util.generateTwoPrimeNumbers(null)
-        .then(function() { done(new Error("Promise should not be resolved.")); })
-        .catch(function() { done(); } );
+    it("should return a rejected Promise if input parameter is no integer", function() {
+      return util.generateTwoPrimeNumbers(null)
+        .then(function() { assert.fail(); })
+        .catch(function(error) {
+          assert.typeOf(error, "string");
+        });
     });
 
     it("should throw an error whe the catch() case is triggered");
 
-    it("should return two {BigInteger} prime numbers of given bit length", function(done) {
+    it("should return two {BigInteger} prime numbers of given bit length", function() {
       var bitLength = 256;
 
-      util.generateTwoPrimeNumbers(bitLength)
+      return util.generateTwoPrimeNumbers(bitLength)
         .then(function(primeNumbers) {
 
           assert.equal(2, primeNumbers.length);
@@ -175,8 +177,7 @@ describe("util", function() {
             assert.equal(bitLength, prime.bitLength());
           });
 
-          done();
-        }).catch(function(error) { done(error); });
+        });
     });
   });
 

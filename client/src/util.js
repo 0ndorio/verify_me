@@ -81,7 +81,7 @@ module.exports = {
   generateTwoPrimeNumbers: function(primeBitLength)
   {
     if (!this.isInteger(primeBitLength)) {
-      return Promise.reject("pimeBitLength no integer but '" + primeBitLength + "'");
+      return Promise.reject("primeBitLength no integer but '" + primeBitLength + "'");
     }
 
     /// rsa.generate() requires a public exponent.
