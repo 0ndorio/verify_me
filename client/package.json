@@ -22,7 +22,9 @@
     "karma-mocha-reporter": "latest",
     "karma-phantomjs-launcher": "latest",
     "mocha": "latest",
+    "mocha-sinon": "latest",
     "phantomjs": "latest",
+    "sinon": "latest",
     "watchify": "latest"
   },
 

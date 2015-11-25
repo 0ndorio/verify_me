@@ -1,5 +1,6 @@
 "use strict";
 
+var BlindingInformation = require("./types/blinding_information");
 var blinding = require("./blinding");
 var client = require("./client");
 var util = require("./util");
@@ -23,6 +24,14 @@ function checkResult(unblinded_message, blinding_information)
 
 function serverRequest(blinded_message, blinding_information)
 {
+  if (!util.isString(blinded_message)) {
+    return Promise.reject("blinded_message is not type of string but '" + typeof blinded_message + "'");
+  }
+
+  if(!(blinding_information instanceof BlindingInformation && util.isBigInteger(blinding_information.hashed_token))) {
+    return Promise.reject("no hashed token stored in blinding_information");
+  }
+
   return new Promise(function(resolve, reject) {
 
     var xhttp = new XMLHttpRequest();
@@ -37,8 +46,8 @@ function serverRequest(blinded_message, blinding_information)
       }
     };
 
-    xhttp.onerror = function() {
-      reject(new Error("Network Error"));
+    xhttp.onerror = function(error) {
+      reject(new Error("error handler called with: " + error));
     };
 
     xhttp.send(JSON.stringify({
@@ -64,48 +73,61 @@ function requestPseudonym()
   var blinding_information = client.collectPublicBlindingInformation();
   var prime_bit_length = Math.floor((blinding_information.modulus.bitLength() - token.data.bitLength() - 1) / 2);
 
-  util.generateTwoPrimeNumbers(prime_bit_length).then(function(primes) {
+  return util.generateTwoPrimeNumbers(prime_bit_length)
+    .then(function (primes) {
 
-    blinding_information.hashed_token = util.bytes2MPI(util.hashMessage(token.data.toRadix())).data;
-    blinding_information.blinding_factor = token.data.multiply(primes[0].multiply(primes[1]));
+      blinding_information.hashed_token = util.bytes2MPI(util.hashMessage(token.data.toRadix())).data;
+      blinding_information.blinding_factor = token.data.multiply(primes[0].multiply(primes[1]));
 
-    /// TODO: workaround for unhandled length problem ... if blinding factor is to large this reduces its size
-    if (blinding_information.blinding_factor.compareTo(blinding_information.modulus) > 0) {
-      blinding_information.blinding_factor = token.data.multiply(primes[0]);
-    }
+      /// TODO: workaround for unhandled length problem ... if blinding factor is to large this reduces its size
+      if (blinding_information.blinding_factor.compareTo(blinding_information.modulus) > 0) {
+        blinding_information.blinding_factor = token.data.multiply(primes[0]);
+      }
 
-    return blinding.blind_message(blind_signature.message, blinding_information).toRadix();
-  })
-  .then(function(blinded_message) {
-    return serverRequest(blinded_message, blinding_information);
-  })
-  .then(function(signed_blinded_message) {
-    var unblinded_message = blinding.unblind_message(signed_blinded_message, blinding_information);
+      return blinding.blind_message(blind_signature.message, blinding_information).toRadix();
+    })
+    .then(function (blinded_message) {
+      return serverRequest(blinded_message, blinding_information);
+    })
+    .then(function (signed_blinded_message) {
+      var unblinded_message = blinding.unblind_message(signed_blinded_message, blinding_information);
 
-    var signature_packet = blind_signature.signature_packet;
-    signature_packet.signature = unblinded_message.toMPI();
+      var signature_packet = blind_signature.signature_packet;
+      signature_packet.signature = unblinded_message.toMPI();
 
-    var verify_me = new openpgp.packet.Literal();
-    verify_me.setBytes(signature_packet.signature, 'binary');
+      var verify_me = new openpgp.packet.Literal();
+      verify_me.setBytes(signature_packet.signature, 'binary');
 
-    var public_key = client.getPublicKey();
-    var result = signature_packet.verify(client.getServerPublicKey().primaryKey, {
-      key: public_key.primaryKey,
-      userid: public_key.getPrimaryUser().user.userId
+      var public_key = client.getPublicKey();
+      var result = signature_packet.verify(client.getServerPublicKey().primaryKey, {
+        key: public_key.primaryKey,
+        userid: public_key.getPrimaryUser().user.userId
+      });
+
+      console.log("Signature veryfied: " + result);
+
+      /// DUMP
+      var public_key = client.getPublicKey();
+      var user = public_key.getPrimaryUser().user;
+
+      if (!user.otherCertifications) {
+        user.otherCertifications = [];
+      }
+      user.otherCertifications.push(signature_packet);
+
+      console.log(public_key.armor());
+      return public_key.armor();
     });
-
-    console.log("Signature veryfied: " + result);
-
-    /// DUMP
-    var public_key = client.getPublicKey();
-    var user = public_key.getPrimaryUser().user;
-
-    if (!user.otherCertifications) { user.otherCertifications = []; }
-    user.otherCertifications.push(signature_packet);
-
-    console.log(public_key.armor());
-    return public_key.armor();
-  });
 }
 
-document.getElementById("activate_pseudonym_button").onclick = requestPseudonym;
+// TODO: refactoring necessary
+// set request button active
+if (typeof document !== "undefined" && document.getElementById("activate_pseudonym_button")) {
+  document.getElementById("activate_pseudonym_button").onclick = requestPseudonym;
+}
+
+// exports requestPseudonym to allow testing
+if(typeof exports !== 'undefined') {
+  exports.requestPseudonym = requestPseudonym;
+  exports.serverRequest = serverRequest;
+}

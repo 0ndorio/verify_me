@@ -22,9 +22,7 @@ module.exports = function(config) {
 
 
     // list of files to exclude
-    exclude: [
-      'src/main.js'
-    ],
+    exclude: [],
 
 
     // preprocess matching files before serving them to the browser
@@ -84,6 +82,8 @@ module.exports = function(config) {
     },
 
 
+    // add additional watchify configuration properties here
+    // such as poll to use watchify as continous integration tool
     watchify: {
       poll: true
     },
