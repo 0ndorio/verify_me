@@ -98,7 +98,7 @@ describe("blinding_information", function() {
     });
 
     it ("should return 'true' if input is a openpgp.key.Key", function() {
-      controls.loadFixture("test/fixture/keys_1024bit.html");
+      controls.loadFixture("test/fixture/keys_2048bit.html");
 
       var blinding_information = new BlindingInformation();
 

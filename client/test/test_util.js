@@ -161,7 +161,16 @@ describe("util", function() {
         });
     });
 
-    it("should throw an error whe the catch() case is triggered");
+    it("should throw an error when sth. wents wrong", function(done) {
+      return util.generateTwoPrimeNumbers(7)
+        .then(function(answer) {
+          done(answer);
+        })
+        .catch(function(error) {
+          assert.typeOf(error, "string");
+          done();
+        });
+    });
 
     it("should return two {BigInteger} prime numbers of given bit length", function() {
       var bitLength = 256;

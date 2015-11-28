@@ -14,7 +14,7 @@ describe("blinding", function() {
   //
 
   beforeEach(function() {
-    controls.loadFixture("test/fixture/keys_1024bit.html");
+    controls.loadFixture("test/fixture/keys_2048bit.html");
   });
 
   afterEach(function() {});
