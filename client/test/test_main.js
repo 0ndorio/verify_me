@@ -13,25 +13,16 @@ describe("main", function() {
   //
   // suite functions
   //
-  var xhr = null;
-  var requests = null;
-
-  before(function() {
-    xhr = sinon.useFakeXMLHttpRequest();
-    xhr.onCreate = function (req) { requests.push(req); };
-  });
 
   beforeEach(function() {
-    requests = [];
-    controls.loadFixture("test/fixture/keys_1024bit.html");
+    this.server = sinon.fakeServer.create();
+    this.server.autoRespond = true;
+    controls.loadFixture("test/fixture/keys_2048bit.html");
   });
 
-  afterEach(function() {});
-
-  after(function() {
-    xhr.restore();
+  afterEach(function() {
+    this.server.restore();
   });
-
 
   //
   // test cases
@@ -77,49 +68,41 @@ describe("main", function() {
           done();
         });
 
-      assert.equal(1, requests.length);
-      requests[0].onload = null;
-      requests[0].abort();
+      assert.equal(1, this.server.requests.length);
+      this.server.requests[0].onload = null;
+      this.server.requests[0].abort();
 
       return request_promise;
     });
 
     it("should reject and return status text error if status is not 200", function(done) {
 
+      var expected = { code: 404, status_text: new Error("Not Found") };
+      this.server.respondWith([expected.code, { "Content-Type": "text/plain" }, ""]);
+
       var blinding_information = new BlindingInformation();
       blinding_information.hashed_token = util.bytes2MPI("\u0000").data;
 
-      var expected = { code: 404, status_text: new Error("Not Found") };
-
-      var request_promise = main.serverRequest("" , blinding_information)
+      return main.serverRequest("" , blinding_information)
         .then(function(answer) { done(answer); })
         .catch(function(error) {
           assert.instanceOf(error, Error);
           done();
         });
-
-      assert.equal(1, requests.length);
-      requests[0].respond(expected.code, { "Content-Type": "text/plain" }, "");
-
-      return request_promise;
     });
 
     it("should resolve and return server response if status is 200", function() {
 
+      var expected = "My expected response";
+      this.server.respondWith([200, { "Content-Type": "text/plain" }, expected]);
+
       var blinding_information = new BlindingInformation();
       blinding_information.hashed_token = util.bytes2MPI("\u0000").data;
 
-      var expected = "My expected response";
-
-      var request_promise = main.serverRequest("" , blinding_information)
+      return main.serverRequest("" , blinding_information)
         .then(function(answer) {
           assert.equal(expected, answer);
         });
-
-      assert.equal(1, requests.length);
-      requests[0].respond(200, { "Content-Type": "text/plain" }, expected);
-
-      return request_promise;
     });
   });
 

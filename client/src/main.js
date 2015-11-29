@@ -91,6 +91,9 @@ function requestPseudonym()
     })
     .then(function (signed_blinded_message) {
       var unblinded_message = blinding.unblind_message(signed_blinded_message, blinding_information);
+      if (unblinded_message === null) {
+        throw new Error("Could not unblind the signed blinded message");
+      }
 
       var signature_packet = blind_signature.signature_packet;
       signature_packet.signature = unblinded_message.toMPI();
