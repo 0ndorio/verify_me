@@ -29,7 +29,7 @@ module.exports = {
   /// TODO
   unblind_message: function(message, blinding_information)
   {
-    if (!(util.isString(message) || /^[0-9]+$/.test(message))
+    if (!(util.isString(message) && /^[0-9]+$/.test(message))
           || !BlindingInformation.isValidFullBlindingInformation(blinding_information)) {
       return null;
     }
