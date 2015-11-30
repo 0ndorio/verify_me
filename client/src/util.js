@@ -81,7 +81,9 @@ module.exports = {
   generateTwoPrimeNumbers: function(primeBitLength)
   {
     if (!this.isInteger(primeBitLength)) {
-      return Promise.reject("primeBitLength no integer but '" + primeBitLength + "'");
+      return Promise.reject("The prime bit length is no integer but a '" + primeBitLength + "'");
+    } else if(!((primeBitLength % 8 === 0) && primeBitLength >= 256 && primeBitLength <= 16384)) {
+      return Promise.reject("The prime bit length must be a multiple of 8 bits and >= 128 and <= 8192");
     }
 
     /// rsa.generate() requires a public exponent.
