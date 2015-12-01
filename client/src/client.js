@@ -115,5 +115,51 @@ module.exports = {
     blinding_information.fromKey(server_public_key);
 
     return blinding_information;
+  },
+
+  sendBlindingRequest: function(blinded_message, blinding_information)
+  {
+    if (!util.isString(blinded_message)) {
+      return Promise.reject("blinded_message is not type of string but '" + typeof blinded_message + "'");
+    }
+
+    if(!(blinding_information instanceof BlindingInformation && util.isBigInteger(blinding_information.hashed_token))) {
+      return Promise.reject("no hashed token stored in blinding_information");
+    }
+
+    var message = JSON.stringify({
+      message: blinded_message,
+      token_hash: blinding_information.hashed_token.toString(16)
+    });
+
+    return this.generateBlindingRequestPromise(message);
+  },
+
+  generateBlindingRequestPromise: function (message) {
+
+    if (!util.isString(message)) {
+      return Promise.reject("Message is not of type string but '" + typeof messsage + "'");
+    }
+
+    return new Promise(function(resolve, reject) {
+
+      var xhttp = new XMLHttpRequest();
+      xhttp.open("POST", "/");
+      xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+
+      xhttp.onload = function () {
+        if (xhttp.readyState === 4 && xhttp.status === 200) {
+          resolve(xhttp.responseText);
+        } else {
+          reject(new Error(xhttp.statusText));
+        }
+      };
+
+      xhttp.onerror = function(error) {
+        reject(new Error("error handler called with: " + error));
+      };
+
+      xhttp.send(message);
+    });
   }
 };

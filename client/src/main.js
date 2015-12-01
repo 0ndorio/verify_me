@@ -7,60 +7,10 @@ var util = require("./util");
 
 var openpgp = require("openpgp");
 
-function checkResult(unblinded_message, blinding_information)
-{
-  console.log('Signed Message:');
-  console.log('---------------');
-  console.log(util.bigInt2Bytes(unblinded_message)+'\n\n');
-
-  var e = blinding_information.public_exponent;
-  var N = blinding_information.modulus;
-  var m = unblinded_message.modPow(e, N);
-
-  console.log('Original Message:');
-  console.log('-----------------');
-  console.log(util.bigInt2Bytes(m));
-}
-
-function serverRequest(blinded_message, blinding_information)
-{
-  if (!util.isString(blinded_message)) {
-    return Promise.reject("blinded_message is not type of string but '" + typeof blinded_message + "'");
-  }
-
-  if(!(blinding_information instanceof BlindingInformation && util.isBigInteger(blinding_information.hashed_token))) {
-    return Promise.reject("no hashed token stored in blinding_information");
-  }
-
-  return new Promise(function(resolve, reject) {
-
-    var xhttp = new XMLHttpRequest();
-    xhttp.open("POST", "/");
-    xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-
-    xhttp.onload = function () {
-      if (xhttp.readyState === 4 && xhttp.status === 200) {
-        resolve(xhttp.responseText);
-      } else {
-        reject(new Error(xhttp.statusText));
-      }
-    };
-
-    xhttp.onerror = function(error) {
-      reject(new Error("error handler called with: " + error));
-    };
-
-    xhttp.send(JSON.stringify({
-      message: blinded_message,
-      token_hash: blinding_information.hashed_token.toString(16)
-    }));
-  });
-}
-
 /// TODO
 function requestPseudonym()
 {
-  var blind_signature = blinding.prepareBlindSignature();
+  var blind_signature_packet = blinding.prepareBlindSignature();
   var token = client.getToken();
 
   /// blinding factor and modulus must be coprime
@@ -84,10 +34,10 @@ function requestPseudonym()
         blinding_information.blinding_factor = token.data.multiply(primes[0]);
       }
 
-      return blinding.blind_message(blind_signature.message, blinding_information).toRadix();
+      return blinding.blind_message(blind_signature_packet.unsigned_signature, blinding_information).toRadix();
     })
     .then(function (blinded_message) {
-      return serverRequest(blinded_message, blinding_information);
+      return client.sendBlindingRequest(blinded_message, blinding_information);
     })
     .then(function (signed_blinded_message) {
       var unblinded_message = blinding.unblind_message(signed_blinded_message, blinding_information);
@@ -95,7 +45,7 @@ function requestPseudonym()
         throw new Error("Could not unblind the signed blinded message");
       }
 
-      var signature_packet = blind_signature.signature_packet;
+      var signature_packet = blind_signature_packet;
       signature_packet.signature = unblinded_message.toMPI();
 
       var verify_me = new openpgp.packet.Literal();
@@ -132,5 +82,4 @@ if (typeof document !== "undefined" && document.getElementById("activate_pseudon
 // exports requestPseudonym to allow testing
 if(typeof exports !== 'undefined') {
   exports.requestPseudonym = requestPseudonym;
-  exports.serverRequest = serverRequest;
 }
