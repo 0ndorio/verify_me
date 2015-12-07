@@ -70,7 +70,8 @@ function requestPseudonym()
 
       console.log(public_key.armor());
       return public_key.armor();
-    });
+    })
+    .catch(function(error) {console.log(error); });
 }
 
 // TODO: refactoring necessary
