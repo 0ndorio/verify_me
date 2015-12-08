@@ -6,7 +6,8 @@
   "version": "0.1.0",
   
   "dependencies": {
-    "openpgp": "latest"
+    "bn": "latest",
+    "kbpgp": "latest"
   },
   
   "devDependencies": {
@@ -20,10 +21,9 @@
     "karma-html2js-preprocessor": "latest",
     "karma-mocha": "latest",
     "karma-mocha-reporter": "latest",
-    "karma-phantomjs-launcher": "latest",
+    "karma-chrome-launcher": "latest",
     "mocha": "latest",
     "mocha-sinon": "latest",
-    "phantomjs": "latest",
     "sinon": "latest",
     "watchify": "latest"
   },
