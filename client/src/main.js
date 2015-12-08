@@ -5,8 +5,6 @@ var blinding = require("./blinding");
 var client = require("./client");
 var util = require("./util");
 
-var openpgp = require("openpgp");
-
 /// TODO
 function requestPseudonym()
 {

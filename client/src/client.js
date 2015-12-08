@@ -26,7 +26,7 @@ module.exports = {
       throw new Error("Could not generate public key. Please check your input.");
     }
 
-    return public_key.keys[0];
+    return public_key;
   },
 
   /// Extracts users public key from textarea "public_key_textarea".

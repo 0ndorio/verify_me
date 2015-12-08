@@ -2,10 +2,10 @@
 
 var assert = require("chai").assert;
 var BlindingInformation = require("../src/types/blinding_information");
-var BigInteger = require("../node_modules/openpgp/src/crypto/public_key/jsbn");
+var BigInteger = require("bn").BigInteger;
 var client = require("../src/client");
 var controls = require("./helper/helper").controls;
-var openpgp = require("openpgp");
+var kbpgp = require("kbpgp");
 
 describe("blinding_information", function() {
 

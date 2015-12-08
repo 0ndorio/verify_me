@@ -1,15 +1,15 @@
 "use strict";
 
-var openpgp = require("openpgp");
+var kbpgp = require("kbpgp");
 var util = require("../util");
 
 var BlindKeySignaturePacket = function()
 {
-  openpgp.packet.Signature.call(this);
-  this.signatureType = openpgp.enums.signature.cert_generic;
+  kbpgp.packet.Signature.call(this);
+  this.signatureType = kbpgp.enums.signature.cert_generic;
 };
 
-BlindKeySignaturePacket.prototype = Object.create(openpgp.packet.Signature.prototype);
+BlindKeySignaturePacket.prototype = Object.create(kbpgp.opkts.Signature.prototype);
 
 BlindKeySignaturePacket.prototype.configure = function(target_public_key, signer_public_key)
 {
@@ -36,7 +36,7 @@ BlindKeySignaturePacket.prototype.extractSignersPublicInformation = function(sig
 
   this.hashAlgorithm = signer_public_key.getPreferredHashAlgorithm();
   this.issuerKeyId = signer_public_key_packet.getKeyId();
-  this.publicKeyAlgorithm = openpgp.enums.write(openpgp.enums.publicKey, signer_public_key_packet.algorithm);
+  this.publicKeyAlgorithm = kbpgp.enums.write(kbpgp.enums.publicKey, signer_public_key_packet.algorithm);
 
   return true;
 };
@@ -145,7 +145,7 @@ BlindKeySignaturePacket.prototype.getUserIDDataFromKey = function(target_public_
 
   var user = target_public_key.getPrimaryUser().user;
   var user_id_packet_string = user.userId.write();
-  return "\u00B4" + openpgp.util.writeNumber(user_id_packet_string.length, 4) + user_id_packet_string;
+  return "\u00B4" + kbpgp.util.writeNumber(user_id_packet_string.length, 4) + user_id_packet_string;
 };
 
 /// TODO
@@ -161,7 +161,7 @@ BlindKeySignaturePacket.prototype.generateHashedSignData = function(target_publi
   var sign_data = public_key_data + user_id_data + this.signatureData + this.calculateTrailer();
   var target_length = (signer_public_key.primaryKey.getBitSize() / 8);
 
-  return openpgp.crypto.pkcs1.emsa.encode(this.hashAlgorithm, sign_data, target_length);
+  return kbpgp.crypto.pkcs1.emsa.encode(this.hashAlgorithm, sign_data, target_length);
 };
 
 module.exports = BlindKeySignaturePacket;

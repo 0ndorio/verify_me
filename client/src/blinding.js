@@ -5,8 +5,6 @@ var BlindKeySignaturePacket = require("./types/blind_signature_packet");
 var client = require("./client");
 var util = require("./util");
 
-var openpgp = require("openpgp");
-
 module.exports = {
 
   /// TODO : Avoid blinding and encrpytion in one step!
@@ -55,5 +53,5 @@ module.exports = {
     }
 
     return signature_packet;
-  },
+  }
 };

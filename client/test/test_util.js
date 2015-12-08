@@ -1,10 +1,10 @@
 "use strict";
 
 var assert = require("chai").assert;
-var BigInteger = require("../node_modules/openpgp/src/crypto/public_key/jsbn");
+var BigInteger = require("bn").BigInteger;
 var controls = require("./helper/helper").controls;
 var client = require("../src/client");
-var openpgp = require("openpgp");
+var kbpgp = require("kbpgp");
 var util = require("../src/util");
 
 describe("util", function() {
@@ -77,7 +77,7 @@ describe("util", function() {
       var input = "123";
       var result = util.bytes2MPI(input);
 
-      assert.instanceOf(result, openpgp.MPI);
+      assert.instanceOf(result, kbpgp.MPI);
       assert.isTrue(util.isMPIWithData(result));
       assert.equal(input, result.toBytes());
     });
@@ -145,7 +145,7 @@ describe("util", function() {
       assert.isNotNull(key);
       assert.isTrue(util.isKeyReadSuccessful(key));
 
-      assert.instanceOf(key.keys[0], openpgp.key.Key);
+      assert.instanceOf(key.keys[0], kbpgp.key.Key);
     });
   });
 
@@ -328,7 +328,7 @@ describe("util", function() {
 
     it("should return true if input mpi parameter is a small prime", function () {
       var prime = new BigInteger("7");
-      var mpi = new openpgp.MPI();
+      var mpi = new kbpgp.MPI();
       mpi.fromBigInteger(prime);
       assert.isTrue(util.isMPIProbablyPrime(mpi));
     });
@@ -341,7 +341,7 @@ describe("util", function() {
                                  "0569087279284814911202228633214487618337632651"+
                                  "2083574821647933992961249917319836219304274280"+
                                  "243803104015000563790123");
-      var mpi = new openpgp.MPI();
+      var mpi = new kbpgp.MPI();
       mpi.fromBigInteger(prime);
       assert.isTrue(util.isMPIProbablyPrime(mpi));
     });
@@ -354,12 +354,12 @@ describe("util", function() {
     });
 
     it("should return false if input mpi parameter has no data", function () {
-      var mpi = new openpgp.MPI();
+      var mpi = new kbpgp.MPI();
       assert.isFalse(util.isMPIWithData(mpi));
     });
 
     it("should return true if input mpi parameter has data", function () {
-      var mpi = new openpgp.MPI();
+      var mpi = new kbpgp.MPI();
       mpi.fromBytes("\u0000");
       assert.isTrue(util.isMPIWithData(mpi));
     });
@@ -423,7 +423,7 @@ describe("util", function() {
       {arg: "123", expected: false},
       {arg: {},    expected: false},
       {arg: [],    expected: false},
-      {arg: util.generateKeyFromString(keyString).keys[0], expected: true}
+      {arg: util.generateKeyFromString(keyString), expected: true}
     ];
 
     tests.forEach(function(test) {

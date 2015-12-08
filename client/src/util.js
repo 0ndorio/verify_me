@@ -1,7 +1,7 @@
 "use strict";
 
-var BigInteger = require("../node_modules/openpgp/src/crypto/public_key/jsbn");
-var openpgp = require("openpgp");
+var BigInteger = require("bn").BigInteger;
+var kbpgp = require("kbpgp");
 
 module.exports = {
 
@@ -18,7 +18,7 @@ module.exports = {
   {
     var result = null;
     if (bigInteger instanceof BigInteger) {
-      result = openpgp.util.bin2str(bigInteger.toByteArray());
+      result = kbpgp.util.bin2str(bigInteger.toByteArray());
     }
 
     return result;
@@ -29,7 +29,7 @@ module.exports = {
   {
     var hex_string = "";
     if (this.isString(byte_string)) {
-      hex_string = openpgp.util.hexstrdump(byte_string);
+      hex_string = kbpgp.util.hexstrdump(byte_string);
     }
 
     return hex_string;
@@ -40,7 +40,7 @@ module.exports = {
   {
     if (!this.isString(byte_string)) { return null; }
 
-    var mpi = new openpgp.MPI();
+    var mpi = new kbpgp.MPI();
     mpi.fromBytes(byte_string);
 
     return mpi;
@@ -51,27 +51,31 @@ module.exports = {
   {
     var byte_string = "";
     if (this.isString(hex_as_string)) {
-      byte_string = openpgp.util.hex2bin(hex_as_string);
+      byte_string = kbpgp.util.hex2bin(hex_as_string);
     }
 
     return byte_string;
   },
 
-  /// Converts a given armored key string into a openpgp key object.
+  /// Converts a given armored key string into a kbpgp key object.
   ///
   /// @param {string} key_as_string
   ///      The armored key.
   /// @return
-  ///      {object} containing the keys represented by the armored key or
+  ///      {kbpgp.KeyManager} containing the keys represented by the armored key or
   ///      {null} if sth. went wrong during conversion.
   generateKeyFromString: function(key_as_string)
   {
     if (!this.isString(key_as_string)) { return null; }
 
-    var key = openpgp.key.readArmored(key_as_string);
-    if (!this.isKeyReadSuccessful(key)) {
-      key = null;
-    }
+    var key = null;
+    kbpgp.KeyManager.import_from_armored_pgp(
+      { armored: key_as_string },
+      function(err, key_manager) {
+        if (!err) {
+          key = key_manager;
+        }
+      });
 
     return key;
   },
@@ -94,7 +98,7 @@ module.exports = {
     var public_exponent = "10001";
     var modulus_bit_length = primeBitLength * 2;
 
-    var rsa = new openpgp.crypto.publicKey.rsa();
+    var rsa = new kbpgp.crypto.publicKey.rsa();
     return rsa
       .generate(modulus_bit_length, public_exponent)
       .then(function(key) {
@@ -138,7 +142,7 @@ module.exports = {
   {
     var digest = null;
     if (this.isString(message)) {
-      digest = openpgp.crypto.hash.sha512(message);
+      digest = kbpgp.crypto.hash.sha512(message);
     }
 
     return digest;
@@ -192,7 +196,7 @@ module.exports = {
   isMPIWithData: function(mpi)
   {
     return this.isObject(mpi)
-      && (mpi instanceof openpgp.MPI)
+      && (mpi instanceof kbpgp.MPI)
       && (mpi.data instanceof BigInteger);
   },
 
@@ -209,7 +213,7 @@ module.exports = {
   // TODO
   isOpenPGPKey: function(key)
   {
-    return (key instanceof openpgp.key.Key);
+    return (key instanceof kbpgp.key.Key);
   },
 
   /// Validates if the input parameter is a string.
