@@ -58,7 +58,7 @@ describe("blinding", function() {
     ];
 
     tests.forEach(function(test) {
-      it ("should return '" + test.expected + "' for sepcified input", function() {
+      it ("should return '" + test.expected + "' for specified input", function() {
 
         var blinding_information = new BlindingInformation();
         blinding_information.blinding_factor = util.int2BigInt(test.args.blinding_factor);
