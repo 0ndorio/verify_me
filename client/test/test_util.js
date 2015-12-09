@@ -17,10 +17,10 @@ describe("util", function() {
       {arg: 1,  expected: "\u0001"},
       {arg: 0,  expected: "\u0000"},
       {arg: "",  expected: "\u0000"},
-      {arg: -1,  expected: "ÿÿÿ"},
-      {arg: -2,  expected: "ÿÿþ"},
-      {arg: -256,  expected: "ÿÿ\u0000"},
-      {arg: -1111,  expected: "ÿû©"}
+      {arg: -1,  expected: "ÿ"},
+      {arg: -2,  expected: "þ"},
+      {arg: -256,  expected: "ÿ\u0000"},
+      {arg: -1111,  expected: "û©"}
     ];
 
     tests.forEach(function(test) {
@@ -77,9 +77,8 @@ describe("util", function() {
       var input = "123";
       var result = util.bytes2MPI(input);
 
-      assert.instanceOf(result, kbpgp.MPI);
       assert.isTrue(util.isMPIWithData(result));
-      assert.equal(input, result.toBytes());
+      assert.equal(input, result.data.toBuffer().toString("binary"));
     });
   });
 
@@ -328,8 +327,7 @@ describe("util", function() {
 
     it("should return true if input mpi parameter is a small prime", function () {
       var prime = new BigInteger("7");
-      var mpi = new kbpgp.MPI();
-      mpi.fromBigInteger(prime);
+      var mpi = { data: prime };
       assert.isTrue(util.isMPIProbablyPrime(mpi));
     });
 
@@ -341,8 +339,7 @@ describe("util", function() {
                                  "0569087279284814911202228633214487618337632651"+
                                  "2083574821647933992961249917319836219304274280"+
                                  "243803104015000563790123");
-      var mpi = new kbpgp.MPI();
-      mpi.fromBigInteger(prime);
+      var mpi = { data: prime };
       assert.isTrue(util.isMPIProbablyPrime(mpi));
     });
   });
@@ -354,13 +351,11 @@ describe("util", function() {
     });
 
     it("should return false if input mpi parameter has no data", function () {
-      var mpi = new kbpgp.MPI();
-      assert.isFalse(util.isMPIWithData(mpi));
+      assert.isFalse(util.isMPIWithData({}));
     });
 
     it("should return true if input mpi parameter has data", function () {
-      var mpi = new kbpgp.MPI();
-      mpi.fromBytes("\u0000");
+      var mpi = util.bytes2MPI("\u0000");
       assert.isTrue(util.isMPIWithData(mpi));
     });
   });

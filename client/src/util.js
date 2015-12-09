@@ -2,6 +2,7 @@
 
 var BigInteger = require("bn").BigInteger;
 var kbpgp = require("kbpgp");
+var naive_is_prime = require("../node_modules/kbpgp/lib/primegen").naive_is_prime;
 
 module.exports = {
 
@@ -18,7 +19,11 @@ module.exports = {
   {
     var result = null;
     if (bigInteger instanceof BigInteger) {
-      result = kbpgp.util.bin2str(bigInteger.toByteArray());
+
+      // toBuffer() called on 0 creates an empty buffer which is represented
+      // by an empty string. To avoid this we enforce a buffer of minimum size 1.
+      var buffer_size = (bigInteger.byteLength() === 0) ? 1 : bigInteger.byteLength();
+      result = bigInteger.toBuffer(buffer_size).toString("binary");
     }
 
     return result;
@@ -27,12 +32,12 @@ module.exports = {
   /// bytes to hex
   bytes2hex: function(byte_string)
   {
-    var hex_string = "";
-    if (this.isString(byte_string)) {
-      hex_string = kbpgp.util.hexstrdump(byte_string);
+    if (!this.isString(byte_string)) {
+      return "";
     }
 
-    return hex_string;
+    var buffer = new kbpgp.Buffer(byte_string, "binary");
+    return buffer.toString("hex");
   },
 
   /// TODO
@@ -40,21 +45,24 @@ module.exports = {
   {
     if (!this.isString(byte_string)) { return null; }
 
-    var mpi = new kbpgp.MPI();
-    mpi.fromBytes(byte_string);
-
-    return mpi;
+    return {
+      data: new BigInteger(new kbpgp.Buffer(byte_string, "binary"))
+    };
   },
 
   /// hex to bytes
   hex2bytes: function(hex_as_string)
   {
-    var byte_string = "";
-    if (this.isString(hex_as_string)) {
-      byte_string = kbpgp.util.hex2bin(hex_as_string);
+    if (!this.isString(hex_as_string)) {
+      return "";
     }
 
-    return byte_string;
+    if (hex_as_string.length === 1) {
+      hex_as_string = "0" + hex_as_string;
+    }
+
+    var bytes = new kbpgp.Buffer(hex_as_string, "hex");
+    return bytes.toString("binary");
   },
 
   /// Converts a given armored key string into a kbpgp key object.
@@ -69,12 +77,9 @@ module.exports = {
     if (!this.isString(key_as_string)) { return null; }
 
     var key = null;
-    kbpgp.KeyManager.import_from_armored_pgp(
-      { armored: key_as_string },
+    kbpgp.KeyManager.import_from_armored_pgp({ armored: key_as_string },
       function(err, key_manager) {
-        if (!err) {
-          key = key_manager;
-        }
+        if (!err) { key = key_manager; }
       });
 
     return key;
@@ -142,7 +147,7 @@ module.exports = {
   {
     var digest = null;
     if (this.isString(message)) {
-      digest = kbpgp.crypto.hash.sha512(message);
+      digest = kbpgp.hash.SHA512(new kbpgp.Buffer(message)).toString("binary");
     }
 
     return digest;
@@ -189,15 +194,13 @@ module.exports = {
   /// Validates if the input parameter is probably a prime MPI.
   isMPIProbablyPrime: function(mpi)
   {
-    return this.isMPIWithData(mpi) && (mpi.toBigInteger().isProbablePrime());
+    return this.isMPIWithData(mpi) && naive_is_prime(mpi.data);
   },
 
   /// TODO
   isMPIWithData: function(mpi)
   {
-    return this.isObject(mpi)
-      && (mpi instanceof kbpgp.MPI)
-      && (mpi.data instanceof BigInteger);
+    return this.isObject(mpi) && (mpi.data instanceof BigInteger);
   },
 
   /**
@@ -213,7 +216,7 @@ module.exports = {
   // TODO
   isOpenPGPKey: function(key)
   {
-    return (key instanceof kbpgp.key.Key);
+    return (key instanceof kbpgp.KeyManager);
   },
 
   /// Validates if the input parameter is a string.
