@@ -13,13 +13,17 @@ from ..lib.OpenPGPPseudonyms.OpenPGP import messages, packets
 
 root = os.path.dirname(os.path.abspath(__file__))
 
-public_key_path = '../lib/OpenPGPPseudonyms/tests/testdata/foobar-bar.com_public_2048.txt'
+public_key_path = '../../keys/server.key'
 public_key_string = open(root + "/" + public_key_path, "r").read()
 public_key = messages.fromRadix64(public_key_string)
 
-secret_key_path = '../lib/OpenPGPPseudonyms/tests/testdata/foobar-bar.com_secret_2048.txt'
+def enter_password():
+    print 'Passphrase needed for secret key'
+    return raw_input('password: ')
+
+secret_key_path = '../../keys/server_secret.key'
 secret_key_string = open(root + "/" + secret_key_path, "r").read()
-secret_key = messages.fromRadix64(secret_key_string)
+secret_key = messages.fromRadix64(secret_key_string, enter_password)
 
 # ----------------
 

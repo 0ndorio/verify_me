@@ -53,5 +53,10 @@ echo "Cofigure Python: install modules"
 pip install tornado > /dev/null
 pip install PyCrypto > /dev/null
 
+echo "Copy Dummy Keys"
+mkdir -p ${application_name}/keys
+cp /vagrant/provision/config/dummy_server.key ${application_name}/keys/server.key
+cp /vagrant/provision/config/dummy_server_secret.key ${application_name}/keys/server_secret.key
+
 #echo "Run application"
 #/bin/bash ${application_name}/src/util_scripts/run_server.sh &
