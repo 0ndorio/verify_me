@@ -1,7 +1,7 @@
 "use strict";
 
 var assert = require("chai").assert;
-var BigInteger = require("bn").BigInteger;
+var BigInteger = require("../node_modules/kbpgp/lib/bn").BigInteger;
 var controls = require("./helper/helper").controls;
 var client = require("../src/client");
 var kbpgp = require("kbpgp");
