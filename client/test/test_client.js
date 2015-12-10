@@ -31,8 +31,8 @@ describe("client", function() {
 
   describe("#getPublicKey()", function() {
 
-    it ("should return users public key as openpgp.Key", function () {
-      assert.instanceOf(client.getPublicKey(), openpgp.key.Key);
+    it ("should return users public key as kbpgp.Key", function () {
+      assert.instanceOf(client.getPublicKey(), kbpgp.KeyManager);
     });
 
     it ("must throw if id is missing from html", function () {
@@ -117,8 +117,8 @@ describe("client", function() {
 
   describe("#getServerPublicKey()", function() {
 
-    it ("should return server public key as openpgp.Key", function () {
-      assert.instanceOf(client.getServerPublicKey(), openpgp.key.Key);
+    it ("should return server public key as kbpgp.Key", function () {
+      assert.instanceOf(client.getServerPublicKey(), kbpgp.KeyManager);
     });
 
     it ("must throw if id is missing from html", function () {

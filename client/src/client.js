@@ -93,7 +93,7 @@ module.exports = {
       throw new Error("Couldn't convert server public key. Please reload page.");
     }
 
-    return public_key.keys[0];
+    return public_key;
   },
 
   /// TODO

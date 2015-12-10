@@ -40,8 +40,9 @@ BlindingInformation.prototype.fromKey = function(key)
     return false;
   }
 
-  this.modulus = key.primaryKey.mpi[0].data;
-  this.public_exponent = key.primaryKey.mpi[1].data;
+  var public_key_package = key.get_primary_keypair().pub;
+  this.modulus = public_key_package.n;
+  this.public_exponent = public_key_package.e;
 
   return true;
 };

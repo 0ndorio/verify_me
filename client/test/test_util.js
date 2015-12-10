@@ -113,38 +113,28 @@ describe("util", function() {
     it("should return a {Key} object if input is a valid ascii armored key", function() {
       var keyString =
         ['-----BEGIN PGP PUBLIC KEY BLOCK-----',
-         'Version: SKS 1.1.3',
-         '',
-         'mQENAy9J/w4AAAEIALBDDD4vWqG/Jg59ghhMYAa+E7ECCTv2At8hxsM5cMP8P9sMLjs+GMfD',
-         'IdQSOqlQXbunYADvM1l/h2fOuUMoYFIIGaUsO5Daxvd9uWceM4DVzhXMeJZb9wc5jEJEF21+',
-         'qidKj5OGsMyTrg++mn4Gh/aFXvvy3N3KWaQpPfNi3NRZUpNLz0IlfbXVBQGD6reLoxPptJun',
-         'NqpClyRiesgq8HCscmB2oQo+b9KzSSgzU9qQJA4SljMYVmJ2sDE/sjREI8iKL8lIgUMhJG9q',
-         'NggWjuxFTpVcGKkuQFJIvdL+UhTVvEBuqw6n4cmFAzfZ/AInJM032qLtsaIf5begFKI3up0A',
-         'BRGJARUDBSAxm7HC5begFKI3up0BAbdDB/0TOcI0ec+OPxC5RTZAltgIgyUc0yOjHoTD/yBh',
-         'WjZdQ9YVrLGMWTW4fjhm4rFnppVZKS/N71bwI76SnN9zO4pPfx86aQPR7StmSLJxB+cfh2GL',
-         'gudJoG9ifhJWdNYMUD/yhA0TpJkdHMD5yTDE5Ce/PqKLviiX9C5MPW0AT1MDvafQlzeUXfb5',
-         '1a71vQNPw7W1NBAVZRwztm7TNUaxWMFuOmUtOJpq4F/qDQTIHW2zGPJvl47rpf6JSiyIyU70',
-         'l0deiQcZOXPC80tgInhNoBrz3zbEXhXRJo1fHkr2YSLclpJaoUOHsPxoyrNB28ASL5ZknPwI',
-         'Zx3+cFxaGpRprfSdtCFKb2huIEEuIFBlcnJ5IDxwZXJyeUBwaG9lbml4Lm5ldD6JARUDBRAv',
-         'Sf8k5begFKI3up0BAcbGB/0eLod2qrQxoE2/RUWQtqklOPUj/p/ZTmvZm8BgsdIflb0AMeey',
-         '9o8AbxyAgA3pcrcCjcye79M1Ma2trEvRksvs8hViuq3BXXjDbjPZi3wTtKSvbAC022OV52Sb',
-         '8/sgiTGp7xC8QMqS8w4ZeKoxJGh1TVMYrevUA8a2Rr5aDqrR3EA4rifSHwkVjJWOPF69xiKt',
-         'IVA0LcYJvGsPOQCf2ag+nOcnDrF4dvcmg6XZ/RyLepve+1qkhXsA/oq+yHoaqWfe+bwgssk/',
-         'qw1aEUk7Di8x7vY+cfjvWaazcYGw8kkIwSSqqIq0pkKFz2xDDfSaDJl6OW/2GUK0wDpJmYZo',
-         'PN40iJUDBRAvSgDsU5OkROGu2G8BAeUqBACbC45t4+wYxWCxxp81pkFRb8RWBvEvbXI+Spwd',
-         '4NcKs8jc5OVC8V02yiq4KbKFDRxdw2OWpUCSRAJe1gjsfFrZ+2RivpKk06kbAYthES03MjXg',
-         'cfcV3z2d7IWanJzdcOlzsHzPe1+RoUAaqBjvcqPRCGRlk0ogkYHyWYxElc6574iVAwUQL9iL',
-         'CXr7ES8bepftAQGPywP/d9GSpEmS7LLIqazl4rgN1nkXN5KqduiH8Whu3xcBrdOAn7IYnGTp',
-         'O+Ag4qwKKH+y/ke9CeZL6AnrU9c0pux150dHsDeHtpTPyInkjgKI7BofprydvpiFNd0nlAi4',
-         'J4SAEYr3q92Qn/IiKpnLgo6Ls/GFb7q6y1O/2LL8PC2zrYU=',
-         '=eoGb',
-         '-----END PGP PUBLIC KEY BLOCK-----'].join('\n');
+          'Version: GnuPG v2',
+          '',
+          'mI0EVmmWTQEEALumEkoJ2JTwSJ+U+aUrKmpAu0B6Rm5FKLagRC6sRrU/2RU12jBi',
+          'q/c+SyJriC6Rfar73MXuaXmTOtkBfz6XkEV70FZVdavciZhEBIYzBvJDOuP4cyXA',
+          'vwFa+pfn1myoW67JNHANkiSM5KJQXtOuvCtofH07lG5WiH2MuLGLImtDABEBAAG0',
+          'G0pvaG4gRG9lIDxqb2huLmRvZUBmb28uY29tPoi3BBMBCAAhBQJWaZZNAhsDBQsJ',
+          'CAcCBhUICQoLAgQWAgMBAh4BAheAAAoJEGs7P8KYU1e8x9gEAI+1rRdNtBCLou1R',
+          'twaBDv/mMkmFfhcDqSk5TzK451cnOSI5YIm5IQFISjTdJm49v4h7UVJB0wNM4QKX',
+          'bioX1e0AyOXTfqMHCfgZMpkbbMMvI4MBjp+hvQ/qByu3whsbVb0b4zJ1HPOoKc4o',
+          'C/SCtSWGyTFV/YLRSBZEPEs/wyJnuI0EVmmWTQEEAL9VPU4uNMXgIGikhwkawDUw',
+          'bgXWc/Cx/CSPbK+PXAGddTyrMWW9xrKvPrJfBiMq5kQlwD7IhCbmPu10h+brWZmj',
+          'pXLxcWUWPnaWIXRR4f/lZSai6k7SZmTpKGXLLliO+Sna/uzBsgijAtOsK5EWEqj1',
+          'FZzt1jSRApRarKcHgy6pABEBAAGInwQYAQgACQUCVmmWTQIbDAAKCRBrOz/CmFNX',
+          'vAx9A/9A1atvnTlGj+lKh9VrlN5CZ4jZMMEsSy5iw311YNnAZhn4gMTMrbWrNyWI',
+          '9PX2VpMxQHlT21l4OJgbof5gp7mOw0HdD0akMa0L3U4Ybd/JgloBDu9HUVB9mT0+',
+          'CVKecnStCMounFvM2rc5uv9HcIgeLes4ccFJUzGSpeThYhyPEw==',
+          '=w97z',
+          '-----END PGP PUBLIC KEY BLOCK-----'].join('\n');
 
       var key = util.generateKeyFromString(keyString);
       assert.isNotNull(key);
-      assert.isTrue(util.isKeyReadSuccessful(key));
-
-      assert.instanceOf(key.keys[0], kbpgp.key.Key);
+      assert.isTrue(util.isOpenPGPKey(key));
     });
   });
 
@@ -384,31 +374,23 @@ describe("util", function() {
 
     var keyString =
       ['-----BEGIN PGP PUBLIC KEY BLOCK-----',
-        'Version: SKS 1.1.3',
+        'Version: GnuPG v2',
         '',
-        'mQENAy9J/w4AAAEIALBDDD4vWqG/Jg59ghhMYAa+E7ECCTv2At8hxsM5cMP8P9sMLjs+GMfD',
-        'IdQSOqlQXbunYADvM1l/h2fOuUMoYFIIGaUsO5Daxvd9uWceM4DVzhXMeJZb9wc5jEJEF21+',
-        'qidKj5OGsMyTrg++mn4Gh/aFXvvy3N3KWaQpPfNi3NRZUpNLz0IlfbXVBQGD6reLoxPptJun',
-        'NqpClyRiesgq8HCscmB2oQo+b9KzSSgzU9qQJA4SljMYVmJ2sDE/sjREI8iKL8lIgUMhJG9q',
-        'NggWjuxFTpVcGKkuQFJIvdL+UhTVvEBuqw6n4cmFAzfZ/AInJM032qLtsaIf5begFKI3up0A',
-        'BRGJARUDBSAxm7HC5begFKI3up0BAbdDB/0TOcI0ec+OPxC5RTZAltgIgyUc0yOjHoTD/yBh',
-        'WjZdQ9YVrLGMWTW4fjhm4rFnppVZKS/N71bwI76SnN9zO4pPfx86aQPR7StmSLJxB+cfh2GL',
-        'gudJoG9ifhJWdNYMUD/yhA0TpJkdHMD5yTDE5Ce/PqKLviiX9C5MPW0AT1MDvafQlzeUXfb5',
-        '1a71vQNPw7W1NBAVZRwztm7TNUaxWMFuOmUtOJpq4F/qDQTIHW2zGPJvl47rpf6JSiyIyU70',
-        'l0deiQcZOXPC80tgInhNoBrz3zbEXhXRJo1fHkr2YSLclpJaoUOHsPxoyrNB28ASL5ZknPwI',
-        'Zx3+cFxaGpRprfSdtCFKb2huIEEuIFBlcnJ5IDxwZXJyeUBwaG9lbml4Lm5ldD6JARUDBRAv',
-        'Sf8k5begFKI3up0BAcbGB/0eLod2qrQxoE2/RUWQtqklOPUj/p/ZTmvZm8BgsdIflb0AMeey',
-        '9o8AbxyAgA3pcrcCjcye79M1Ma2trEvRksvs8hViuq3BXXjDbjPZi3wTtKSvbAC022OV52Sb',
-        '8/sgiTGp7xC8QMqS8w4ZeKoxJGh1TVMYrevUA8a2Rr5aDqrR3EA4rifSHwkVjJWOPF69xiKt',
-        'IVA0LcYJvGsPOQCf2ag+nOcnDrF4dvcmg6XZ/RyLepve+1qkhXsA/oq+yHoaqWfe+bwgssk/',
-        'qw1aEUk7Di8x7vY+cfjvWaazcYGw8kkIwSSqqIq0pkKFz2xDDfSaDJl6OW/2GUK0wDpJmYZo',
-        'PN40iJUDBRAvSgDsU5OkROGu2G8BAeUqBACbC45t4+wYxWCxxp81pkFRb8RWBvEvbXI+Spwd',
-        '4NcKs8jc5OVC8V02yiq4KbKFDRxdw2OWpUCSRAJe1gjsfFrZ+2RivpKk06kbAYthES03MjXg',
-        'cfcV3z2d7IWanJzdcOlzsHzPe1+RoUAaqBjvcqPRCGRlk0ogkYHyWYxElc6574iVAwUQL9iL',
-        'CXr7ES8bepftAQGPywP/d9GSpEmS7LLIqazl4rgN1nkXN5KqduiH8Whu3xcBrdOAn7IYnGTp',
-        'O+Ag4qwKKH+y/ke9CeZL6AnrU9c0pux150dHsDeHtpTPyInkjgKI7BofprydvpiFNd0nlAi4',
-        'J4SAEYr3q92Qn/IiKpnLgo6Ls/GFb7q6y1O/2LL8PC2zrYU=',
-        '=eoGb',
+        'mI0EVmmWTQEEALumEkoJ2JTwSJ+U+aUrKmpAu0B6Rm5FKLagRC6sRrU/2RU12jBi',
+        'q/c+SyJriC6Rfar73MXuaXmTOtkBfz6XkEV70FZVdavciZhEBIYzBvJDOuP4cyXA',
+        'vwFa+pfn1myoW67JNHANkiSM5KJQXtOuvCtofH07lG5WiH2MuLGLImtDABEBAAG0',
+        'G0pvaG4gRG9lIDxqb2huLmRvZUBmb28uY29tPoi3BBMBCAAhBQJWaZZNAhsDBQsJ',
+        'CAcCBhUICQoLAgQWAgMBAh4BAheAAAoJEGs7P8KYU1e8x9gEAI+1rRdNtBCLou1R',
+        'twaBDv/mMkmFfhcDqSk5TzK451cnOSI5YIm5IQFISjTdJm49v4h7UVJB0wNM4QKX',
+        'bioX1e0AyOXTfqMHCfgZMpkbbMMvI4MBjp+hvQ/qByu3whsbVb0b4zJ1HPOoKc4o',
+        'C/SCtSWGyTFV/YLRSBZEPEs/wyJnuI0EVmmWTQEEAL9VPU4uNMXgIGikhwkawDUw',
+        'bgXWc/Cx/CSPbK+PXAGddTyrMWW9xrKvPrJfBiMq5kQlwD7IhCbmPu10h+brWZmj',
+        'pXLxcWUWPnaWIXRR4f/lZSai6k7SZmTpKGXLLliO+Sna/uzBsgijAtOsK5EWEqj1',
+        'FZzt1jSRApRarKcHgy6pABEBAAGInwQYAQgACQUCVmmWTQIbDAAKCRBrOz/CmFNX',
+        'vAx9A/9A1atvnTlGj+lKh9VrlN5CZ4jZMMEsSy5iw311YNnAZhn4gMTMrbWrNyWI',
+        '9PX2VpMxQHlT21l4OJgbof5gp7mOw0HdD0akMa0L3U4Ybd/JgloBDu9HUVB9mT0+',
+        'CVKecnStCMounFvM2rc5uv9HcIgeLes4ccFJUzGSpeThYhyPEw==',
+        '=w97z',
         '-----END PGP PUBLIC KEY BLOCK-----'].join('\n');
 
     var tests = [
