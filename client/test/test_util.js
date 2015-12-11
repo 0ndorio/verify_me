@@ -3,7 +3,6 @@
 var assert = require("chai").assert;
 var controls = require("./helper/helper").controls;
 var client = require("../src/client");
-var kbpgp = require("kbpgp");
 var util = require("../src/util");
 
 describe("util", function() {

@@ -4,7 +4,6 @@ var assert = require("chai").assert;
 var BlindingInformation = require("../src/types/blinding_information");
 var client = require("../src/client");
 var controls = require("./helper/helper").controls;
-var kbpgp = require("kbpgp");
 
 describe("blinding_information", function() {
 

@@ -2,7 +2,6 @@
 
 var BigInteger = require("../node_modules/kbpgp/lib/bn").BigInteger;
 var kbpgp = require("kbpgp");
-var naive_is_prime = require("../node_modules/kbpgp/lib/primegen").naive_is_prime;
 
 module.exports = {
 
