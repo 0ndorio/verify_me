@@ -2,7 +2,6 @@
 
 var assert = require("chai").assert;
 var BlindingInformation = require("../src/types/blinding_information");
-var BigInteger = require("../node_modules/kbpgp/lib/bn").BigInteger;
 var client = require("../src/client");
 var controls = require("./helper/helper").controls;
 var kbpgp = require("kbpgp");
@@ -34,18 +33,18 @@ describe("blinding_information", function() {
     });
 
     it ("should return false if public exponent is missing", function() {
-      blinding_information.modulus = new BigInteger("1", 10);
+      blinding_information.modulus = new util.BigInteger("1", 10);
       assert.isFalse(blinding_information.containsPublicBlindingInformation());
     });
 
     it ("should return false if modulus is missing", function() {
-      blinding_information.public_exponent = new BigInteger("2", 10);
+      blinding_information.public_exponent = new util.BigInteger("2", 10);
       assert.isFalse(blinding_information.containsPublicBlindingInformation());
     });
 
     it ("should return true if all necessary information are present", function() {
-      blinding_information.modulus = new BigInteger("1", 10);
-      blinding_information.public_exponent = new BigInteger("2", 10);
+      blinding_information.modulus = new util.BigInteger("1", 10);
+      blinding_information.public_exponent = new util.BigInteger("2", 10);
 
       assert.isTrue(blinding_information.containsPublicBlindingInformation());
     });
@@ -58,24 +57,24 @@ describe("blinding_information", function() {
     });
 
     it ("should return false if blinding factor is missing", function() {
-      blinding_information.modulus = new BigInteger("1", 10);
-      blinding_information.public_exponent = new BigInteger("2", 10);
-      blinding_information.hashed_token = new BigInteger("3", 10);
+      blinding_information.modulus = new util.BigInteger("1", 10);
+      blinding_information.public_exponent = new util.BigInteger("2", 10);
+      blinding_information.hashed_token = new util.BigInteger("3", 10);
       assert.isFalse(blinding_information.containsAllBlindingInformation());
     });
 
     it ("should return false if hashed token is missing", function() {
-      blinding_information.modulus = new BigInteger("1", 10);
-      blinding_information.public_exponent = new BigInteger("2", 10);
-      blinding_information.blinding_factor = new BigInteger("3", 10);
+      blinding_information.modulus = new util.BigInteger("1", 10);
+      blinding_information.public_exponent = new util.BigInteger("2", 10);
+      blinding_information.blinding_factor = new util.BigInteger("3", 10);
       assert.isFalse(blinding_information.containsAllBlindingInformation());
     });
 
     it ("should return true if all necessary information are present", function() {
-      blinding_information.modulus = new BigInteger("1", 10);
-      blinding_information.public_exponent = new BigInteger("2", 10);
-      blinding_information.blinding_factor = new BigInteger("3", 10);
-      blinding_information.hashed_token = new BigInteger("4", 10);
+      blinding_information.modulus = new util.BigInteger("1", 10);
+      blinding_information.public_exponent = new util.BigInteger("2", 10);
+      blinding_information.blinding_factor = new util.BigInteger("3", 10);
+      blinding_information.hashed_token = new util.BigInteger("4", 10);
       assert.isTrue(blinding_information.containsAllBlindingInformation());
     });
   });
@@ -129,24 +128,24 @@ describe("blinding_information", function() {
     });
 
     it ("should return false if blinding factor is missing", function() {
-      blinding_information.modulus = new BigInteger("1", 10);
-      blinding_information.public_exponent = new BigInteger("2", 10);
-      blinding_information.hashed_token = new BigInteger("3", 10);
+      blinding_information.modulus = new util.BigInteger("1", 10);
+      blinding_information.public_exponent = new util.BigInteger("2", 10);
+      blinding_information.hashed_token = new util.BigInteger("3", 10);
       assert.isFalse(BlindingInformation.isValidFullBlindingInformation(blinding_information));
     });
 
     it ("should return false if hashed token is missing", function() {
-      blinding_information.modulus = new BigInteger("1", 10);
-      blinding_information.public_exponent = new BigInteger("2", 10);
-      blinding_information.blinding_factor = new BigInteger("3", 10);
+      blinding_information.modulus = new util.BigInteger("1", 10);
+      blinding_information.public_exponent = new util.BigInteger("2", 10);
+      blinding_information.blinding_factor = new util.BigInteger("3", 10);
       assert.isFalse(BlindingInformation.isValidFullBlindingInformation(blinding_information));
     });
 
     it ("should return true if all necessary information are present", function() {
-      blinding_information.modulus = new BigInteger("1", 10);
-      blinding_information.public_exponent = new BigInteger("2", 10);
-      blinding_information.blinding_factor = new BigInteger("3", 10);
-      blinding_information.hashed_token = new BigInteger("4", 10);
+      blinding_information.modulus = new util.BigInteger("1", 10);
+      blinding_information.public_exponent = new util.BigInteger("2", 10);
+      blinding_information.blinding_factor = new util.BigInteger("3", 10);
+      blinding_information.hashed_token = new util.BigInteger("4", 10);
       assert.isTrue(BlindingInformation.isValidFullBlindingInformation(blinding_information));
     });
   });
@@ -173,18 +172,18 @@ describe("blinding_information", function() {
     });
 
     it ("should return false if public exponent is missing", function() {
-      blinding_information.modulus = new BigInteger("1", 10);
+      blinding_information.modulus = new util.BigInteger("1", 10);
       assert.isFalse(BlindingInformation.isValidPublicBlindingInformation(blinding_information));
     });
 
     it ("should return false if modulus is missing", function() {
-      blinding_information.public_exponent = new BigInteger("2", 10);
+      blinding_information.public_exponent = new util.BigInteger("2", 10);
       assert.isFalse(BlindingInformation.isValidPublicBlindingInformation(blinding_information));
     });
 
     it ("should return true if all necessary information are present", function() {
-      blinding_information.modulus = new BigInteger("1", 10);
-      blinding_information.public_exponent = new BigInteger("2", 10);
+      blinding_information.modulus = new util.BigInteger("1", 10);
+      blinding_information.public_exponent = new util.BigInteger("2", 10);
 
       assert.isTrue(BlindingInformation.isValidPublicBlindingInformation(blinding_information));
     });

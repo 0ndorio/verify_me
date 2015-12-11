@@ -6,6 +6,8 @@ var naive_is_prime = require("../node_modules/kbpgp/lib/primegen").naive_is_prim
 
 module.exports = {
 
+  BigInteger: BigInteger,
+
   /**
    * Converts the binary data in BigInteger into a byte string.
    *

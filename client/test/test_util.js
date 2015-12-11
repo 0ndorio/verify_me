@@ -1,7 +1,6 @@
 "use strict";
 
 var assert = require("chai").assert;
-var BigInteger = require("../node_modules/kbpgp/lib/bn").BigInteger;
 var controls = require("./helper/helper").controls;
 var client = require("../src/client");
 var kbpgp = require("kbpgp");
@@ -25,7 +24,7 @@ describe("util", function() {
 
     tests.forEach(function(test) {
       it("should return the byte string '" + test.expected + "' when input is BigInt with '" + test.arg + "'", function(){
-        var bigInt = new BigInteger(test.arg.toString());
+        var bigInt = new util.BigInteger(test.arg.toString());
         var result = util.bigInt2Bytes(bigInt);
 
         assert.equal(test.expected, result);
@@ -316,13 +315,13 @@ describe("util", function() {
     });
 
     it("should return true if input mpi parameter is a small prime", function () {
-      var prime = new BigInteger("7");
+      var prime = new util.BigInteger("7");
       var mpi = { data: prime };
       assert.isTrue(util.isMPIProbablyPrime(mpi));
     });
 
     it("should return true if input mpi parameter is a large prime", function () {
-      var prime = new BigInteger("2039568783564019774057658669290345772801939933"+
+      var prime = new util.BigInteger("2039568783564019774057658669290345772801939933"+
                                  "1434826309477264645328306272270127763293661606"+
                                  "3144088173312372882677123879538709400158306567"+
                                  "3383282791544996983660719067664400370742171178"+
