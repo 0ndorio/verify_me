@@ -59,7 +59,7 @@ module.exports = {
       return "";
     }
 
-    if (hex_as_string.length === 1) {
+    if ((hex_as_string.length % 2) === 1) {
       hex_as_string = "0" + hex_as_string;
     }
 
@@ -97,23 +97,20 @@ module.exports = {
       return Promise.reject("The prime bit length must be a multiple of 8 bits and >= 128 and <= 8192");
     }
 
-    /// rsa.generate() requires a public exponent.
-    /// This exponent has to be 3 or 65537 written in base 16.
-    ///
-    /// 3 => "3"
-    /// 65537 => "10001"
-    var public_exponent = "10001";
-    var modulus_bit_length = primeBitLength * 2;
+    var key_arguments = {
+      e: 65537,
+      nbits: primeBitLength * 2
+    };
 
-    var rsa = new kbpgp.crypto.publicKey.rsa();
-    return rsa
-      .generate(modulus_bit_length, public_exponent)
-      .then(function(key) {
-        return [key.q, key.p];
-      })
-      .catch(function(error) {
-        throw new Error("Something went wrong during prime number generation (" + error + ") . Please retry.");
+    return new Promise(function(resolve, reject) {
+      kbpgp.asym.RSA.generate(key_arguments, function(err, key) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve([key.priv.p, key.priv.q]);
+        }
       });
+    });
   },
 
   /// Loads content from textarea with specific id.
@@ -196,7 +193,7 @@ module.exports = {
   /// Validates if the input parameter is probably a prime MPI.
   isMPIProbablyPrime: function(mpi)
   {
-    return this.isMPIWithData(mpi) && naive_is_prime(mpi.data);
+    return this.isMPIWithData(mpi) && mpi.data.isProbablePrime();
   },
 
   /// TODO

@@ -72,8 +72,9 @@ describe("client", function() {
 
   describe("#getToken()", function() {
 
-    it ("should return Token as openpgp.MPI", function () {
-      assert.instanceOf(client.getToken(), openpgp.MPI);
+    it ("should return Token as MPI", function () {
+      var token = client.getToken();
+      assert.isTrue(util.isMPIWithData(token));
     });
 
     it ("result must pass prime test", function () {
