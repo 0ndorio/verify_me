@@ -1,8 +1,11 @@
 "use strict";
 
 var assert = require("chai").assert;
-var BlindingInformation = require("../src/types/blinding_information");
+
 var client = require("../src/client");
+var util = require("../src/util");
+var BlindingInformation = require("../src/types/blinding_information");
+
 var controls = require("./helper/helper").controls;
 
 describe("blinding_information", function() {

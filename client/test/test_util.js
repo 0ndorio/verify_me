@@ -229,13 +229,13 @@ describe("util", function() {
     });
 
     it("should return a 'BigInteger' when parameter is an integer", function() {
-      assert.instanceOf(util.int2BigInt(0), BigInteger);
+      assert.instanceOf(util.int2BigInt(0), util.BigInteger);
     });
 
     tests = [
       {arg: 0},
       {arg: 1}, {arg: -1},
-      {arg: BigInteger.ZERO.DV}, {arg: -BigInteger.ZERO.DV}
+      {arg: util.BigInteger.ZERO.DV}, {arg: -util.BigInteger.ZERO.DV}
     ];
 
     tests.forEach(function(test) {
@@ -253,7 +253,7 @@ describe("util", function() {
       {arg: true,  expected: false},
       {arg: {},    expected: false},
       {arg: undefined, expected: false},
-      {arg: BigInteger.ONE, expected: true}
+      {arg: util.BigInteger.ONE, expected: true}
     ];
 
     tests.forEach(function(test) {
@@ -441,7 +441,7 @@ describe("util", function() {
       var input = "11242";
       var result = util.str2BigInt(input);
 
-      assert.instanceOf(result, BigInteger);
+      assert.instanceOf(result, util.BigInteger);
       assert.equal(input, result.toString());
     });
   });
