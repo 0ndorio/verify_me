@@ -1,5 +1,4 @@
 "use strict";
-
 var BigInteger = require("../node_modules/kbpgp/lib/bn").BigInteger;
 var kbpgp = require("kbpgp");
 
@@ -92,7 +91,7 @@ module.exports = {
   {
     if (!this.isInteger(primeBitLength)) {
       return Promise.reject("The prime bit length is no integer but a '" + primeBitLength + "'");
-    } else if(!((primeBitLength % 8 === 0) && primeBitLength >= 256 && primeBitLength <= 16384)) {
+    } else if(!((primeBitLength % 8 === 0) && primeBitLength >= 128 && primeBitLength <= 8192)) {
       return Promise.reject("The prime bit length must be a multiple of 8 bits and >= 128 and <= 8192");
     }
 
@@ -171,7 +170,7 @@ module.exports = {
   /// TODO
   isBigInteger: function(bigInteger)
   {
-    return (bigInteger instanceof BigInteger);
+    return this.isObject(bigInteger) && (bigInteger.constructor.name === BigInteger.name);
   },
 
   /// TODO
@@ -226,11 +225,11 @@ module.exports = {
   /// TODO
   str2BigInt: function(string)
   {
-    var bigInt = null;
-    if (this.isString(string) && /^[0-9]+$/.test(string)) {
-      bigInt = new BigInteger(string);
+    if (!this.isString(string)) {
+      return null;
     }
 
-    return bigInt;
+    var buffer = new kbpgp.Buffer(string, "ascii");
+    return new BigInteger(buffer);
   }
 };

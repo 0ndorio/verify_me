@@ -433,16 +433,22 @@ describe("util", function() {
       assert.isNull(util.str2BigInt(123));
     });
 
-    it("should return null if input not a base 10 integer string", function() {
-      assert.isNull(util.str2BigInt("caffee"));
-    });
-
-    it("should return a BigInteger object if input a valid base 10 integer string", function() {
-      var input = "11242";
+    it("should return a BigInteger object if input a string", function() {
+      var input = "message";
       var result = util.str2BigInt(input);
 
       assert.instanceOf(result, util.BigInteger);
-      assert.equal(input, result.toString());
+    });
+
+    it("should be able to convert ascii encoded messages", function() {
+      var input = "--- my ascii encoded message ---";
+      var result = util.str2BigInt(input);
+
+      assert.equal(input, result.toBuffer().toString("utf8"));
+      assert.equal(input, result.toBuffer().toString("binary"));
+      assert.equal(input, result.toBuffer().toString("ascii"));
+      assert.notEqual(input, result.toBuffer().toString("hex"));
+      assert.notEqual(input, result.toBuffer().toString("base64"));
     });
   });
 });

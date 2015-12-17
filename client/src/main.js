@@ -5,6 +5,33 @@ var blinding = require("./blinding");
 var client = require("./client");
 var util = require("./util");
 
+var kbpgp = require("kbpgp");
+
+function export_keys_to_binary_and_inject_signature(keymanager,  signature, opts)
+{
+  var pgpengine = keymanager.pgp;
+  var primary_userid = keymanager.get_userids_mark_primary()[0];
+
+  var packets = [pgpengine.key(pgpengine.primary).export_framed(opts)];
+  pgpengine.userids.forEach(function(userid) {
+    packets.push(userid.write(), userid.get_framed_signature_output());
+
+    if (primary_userid === userid) {
+      packets.push(signature.get_framed_output());
+    }
+  });
+
+  opts.subkey = true;
+
+  pgpengine.subkeys.forEach(function(subkey) {
+    var material = pgpengine.key(subkey);
+    packets.push(material.export_framed(opts), material.get_subkey_binding_signature_output());
+  });
+
+  kbpgp.util.assert_no_nulls(packets);
+  return kbpgp.Buffer.concat(packets);
+}
+
 /// TODO
 function requestPseudonym()
 {
@@ -19,9 +46,9 @@ function requestPseudonym()
   ///     (https://math.stackexchange.com/questions/682618/the-maximum-number-of-digits-in-binary-multiplication)
   ///   - TODO: unsure how to handle this properly
   var blinding_information = client.collectPublicBlindingInformation();
-  var prime_bit_length = Math.floor((blinding_information.modulus.bitLength() - token.data.bitLength() - 1) / 2);
+  //var prime_bit_length = Math.floor((blinding_information.modulus.bitLength() - token.data.bitLength() - 1) / 2);
 
-  return util.generateTwoPrimeNumbers(prime_bit_length)
+  return util.generateTwoPrimeNumbers(128)
     .then(function (primes) {
 
       blinding_information.hashed_token = util.bytes2MPI(util.hashMessage(token.data.toRadix())).data;
@@ -32,42 +59,71 @@ function requestPseudonym()
         blinding_information.blinding_factor = token.data.multiply(primes[0]);
       }
 
-      return blinding.blind_message(blind_signature_packet.unsigned_signature, blinding_information).toRadix();
+      return blinding.blind_message(blind_signature_packet.raw_signature, blinding_information).toRadix();
     })
     .then(function (blinded_message) {
       return client.sendBlindingRequest(blinded_message, blinding_information);
     })
     .then(function (signed_blinded_message) {
-      var unblinded_message = blinding.unblind_message(signed_blinded_message, blinding_information);
-      if (unblinded_message === null) {
+
+      var message = new util.BigInteger(signed_blinded_message, 10);
+
+      var unblinded_message = blinding.unblind_message(message, blinding_information);
+      if (null === unblinded_message) {
         throw new Error("Could not unblind the signed blinded message");
       }
 
-      var signature_packet = blind_signature_packet;
-      signature_packet.signature = unblinded_message.toMPI();
+      var target_key = client.getPublicKey();
 
-      var verify_me = new openpgp.packet.Literal();
-      verify_me.setBytes(signature_packet.signature, 'binary');
+      /// ---------------------------------------
+      /// Inject Signed Data
 
-      var public_key = client.getPublicKey();
-      var result = signature_packet.verify(client.getServerPublicKey().primaryKey, {
-        key: public_key.primaryKey,
-        userid: public_key.getPrimaryUser().user.userId
+      blind_signature_packet.sig = unblinded_message.to_mpi_buffer();
+
+      /// ---------------------------------------
+      /// Calculate Unframed Signature Body
+
+      var unhashed_packet_data = new kbpgp.Buffer({});
+      blind_signature_packet.unhashed_subpackets.forEach(function (packet) {
+        unhashed_packet_data = kbpgp.Buffer.concat([unhashed_packet_data, packet.to_buffer()]);
       });
 
-      console.log("Signature veryfied: " + result);
+      var unframed_sig = kbpgp.Buffer.concat([
+        blind_signature_packet.generate_sig_prefix(),
+        kbpgp.util.uint_to_buffer(16, unhashed_packet_data.length),
+        unhashed_packet_data,
+        blind_signature_packet.signed_hash_value_hash,
+        blind_signature_packet.sig
+      ]);
 
-      /// DUMP
-      var public_key = client.getPublicKey();
-      var user = public_key.getPrimaryUser().user;
+      /// ---------------------------------------
+      /// Calculate & Inject Framed Signature Body
 
-      if (!user.otherCertifications) {
-        user.otherCertifications = [];
-      }
-      user.otherCertifications.push(signature_packet);
+      var framed_sig = blind_signature_packet.frame_packet(kbpgp.const.openpgp.packet_tags.signature, unframed_sig);
+      blind_signature_packet._framed_output = framed_sig;
 
-      console.log(public_key.armor());
-      return public_key.armor();
+      /// ---------------------------------------
+      /// Veryfication & Export
+
+      var key_material_packet = target_key.pgp.key(target_key.pgp.primary);
+      blind_signature_packet.primary = key_material_packet;
+
+      blind_signature_packet.verify(
+        [target_key.get_userids_mark_primary()[0]],
+        function(err) {
+          if (null !== err) {
+            console.log("Error during final signature verification. Please restart the process.");
+            console.log(err);
+          }
+
+          var key_binary = export_keys_to_binary_and_inject_signature(target_key, blind_signature_packet, {});
+          var key_ascii = kbpgp.armor.encode(kbpgp.const.openpgp.message_types.public_key, key_binary);
+
+          console.log(key_ascii);
+        }
+
+        /// ---------------------------------------
+      );
     })
     .catch(function(error) {console.log(error); });
 }
