@@ -1,6 +1,7 @@
 "use strict";
 
 var BlindingInformation= require("./types/blinding_information");
+var BlindKeySignaturePacket = require("./types/blind_signature_packet");
 var util = require("./util");
 
 module.exports = {
@@ -113,6 +114,10 @@ module.exports = {
     var blinding_information = new BlindingInformation();
     blinding_information.fromKey(server_public_key);
 
+    var token = this.getToken();
+    var hashed_token = util.hashMessage(token.data.toRadix());
+    blinding_information.hashed_token = util.bytes2MPI(hashed_token).data;
+
     return blinding_information;
   },
 
@@ -160,5 +165,18 @@ module.exports = {
 
       xhttp.send(message);
     });
+  },
+
+  prepareBlindSignatureRequest: function ()
+  {
+    var public_key = this.getPublicKey();
+    var server_public_key = this.getServerPublicKey();
+    var token = this.getToken();
+
+    return {
+      context: this.collectPublicBlindingInformation(),
+      packet: new BlindKeySignaturePacket(public_key, server_public_key),
+      token: token
+    };
   }
 };

@@ -13,6 +13,9 @@ var util = require("../util");
 /// @parameter {KeyManager} sig_key
 var BlindKeysigPacket = function(target_key, sig_key)
 {
+  this.target_key = target_key;
+  this.primary = target_key.pgp.key(target_key.pgp.primary);
+
   var hashed_subpackets = [
     new sig.CreationTime(this.calculateRandomCreationDate(target_key)),
     new sig.PreferredHashAlgorithms([Constants.openpgp.hash_algorithms.SHA512])
@@ -32,12 +35,11 @@ var BlindKeysigPacket = function(target_key, sig_key)
   };
 
   sig.Signature.call(this, ctor_args);
-  this.target_key = target_key;
-
   this.prepare_raw_sig();
 };
 
 BlindKeysigPacket.prototype = Object.create(sig.Signature.prototype);
+BlindKeysigPacket.prototype.tag = kbpgp.const.openpgp.packet_tags.signature;
 
 /// Create random creation time between key creation und expire date
 /// @parameter {KeyManager} target_public_key
@@ -76,25 +78,19 @@ BlindKeysigPacket.prototype.prepare_raw_sig = function()
   this.signed_hash_value_hash = this.raw_signature.toBuffer().slice(0, 2);
 };
 
-/// <signData>   = <pubKeyData> <userIdData> <sigData>
 BlindKeysigPacket.prototype.generate_sig_payload = function()
 {
-  // <userIdData> = %xb4 <userIdLen> <userIdPacket>
-  // <userIdLen>  = 4<OCTET> ; len(<userIdPacket >)
-  var user_id_packet = this.target_key.get_userids_mark_primary()[0];
-  var userIdData = user_id_packet.to_signature_payload();
-
-  // <pubKeyData> = %x99 <pubKeyLen> <publicKeyPacket>
-  // <pubKeyLen>  = 2<OCTET> ; len(<publicKeyPacket>)
   var key_material_packet = this.target_key.pgp.key(this.target_key.pgp.primary);
   var pubKeyData = key_material_packet.to_signature_payload();
+
+  var user_id_packet = this.target_key.get_userids_mark_primary()[0];
+  var userIdData = user_id_packet.to_signature_payload();
 
   return kbpgp.Buffer.concat([
     pubKeyData, userIdData, this.generate_sig_data()
   ]);
 };
 
-/// <sigData>  = <sigHashdData> <sigTrailer>
 BlindKeysigPacket.prototype.generate_sig_data = function()
 {
   var sigHashData = this.generate_sig_prefix();
@@ -103,8 +99,6 @@ BlindKeysigPacket.prototype.generate_sig_data = function()
   return Buffer.concat([sigHashData, sigTrailer]);
 };
 
-/// <sigTrailer>     = %x04 %xff <sigHashDataLen>
-/// <sigHashDataLen> = 4<OCTET> ; len(<sigHashData>)
 BlindKeysigPacket.prototype.generate_sig_trailer = function(hash_data_length)
 {
   return kbpgp.Buffer.concat([
@@ -116,23 +110,13 @@ BlindKeysigPacket.prototype.generate_sig_trailer = function(hash_data_length)
   ]);
 };
 
-/// <sigHashData> = <version> <sigType> <pubAlgorithm>
-///                 <hashAlgorithm> <hashedSubpktsLen>
-///                 <hashedSubpkts>
 BlindKeysigPacket.prototype.generate_sig_prefix = function()
 {
-  // <subpackets> = *<subpacket>
   var hashedSubpkts = this.hashed_subpackets
     .reduce(function(lhs, rhs) {
       return kbpgp.Buffer.concat([lhs.to_buffer(), rhs.to_buffer()]);
     });
 
-  // <version>          = <OCTET>
-  // <sigType>          = <OCTET>
-  // <pubAlgorithm>     = <OCTET>
-  // <hashAlgorithm>    = <OCTET>
-  // <hashedSubpktsLen> = 2<OCTET> ; len(<hashedSubpkts>)
-  // <hashedSubpkts>    = 1*<subpacket>
   return kbpgp.Buffer.concat([
     new Buffer([
       this.version,
@@ -142,6 +126,32 @@ BlindKeysigPacket.prototype.generate_sig_prefix = function()
     ]),
     kbpgp.util.uint_to_buffer(16, hashedSubpkts.length),
     hashedSubpkts
+  ]);
+};
+
+/// Calculate & Inject Framed Signature Body
+BlindKeysigPacket.prototype.write = function()
+{
+  var unframed_sig = this.write_unframed();
+  this._framed_output = this.frame_packet(this.tag, unframed_sig);
+
+  return this._framed_output;
+};
+
+/// Calculate Unframed Signature Body
+BlindKeysigPacket.prototype.write_unframed = function()
+{
+  var unhashed_packet_data = new kbpgp.Buffer({});
+  this.unhashed_subpackets.forEach(function (packet) {
+    unhashed_packet_data = kbpgp.Buffer.concat([unhashed_packet_data, packet.to_buffer()]);
+  });
+
+  return kbpgp.Buffer.concat([
+    this.generate_sig_prefix(),
+    kbpgp.util.uint_to_buffer(16, unhashed_packet_data.length),
+    unhashed_packet_data,
+    this.signed_hash_value_hash,
+    this.sig
   ]);
 };
 

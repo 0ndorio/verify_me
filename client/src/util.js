@@ -111,6 +111,21 @@ module.exports = {
     });
   },
 
+  generateBlindingFactor: function(bitLength)
+  {
+    if (!this.isInteger(bitLength)) {
+      return Promise.reject("The prime bit length is no integer but a '" + bitLength + "'");
+    } else if(!((bitLength % 8 === 0) && bitLength >= 256 && bitLength <= 16384)) {
+      return Promise.reject("The prime bit length must be a multiple of 8 bits and >= 256 and <= 16384");
+    }
+
+    var sub_prime_length = Math.floor(bitLength / 2);
+    return this.generateTwoPrimeNumbers(sub_prime_length)
+      .then(function(primes) {
+        return primes[0].multiply(primes[1]);
+      });
+  },
+
   /// Loads content from textarea with specific id.
   ///
   /// @param {string} text_area_name

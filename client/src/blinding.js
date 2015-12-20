@@ -1,8 +1,6 @@
 "use strict";
 
 var BlindingInformation = require("./types/blinding_information");
-var BlindKeySignaturePacket = require("./types/blind_signature_packet");
-var client = require("./client");
 var util = require("./util");
 
 module.exports = {
@@ -35,14 +33,5 @@ module.exports = {
 
     var r_inv = r.modInverse(N);
     return message.multiply(r_inv).mod(N);
-  },
-
-  /// TODO
-  prepareBlindSignature: function ()
-  {
-    var public_key = client.getPublicKey();
-    var server_public_key = client.getServerPublicKey();
-
-    return new BlindKeySignaturePacket(public_key, server_public_key);
   }
 };
