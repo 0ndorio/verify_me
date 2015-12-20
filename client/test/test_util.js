@@ -65,21 +65,6 @@ describe("util", function() {
     });
   });
 
-  describe("#bytes2MPI", function() {
-
-    it("should return null if input is no string", function () {
-      assert.isNull(util.bytes2MPI(123));
-    });
-
-    it("should return valid mpi with data if input is byte string", function () {
-      var input = "123";
-      var result = util.bytes2MPI(input);
-
-      assert.isTrue(util.isMPIWithData(result));
-      assert.equal(input, result.data.toBuffer().toString("binary"));
-    });
-  });
-
   describe("#hex2bytes", function() {
 
     var tests = [
@@ -211,8 +196,8 @@ describe("util", function() {
       var expected_hex = "ddaf35a193617abacc417349ae20413112e6fa4e89a97ea20a9eeee64b55d39a2192992a274fc1a836ba3c23a3feebbd454d4423643ce80e2a9ac94fa54ca49f";
       var result = util.hashMessage("abc");
 
-      assert.equal(512, result.length * 8);
-      assert.equal(expected_hex, util.bytes2hex(result));
+      assert.equal(512, result.bitLength());
+      assert.equal(expected_hex, result.toString(16));
     });
   });
 
@@ -299,52 +284,6 @@ describe("util", function() {
         var result = util.isKeyReadSuccessful(test.arg);
         assert.equal(test.expected, result);
       });
-    });
-  });
-
-  describe("#isMPIProbablyPrime()", function() {
-
-    it("should return false if input parameter is no mpi", function () {
-      assert.isFalse(util.isMPIProbablyPrime(123));
-    });
-
-    it("should return false if input mpi parameter is not prime", function () {
-      var mpi = util.bytes2MPI("10");
-      assert.isFalse(util.isMPIProbablyPrime(mpi));
-    });
-
-    it("should return true if input mpi parameter is a small prime", function () {
-      var prime = new util.BigInteger("7");
-      var mpi = { data: prime };
-      assert.isTrue(util.isMPIProbablyPrime(mpi));
-    });
-
-    it("should return true if input mpi parameter is a large prime", function () {
-      var prime = new util.BigInteger("2039568783564019774057658669290345772801939933"+
-                                 "1434826309477264645328306272270127763293661606"+
-                                 "3144088173312372882677123879538709400158306567"+
-                                 "3383282791544996983660719067664400370742171178"+
-                                 "0569087279284814911202228633214487618337632651"+
-                                 "2083574821647933992961249917319836219304274280"+
-                                 "243803104015000563790123");
-      var mpi = { data: prime };
-      assert.isTrue(util.isMPIProbablyPrime(mpi));
-    });
-  });
-
-  describe("#isMPIWithData()", function() {
-
-    it("should return false if input parameter is no mpi", function () {
-      assert.isFalse(util.isMPIWithData(123));
-    });
-
-    it("should return false if input mpi parameter has no data", function () {
-      assert.isFalse(util.isMPIWithData({}));
-    });
-
-    it("should return true if input mpi parameter has data", function () {
-      var mpi = util.bytes2MPI("\u0000");
-      assert.isTrue(util.isMPIWithData(mpi));
     });
   });
 

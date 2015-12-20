@@ -29,6 +29,12 @@ module.exports = {
     return result;
   },
 
+  /// TODO
+  bytes2BigInt: function(byte_string)
+  {
+    return BigInteger.fromBuffer(new kbpgp.Buffer(byte_string, "binary"));
+  },
+
   /// bytes to hex
   bytes2hex: function(byte_string)
   {
@@ -38,16 +44,6 @@ module.exports = {
 
     var buffer = new kbpgp.Buffer(byte_string, "binary");
     return buffer.toString("hex");
-  },
-
-  /// TODO
-  bytes2MPI: function(byte_string)
-  {
-    if (!this.isString(byte_string)) { return null; }
-
-    return {
-      data: new BigInteger(new kbpgp.Buffer(byte_string, "binary"))
-    };
   },
 
   /// hex to bytes
@@ -111,6 +107,7 @@ module.exports = {
     });
   },
 
+  /// TODO
   generateBlindingFactor: function(bitLength)
   {
     if (!this.isInteger(bitLength)) {
@@ -152,14 +149,15 @@ module.exports = {
    *
    * @param {string} message
    *    Input parameter to hash.
-   * @returns {string}
+   * @returns {BigInteger}
    *    Hash digest as {string} or {null} if input message is no string object.
    */
   hashMessage: function(message)
   {
     var digest = null;
     if (this.isString(message)) {
-      digest = kbpgp.hash.SHA512(new kbpgp.Buffer(message)).toString("binary");
+      var hash_buffer = kbpgp.hash.SHA512(new kbpgp.Buffer(message));
+      digest = BigInteger.fromBuffer(hash_buffer);
     }
 
     return digest;
@@ -203,18 +201,6 @@ module.exports = {
       && key.hasOwnProperty("keys");
   },
 
-  /// Validates if the input parameter is probably a prime MPI.
-  isMPIProbablyPrime: function(mpi)
-  {
-    return this.isMPIWithData(mpi) && mpi.data.isProbablePrime();
-  },
-
-  /// TODO
-  isMPIWithData: function(mpi)
-  {
-    return this.isObject(mpi) && (mpi.data instanceof BigInteger);
-  },
-
   /**
    * Checks if the input parameter is an object.
    * @param {Object} object
@@ -245,6 +231,6 @@ module.exports = {
     }
 
     var buffer = new kbpgp.Buffer(string, "ascii");
-    return new BigInteger(buffer);
+    return BigInteger.fromBuffer(buffer);
   }
 };

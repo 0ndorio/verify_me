@@ -14,7 +14,7 @@ function requestPseudonym()
 
   return util.generateBlindingFactor(blinding_context.modulus.bitLength())
     .then(function(blinding_factor) {
-      blinding_context.blinding_factor = blind_signature_request.token.data.multiply(blinding_factor);
+      blinding_context.blinding_factor = blind_signature_request.token.multiply(blinding_factor);
       return blinding.blind_message(blind_signature.raw_signature, blinding_context).toRadix();
     })
     .then(function (blinded_message) {

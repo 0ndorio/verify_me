@@ -37,7 +37,7 @@ describe("blinding", function() {
     });
 
     it ("should return 'null' if not all blinding information are available", function() {
-      var message = new util.BigInteger(kbpgp.util.bufferify("message"));
+      var message = util.BigInteger.fromBuffer(kbpgp.util.bufferify("message"));
       assert.isNull(blinding.blind_message(message, new BlindingInformation()));
     });
 

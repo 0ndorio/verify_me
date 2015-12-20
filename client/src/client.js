@@ -47,7 +47,7 @@ module.exports = {
   /**
    * Extract users token from textarea "token_textarea"
    *
-   * @return {MPI}
+   * @return {BigInteger}
    *    token extracted from input
    */
   getToken: function()
@@ -57,9 +57,9 @@ module.exports = {
       throw new Error("Couldn't read the token input. Please reload page.");
     }
 
-    var token = {data: new util.BigInteger(token_string, 16)};
+    var token = new util.BigInteger(token_string, 16);
 
-    if (!util.isMPIProbablyPrime(token)) {
+    if (!token.isProbablePrime()) {
       throw new Error("Unsecure Token. Please check your input.");
     }
 
@@ -107,7 +107,7 @@ module.exports = {
     return element.innerHTML.trim();
   },
 
-  /// Extracts the public MPIs from the servers public key.
+  /// TODO
   collectPublicBlindingInformation: function()
   {
     var server_public_key = this.getServerPublicKey();
@@ -115,8 +115,7 @@ module.exports = {
     blinding_information.fromKey(server_public_key);
 
     var token = this.getToken();
-    var hashed_token = util.hashMessage(token.data.toRadix());
-    blinding_information.hashed_token = util.bytes2MPI(hashed_token).data;
+    blinding_information.hashed_token = util.hashMessage(token.toRadix());
 
     return blinding_information;
   },

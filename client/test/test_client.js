@@ -72,13 +72,14 @@ describe("client", function() {
 
   describe("#getToken()", function() {
 
-    it ("should return Token as MPI", function () {
+    it ("should return Token as BigInteger", function () {
       var token = client.getToken();
-      assert.isTrue(util.isMPIWithData(token));
+      assert.isTrue(util.isBigInteger(token));
     });
 
     it ("result must pass prime test", function () {
-      assert.isTrue(util.isMPIProbablyPrime(client.getToken()));
+      var token = client.getToken();
+      assert.isTrue(token.isProbablePrime());
     });
 
     it ("must throw if id is missing from html", function () {
@@ -201,7 +202,7 @@ describe("client", function() {
     it("should reject when a network error occures", function(done) {
 
       var blinding_information = new BlindingInformation();
-      blinding_information.hashed_token = util.bytes2MPI("\u0000").data;
+      blinding_information.hashed_token = util.bytes2BigInt("\u0000");
 
       var request_promise = client.sendBlindingRequest("1234", blinding_information)
         .then(function (answer) { done("Should not happend: " + answer); })
@@ -223,7 +224,7 @@ describe("client", function() {
       this.server.respondWith([expected.code, { "Content-Type": "text/plain" }, ""]);
 
       var blinding_information = new BlindingInformation();
-      blinding_information.hashed_token = util.bytes2MPI("\u0000").data;
+      blinding_information.hashed_token = util.bytes2BigInt("\u0000");
 
       return client.sendBlindingRequest("" , blinding_information)
         .then(function(answer) { done(answer); })
@@ -239,7 +240,7 @@ describe("client", function() {
       this.server.respondWith([200, { "Content-Type": "text/plain" }, expected]);
 
       var blinding_information = new BlindingInformation();
-      blinding_information.hashed_token = util.bytes2MPI("\u0000").data;
+      blinding_information.hashed_token = util.bytes2BigInt("\u0000");
 
       return client.sendBlindingRequest("" , blinding_information)
         .then(function(answer) {
