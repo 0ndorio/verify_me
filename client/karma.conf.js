@@ -78,7 +78,9 @@ module.exports = function(config) {
     // such as transform and/or debug=true to generate source maps
     browserify: {
       debug: true,
-      transform: ['browserify-istanbul']
+      transform: [
+        'browserify-istanbul',
+        ['babelify',{presets: ['es2015']}]]
     },
 
 
