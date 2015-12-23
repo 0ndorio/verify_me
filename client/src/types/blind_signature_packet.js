@@ -11,7 +11,7 @@ var util = require("../util");
 /// TODO
 /// @parameter {KeyManager} target_key
 /// @parameter {KeyManager} sig_key
-var BlindKeysigPacket = function(target_key, sig_key)
+var BlindSignaturePacket = function(target_key, sig_key)
 {
   this.target_key = target_key;
   this.primary = target_key.pgp.key(target_key.pgp.primary);
@@ -38,12 +38,12 @@ var BlindKeysigPacket = function(target_key, sig_key)
   this.prepare_raw_sig();
 };
 
-BlindKeysigPacket.prototype = Object.create(sig.Signature.prototype);
-BlindKeysigPacket.prototype.tag = kbpgp.const.openpgp.packet_tags.signature;
+BlindSignaturePacket.prototype = Object.create(sig.Signature.prototype);
+BlindSignaturePacket.prototype.tag = kbpgp.const.openpgp.packet_tags.signature;
 
 /// Create random creation time between key creation und expire date
 /// @parameter {KeyManager} target_public_key
-BlindKeysigPacket.prototype.calculateRandomCreationDate = function(target_key)
+BlindSignaturePacket.prototype.calculateRandomCreationDate = function(target_key)
 {
   if (!util.isOpenPGPKey(target_key)) {
     return false;
@@ -63,7 +63,7 @@ BlindKeysigPacket.prototype.calculateRandomCreationDate = function(target_key)
 };
 
 /// TODO
-BlindKeysigPacket.prototype.prepare_raw_sig = function()
+BlindSignaturePacket.prototype.prepare_raw_sig = function()
 {
   // TODO: Input Checks
 
@@ -78,7 +78,7 @@ BlindKeysigPacket.prototype.prepare_raw_sig = function()
   this.signed_hash_value_hash = this.raw_signature.toBuffer().slice(0, 2);
 };
 
-BlindKeysigPacket.prototype.generate_sig_payload = function()
+BlindSignaturePacket.prototype.generate_sig_payload = function()
 {
   var key_material_packet = this.target_key.pgp.key(this.target_key.pgp.primary);
   var pubKeyData = key_material_packet.to_signature_payload();
@@ -91,7 +91,7 @@ BlindKeysigPacket.prototype.generate_sig_payload = function()
   ]);
 };
 
-BlindKeysigPacket.prototype.generate_sig_data = function()
+BlindSignaturePacket.prototype.generate_sig_data = function()
 {
   var sigHashData = this.generate_sig_prefix();
   var sigTrailer = this.generate_sig_trailer(sigHashData.length);
@@ -99,7 +99,7 @@ BlindKeysigPacket.prototype.generate_sig_data = function()
   return Buffer.concat([sigHashData, sigTrailer]);
 };
 
-BlindKeysigPacket.prototype.generate_sig_trailer = function(hash_data_length)
+BlindSignaturePacket.prototype.generate_sig_trailer = function(hash_data_length)
 {
   return kbpgp.Buffer.concat([
     new kbpgp.Buffer([
@@ -110,7 +110,7 @@ BlindKeysigPacket.prototype.generate_sig_trailer = function(hash_data_length)
   ]);
 };
 
-BlindKeysigPacket.prototype.generate_sig_prefix = function()
+BlindSignaturePacket.prototype.generate_sig_prefix = function()
 {
   var hashedSubpkts = this.hashed_subpackets
     .reduce(function(lhs, rhs) {
@@ -130,7 +130,7 @@ BlindKeysigPacket.prototype.generate_sig_prefix = function()
 };
 
 /// Calculate & Inject Framed Signature Body
-BlindKeysigPacket.prototype.write = function()
+BlindSignaturePacket.prototype.write = function()
 {
   var unframed_sig = this.write_unframed();
   this._framed_output = this.frame_packet(this.tag, unframed_sig);
@@ -139,7 +139,7 @@ BlindKeysigPacket.prototype.write = function()
 };
 
 /// Calculate Unframed Signature Body
-BlindKeysigPacket.prototype.write_unframed = function()
+BlindSignaturePacket.prototype.write_unframed = function()
 {
   var unhashed_packet_data = new kbpgp.Buffer({});
   this.unhashed_subpackets.forEach(function (packet) {
@@ -155,4 +155,4 @@ BlindKeysigPacket.prototype.write_unframed = function()
   ]);
 };
 
-module.exports = BlindKeysigPacket;
+module.exports = BlindSignaturePacket;

@@ -1,8 +1,8 @@
 "use strict";
 
-var BlindingInformation= require("./types/blinding_information");
-var BlindKeySignaturePacket = require("./types/blind_signature_packet");
-var util = require("./util");
+import BlindingInformation from "./types/blinding_information"
+import BlindSignaturePacket from "./types/blind_signature_packet"
+import * as util from "./util"
 
 module.exports = {
 
@@ -174,7 +174,7 @@ module.exports = {
 
     return {
       context: this.collectPublicBlindingInformation(),
-      packet: new BlindKeySignaturePacket(public_key, server_public_key),
+      packet: new BlindSignaturePacket(public_key, server_public_key),
       token: token
     };
   }
