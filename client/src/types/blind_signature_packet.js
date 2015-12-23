@@ -113,9 +113,7 @@ BlindSignaturePacket.prototype.generate_sig_trailer = function(hash_data_length)
 BlindSignaturePacket.prototype.generate_sig_prefix = function()
 {
   const hashedSubpkts = this.hashed_subpackets
-    .reduce(function(lhs, rhs) {
-      return kbpgp.Buffer.concat([lhs.to_buffer(), rhs.to_buffer()]);
-    });
+    .reduce((lhs, rhs) => kbpgp.Buffer.concat([lhs.to_buffer(), rhs.to_buffer()]));
 
   return kbpgp.Buffer.concat([
     new Buffer([

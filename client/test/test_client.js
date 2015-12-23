@@ -16,14 +16,14 @@ describe("client", function() {
   // suite functions
   //
 
-  beforeEach(function() {
+  beforeEach(() => {
     controls.loadFixture("test/fixture/keys_2048bit.html");
 
     this.server = sinon.fakeServer.create();
     this.server.autoRespond = true;
   });
 
-  afterEach(function() {
+  afterEach(() => {
     this.server.restore();
   });
 
@@ -31,26 +31,26 @@ describe("client", function() {
   // test cases
   //
 
-  describe("#getPublicKey()", function() {
+  describe("#getPublicKey()", () => {
 
-    it ("should return users public key as kbpgp.Key", function () {
+    it ("should return users public key as kbpgp.Key",() => {
       assert.instanceOf(client.getPublicKey(), kbpgp.KeyManager);
     });
 
-    it ("must throw if id is missing from html", function () {
+    it ("must throw if id is missing from html",() => {
       controls.loadFixture("test/fixture/missing_id.html");
-      assert.throws(function() {client.getPublicKey()}, Error);
+      assert.throws(() => {client.getPublicKey()}, Error);
     });
 
-    it ("must throw if string is no key representation", function () {
+    it ("must throw if string is no key representation",() => {
       controls.userPublicKeyString = "123";
-      assert.throws(function() {client.getPublicKey()}, Error);
+      assert.throws(() => {client.getPublicKey()}, Error);
     });
   });
 
-  describe("#getPublicKeyString()", function() {
+  describe("#getPublicKeyString()", () => {
 
-    it ("should return null if id is missing from html", function () {
+    it ("should return null if id is missing from html",() => {
       controls.loadFixture("test/fixture/missing_id.html");
       assert.isNull(client.getPublicKeyString(), Error);
     });
@@ -64,40 +64,40 @@ describe("client", function() {
       {arg: "\n",      expected: ""}
     ];
 
-    tests.forEach(function(test) {
-      it ("should read '" + test.arg.replace(/\n/g, "\\n") + "' and trim to '" + test.expected + "'", function() {
+    tests.forEach((test) => {
+      it ("should read '" + test.arg.replace(/\n/g, "\\n") + "' and trim to '" + test.expected + "'", () => {
         controls.userPublicKeyString = test.arg;
         assert.equal(test.expected, client.getPublicKeyString());
       });
     });
   });
 
-  describe("#getToken()", function() {
+  describe("#getToken()", () => {
 
-    it ("should return Token as BigInteger", function () {
+    it ("should return Token as BigInteger",() => {
       const token = client.getToken();
       assert.isTrue(util.isBigInteger(token));
     });
 
-    it ("result must pass prime test", function () {
+    it ("result must pass prime test",() => {
       const token = client.getToken();
       assert.isTrue(token.isProbablePrime());
     });
 
-    it ("must throw if id is missing from html", function () {
+    it ("must throw if id is missing from html",() => {
       controls.loadFixture("test/fixture/missing_id.html");
-      assert.throws(function() {client.getToken()}, Error);
+      assert.throws(() => {client.getToken()}, Error);
     });
 
-    it ("must throw if Token is not prime", function () {
+    it ("must throw if Token is not prime",() => {
       controls.userTokenString = "A";
-      assert.throws(function() {client.getToken()}, Error);
+      assert.throws(() => {client.getToken()}, Error);
     });
   });
 
-  describe("#getTokenString()", function() {
+  describe("#getTokenString()", () => {
 
-    it ("should return null if id is missing from html", function () {
+    it ("should return null if id is missing from html",() => {
       controls.loadFixture("test/fixture/missing_id.html");
       assert.isNull(client.getTokenString(), Error);
     });
@@ -111,34 +111,34 @@ describe("client", function() {
       {arg: "\n",      expected: ""}
     ];
 
-    tests.forEach(function(test) {
-      it ("should read '" + test.arg.replace(/\n/g, "\\n") + "' and trim to '" + test.expected + "'", function() {
+    tests.forEach((test) => {
+      it ("should read '" + test.arg.replace(/\n/g, "\\n") + "' and trim to '" + test.expected + "'", () => {
         controls.userTokenString = test.arg;
         assert.equal(test.expected, client.getTokenString());
       });
     });
   });
 
-  describe("#getServerPublicKey()", function() {
+  describe("#getServerPublicKey()", () => {
 
-    it ("should return server public key as kbpgp.Key", function () {
+    it ("should return server public key as kbpgp.Key",() => {
       assert.instanceOf(client.getServerPublicKey(), kbpgp.KeyManager);
     });
 
-    it ("must throw if id is missing from html", function () {
+    it ("must throw if id is missing from html",() => {
       controls.loadFixture("test/fixture/missing_id.html");
-      assert.throws(function() {client.getServerPublicKey()}, Error);
+      assert.throws(() => {client.getServerPublicKey()}, Error);
     });
 
-    it ("must throw if string is no key representation", function () {
+    it ("must throw if string is no key representation",() => {
       controls.serverPublicKey = "123";
-      assert.throws(function() {client.getServerPublicKey()}, Error);
+      assert.throws(() => {client.getServerPublicKey()}, Error);
     });
   });
 
-  describe("#getServerPublicKeyString()", function() {
+  describe("#getServerPublicKeyString()", () => {
 
-    it ("should return null if id is missing from html", function () {
+    it ("should return null if id is missing from html",() => {
       controls.loadFixture("test/fixture/missing_id.html");
       assert.isNull(client.getServerPublicKeyString());
     });
@@ -152,63 +152,63 @@ describe("client", function() {
       {arg: "\n",      expected: ""}
     ];
 
-    tests.forEach(function(test) {
-      it ("should read '" + test.arg.replace(/\n/g, "\\n") + "' and trim to '" + test.expected + "'", function() {
+    tests.forEach((test) => {
+      it ("should read '" + test.arg.replace(/\n/g, "\\n") + "' and trim to '" + test.expected + "'", () => {
         controls.serverPublicKey = test.arg;
         assert.equal(test.expected, client.getServerPublicKeyString());
       });
     });
   });
 
-  describe("#collectPublicBlindingInformation()", function() {
+  describe("#collectPublicBlindingInformation()", () => {
 
-    it ("should return an BlindingInformation object", function() {
+    it ("should return an BlindingInformation object", () => {
       assert.isTrue(client.collectPublicBlindingInformation() instanceof BlindingInformation);
     });
 
-    it ("should return an object with modulus and public exponent", function () {
+    it ("should return an object with modulus and public exponent",() => {
       const blinding_information = client.collectPublicBlindingInformation();
       const isValid = BlindingInformation.isValidPublicBlindingInformation(blinding_information);
       assert.isTrue(isValid);
     });
   });
 
-  describe("#sendBlindingRequest()", function() {
+  describe("#sendBlindingRequest()", () => {
 
-    it("should return a promise", function() {
+    it("should return a promise", () => {
       assert.instanceOf(client.sendBlindingRequest(), Promise);
     });
 
-    it("should reject with wrong typed input for blinded_message", function() {
+    it("should reject with wrong typed input for blinded_message", () => {
 
       return client.sendBlindingRequest(123)
-        .then(function() { assert.fail(); })
-        .catch(function(error) {
+        .then(() => { assert.fail(); })
+        .catch((error) => {
           assert.typeOf(error, 'string');
         });
     });
 
-    it("should reject with wrong typed input for blinding_information", function(done) {
+    it("should reject with wrong typed input for blinding_information", (done) => {
 
       const blinding_information = new BlindingInformation();
       blinding_information.hashed_token = 123;
 
       return client.sendBlindingRequest("1234", blinding_information)
-        .then(function(answer) { done(answer); })
-        .catch(function(error) {
+        .then((answer) => { done(answer); })
+        .catch((error) => {
           assert.typeOf(error, 'string');
           done();
         });
     });
 
-    it("should reject when a network error occures", function(done) {
+    it("should reject when a network error occures", (done) => {
 
       const blinding_information = new BlindingInformation();
       blinding_information.hashed_token = util.bytes2BigInt("\u0000");
 
       const request_promise = client.sendBlindingRequest("1234", blinding_information)
-        .then(function (answer) { done("Should not happend: " + answer); })
-        .catch(function(error) {
+        .then((answer) => { done("Should not happend: " + answer); })
+        .catch((error) => {
           assert.instanceOf(error, Error);
           done();
         });
@@ -220,7 +220,7 @@ describe("client", function() {
       return request_promise;
     });
 
-    it("should reject and return status text error if status is not 200", function(done) {
+    it("should reject and return status text error if status is not 200", (done) => {
 
       const expected = { code: 404, status_text: new Error("Not Found") };
       this.server.respondWith([expected.code, { "Content-Type": "text/plain" }, ""]);
@@ -229,14 +229,14 @@ describe("client", function() {
       blinding_information.hashed_token = util.bytes2BigInt("\u0000");
 
       return client.sendBlindingRequest("" , blinding_information)
-        .then(function(answer) { done(answer); })
-        .catch(function(error) {
+        .then((answer) => { done(answer); })
+        .catch((error) => {
           assert.instanceOf(error, Error);
           done();
         });
     });
 
-    it("should resolve and return server response if status is 200", function() {
+    it("should resolve and return server response if status is 200", () => {
 
       const expected = "My expected response";
       this.server.respondWith([200, { "Content-Type": "text/plain" }, expected]);
@@ -245,7 +245,7 @@ describe("client", function() {
       blinding_information.hashed_token = util.bytes2BigInt("\u0000");
 
       return client.sendBlindingRequest("" , blinding_information)
-        .then(function(answer) {
+        .then((answer) => {
           assert.equal(expected, answer);
         });
     });

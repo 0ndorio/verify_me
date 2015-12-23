@@ -11,20 +11,21 @@ module.exports = {
     const primary_userid = keymanager.get_userids_mark_primary()[0];
 
     let packets = [pgpengine.key(pgpengine.primary).export_framed(opts)];
-    pgpengine.userids.forEach(function(userid) {
+
+    pgpengine.userids.reduce((packets, userid) => {
       packets.push(userid.write(), userid.get_framed_signature_output());
 
       if (primary_userid === userid) {
         packets.push(signature.write());
       }
-    });
+    }, packets);
 
     opts.subkey = true;
 
-    pgpengine.subkeys.forEach(function(subkey) {
+    pgpengine.subkeys.reduce((packets, subkey) => {
       const material = pgpengine.key(subkey);
       packets.push(material.export_framed(opts), material.get_subkey_binding_signature_output());
-    });
+    }, packets);
 
     kbpgp.util.assert_no_nulls(packets);
     return kbpgp.Buffer.concat(packets);
@@ -37,14 +38,16 @@ module.exports = {
 
     const target_key_material = [key.get_userids_mark_primary()[0]];
 
-    return new Promise(function(resolve, reject) {
-      signature_packet.verify(target_key_material,
-        function(err) {
+    return new Promise((resolve, reject) => {
+
+      signature_packet.verify(
+        target_key_material,
+        (err) => {
           if (err) {
             reject(new Error("Error during final signature verification. Please restart the process.", err));
-          } else {
-            resolve(key_ascii);
           }
+
+          resolve(key_ascii);
         }
       );
     });

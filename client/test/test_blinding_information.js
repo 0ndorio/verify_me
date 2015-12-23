@@ -16,11 +16,11 @@ describe("blinding_information", function() {
 
   let blinding_information = null;
 
-  beforeEach(function () {
+  beforeEach( () => {
     blinding_information = new BlindingInformation(null);
   });
 
-  afterEach(function () {
+  afterEach( () => {
     blinding_information = null;
   });
 
@@ -28,23 +28,23 @@ describe("blinding_information", function() {
   // test cases
   //
 
-  describe("#containsPublicBlindingInformation", function() {
+  describe("#containsPublicBlindingInformation", () => {
 
-    it ("should return false after initialization", function() {
+    it ("should return false after initialization", () => {
       assert.isFalse(blinding_information.containsPublicBlindingInformation());
     });
 
-    it ("should return false if public exponent is missing", function() {
+    it ("should return false if public exponent is missing", () => {
       blinding_information.modulus = new util.BigInteger("1", 10);
       assert.isFalse(blinding_information.containsPublicBlindingInformation());
     });
 
-    it ("should return false if modulus is missing", function() {
+    it ("should return false if modulus is missing", () => {
       blinding_information.public_exponent = new util.BigInteger("2", 10);
       assert.isFalse(blinding_information.containsPublicBlindingInformation());
     });
 
-    it ("should return true if all necessary information are present", function() {
+    it ("should return true if all necessary information are present", () => {
       blinding_information.modulus = new util.BigInteger("1", 10);
       blinding_information.public_exponent = new util.BigInteger("2", 10);
 
@@ -52,27 +52,27 @@ describe("blinding_information", function() {
     });
   });
 
-  describe("#containsAllBlindingInformation", function() {
+  describe("#containsAllBlindingInformation", () => {
 
-    it ("should return false after initialization", function() {
+    it ("should return false after initialization", () => {
       assert.isFalse(blinding_information.containsAllBlindingInformation());
     });
 
-    it ("should return false if blinding factor is missing", function() {
+    it ("should return false if blinding factor is missing", () => {
       blinding_information.modulus = new util.BigInteger("1", 10);
       blinding_information.public_exponent = new util.BigInteger("2", 10);
       blinding_information.hashed_token = new util.BigInteger("3", 10);
       assert.isFalse(blinding_information.containsAllBlindingInformation());
     });
 
-    it ("should return false if hashed token is missing", function() {
+    it ("should return false if hashed token is missing", () => {
       blinding_information.modulus = new util.BigInteger("1", 10);
       blinding_information.public_exponent = new util.BigInteger("2", 10);
       blinding_information.blinding_factor = new util.BigInteger("3", 10);
       assert.isFalse(blinding_information.containsAllBlindingInformation());
     });
 
-    it ("should return true if all necessary information are present", function() {
+    it ("should return true if all necessary information are present", () => {
       blinding_information.modulus = new util.BigInteger("1", 10);
       blinding_information.public_exponent = new util.BigInteger("2", 10);
       blinding_information.blinding_factor = new util.BigInteger("3", 10);
@@ -81,7 +81,7 @@ describe("blinding_information", function() {
     });
   });
 
-  describe("#fromKey", function() {
+  describe("#fromKey", () => {
 
     const tests = [
       {arg: null,      expected: false},
@@ -92,13 +92,13 @@ describe("blinding_information", function() {
       {arg: {},  expected: false}
     ];
 
-    tests.forEach(function(test) {
-      it ("should return '" + test.expected + "' if input is a " + typeof test.arg, function() {
+    tests.forEach((test) => {
+      it ("should return '" + test.expected + "' if input is a " + typeof test.arg, () => {
         assert.equal(test.expected, blinding_information.fromKey(test.arg));
       });
     });
 
-    it ("should return 'true' if input is a openpgp.key.Key", function() {
+    it ("should return 'true' if input is a openpgp.key.Key", () => {
       controls.loadFixture("test/fixture/keys_2048bit.html");
 
       const blinding_information = new BlindingInformation();
@@ -107,7 +107,7 @@ describe("blinding_information", function() {
     });
   });
 
-  describe("#isValidFullBlindingInformation", function() {
+  describe("#isValidFullBlindingInformation", () => {
 
     const tests = [
       {arg: null,      expected: false},
@@ -118,31 +118,31 @@ describe("blinding_information", function() {
       {arg: {},  expected: false}
     ];
 
-    tests.forEach(function(test) {
-      it ("should return '" + test.expected + "' if input is a " + typeof test.arg, function() {
+    tests.forEach((test) => {
+      it ("should return '" + test.expected + "' if input is a " + typeof test.arg, () => {
         assert.equal(test.expected, BlindingInformation.isValidFullBlindingInformation(test.arg));
       });
     });
 
-    it ("should return false after initialization", function() {
+    it ("should return false after initialization", () => {
       assert.isFalse(BlindingInformation.isValidFullBlindingInformation(blinding_information));
     });
 
-    it ("should return false if blinding factor is missing", function() {
+    it ("should return false if blinding factor is missing", () => {
       blinding_information.modulus = new util.BigInteger("1", 10);
       blinding_information.public_exponent = new util.BigInteger("2", 10);
       blinding_information.hashed_token = new util.BigInteger("3", 10);
       assert.isFalse(BlindingInformation.isValidFullBlindingInformation(blinding_information));
     });
 
-    it ("should return false if hashed token is missing", function() {
+    it ("should return false if hashed token is missing", () => {
       blinding_information.modulus = new util.BigInteger("1", 10);
       blinding_information.public_exponent = new util.BigInteger("2", 10);
       blinding_information.blinding_factor = new util.BigInteger("3", 10);
       assert.isFalse(BlindingInformation.isValidFullBlindingInformation(blinding_information));
     });
 
-    it ("should return true if all necessary information are present", function() {
+    it ("should return true if all necessary information are present", () => {
       blinding_information.modulus = new util.BigInteger("1", 10);
       blinding_information.public_exponent = new util.BigInteger("2", 10);
       blinding_information.blinding_factor = new util.BigInteger("3", 10);
@@ -151,7 +151,7 @@ describe("blinding_information", function() {
     });
   });
 
-  describe("#isValidPublicBlindingInformation", function() {
+  describe("#isValidPublicBlindingInformation", () => {
 
     const tests = [
       {arg: null,      expected: false},
@@ -162,27 +162,27 @@ describe("blinding_information", function() {
       {arg: {},  expected: false}
     ];
 
-    tests.forEach(function(test) {
-      it ("should return '" + test.expected + "' if input is a " + typeof test.arg, function() {
+    tests.forEach((test) => {
+      it ("should return '" + test.expected + "' if input is a " + typeof test.arg, () => {
         assert.equal(test.expected, BlindingInformation.isValidPublicBlindingInformation(test.arg));
       });
     });
 
-    it ("should return false after initialization", function() {
+    it ("should return false after initialization", () => {
       assert.isFalse(BlindingInformation.isValidPublicBlindingInformation(blinding_information));
     });
 
-    it ("should return false if public exponent is missing", function() {
+    it ("should return false if public exponent is missing", () => {
       blinding_information.modulus = new util.BigInteger("1", 10);
       assert.isFalse(BlindingInformation.isValidPublicBlindingInformation(blinding_information));
     });
 
-    it ("should return false if modulus is missing", function() {
+    it ("should return false if modulus is missing", () => {
       blinding_information.public_exponent = new util.BigInteger("2", 10);
       assert.isFalse(BlindingInformation.isValidPublicBlindingInformation(blinding_information));
     });
 
-    it ("should return true if all necessary information are present", function() {
+    it ("should return true if all necessary information are present", () => {
       blinding_information.modulus = new util.BigInteger("1", 10);
       blinding_information.public_exponent = new util.BigInteger("2", 10);
 

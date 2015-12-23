@@ -12,15 +12,15 @@ function requestPseudonym()
   let blind_signature = blind_signature_request.packet;
   let blinding_context = blind_signature_request.context;
 
-  return util.generateBlindingFactor(blinding_context.modulus.bitLength())
-    .then(function(blinding_factor) {
+  return util
+    .generateBlindingFactor(blinding_context.modulus.bitLength())
+    .then((blinding_factor) => {
+
       blinding_context.blinding_factor = blind_signature_request.token.multiply(blinding_factor);
       return blinding.blind_message(blind_signature.raw_signature, blinding_context).toRadix();
     })
-    .then(function (blinded_message) {
-      return client.sendBlindingRequest(blinded_message, blinding_context);
-    })
-    .then(function (signed_blinded_message) {
+    .then((blinded_message) => client.sendBlindingRequest(blinded_message, blinding_context))
+    .then((signed_blinded_message) => {
 
       const message = new util.BigInteger(signed_blinded_message, 10);
       const unblinded_message = blinding.unblind_message(message, blinding_context);
@@ -28,8 +28,8 @@ function requestPseudonym()
 
       return pgp.export_key_with_signature(blind_signature.target_key, blind_signature);
     })
-    .then(function(key_ascii) { console.log(key_ascii); })
-    .catch(function(error) { console.log(error); });
+    .then((key_ascii) => console.log(key_ascii))
+    .catch((error) => console.log(error));
 }
 
 // set request button active

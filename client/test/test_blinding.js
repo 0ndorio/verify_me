@@ -16,34 +16,32 @@ describe("blinding", function() {
   // suite functions
   //
 
-  beforeEach(function() {
-    controls.loadFixture("test/fixture/keys_2048bit.html");
-  });
+  beforeEach(() => { controls.loadFixture("test/fixture/keys_2048bit.html"); });
 
-  afterEach(function() {});
+  afterEach(() => {});
 
   //
   // test cases
   //
 
-  describe("#blind_message()", function() {
+  describe("#blind_message()", () => {
 
     let tests = [
       {arg: null}, {arg: undefined}, {arg: true}, {arg: 123}, {arg: {}}, {arg: "123"}
     ];
 
-    tests.forEach(function(test) {
-      it ("should return 'null' if message is a " + typeof test.arg, function() {
+    tests.forEach((test) => {
+      it ("should return 'null' if message is a " + typeof test.arg, () => {
         assert.isNull(blinding.blind_message(test.arg, new BlindingInformation()));
       });
     });
 
-    it ("should return 'null' if not all blinding information are available", function() {
+    it ("should return 'null' if not all blinding information are available", () => {
       const message = util.BigInteger.fromBuffer(kbpgp.util.bufferify("message"));
       assert.isNull(blinding.blind_message(message, new BlindingInformation()));
     });
 
-    it ("should return a blinded 'BigInteger' with correct input", function () {
+    it ("should return a blinded 'BigInteger' with correct input", () => {
       let blinding_information = new BlindingInformation();
       blinding_information.fromKey(client.getPublicKey());
       blinding_information.blinding_factor = util.int2BigInt(3);
@@ -62,8 +60,8 @@ describe("blinding", function() {
       { args: {message: "\u0005", blinding_factor: 17, modulus: 23, public_exponent: 3}, expected: "70" }
     ];
 
-    tests.forEach(function(test) {
-      it ("should return '" + test.expected + "' for specified input", function() {
+    tests.forEach((test) => {
+      it ("should return '" + test.expected + "' for specified input", () => {
 
         let blinding_information = new BlindingInformation();
         blinding_information.blinding_factor = util.int2BigInt(test.args.blinding_factor);
@@ -77,24 +75,24 @@ describe("blinding", function() {
     });
   });
 
-  describe("#unblind_message()", function() {
+  describe("#unblind_message()", () => {
 
     let tests = [
       {arg: null}, {arg: undefined}, {arg: true}, {arg: 123}, {arg: {}}, {arg: "R2D2"}
     ];
 
-    tests.forEach(function(test) {
-      it ("should return 'null' if message is " + test.arg + " (" + typeof test.arg + ")", function() {
+    tests.forEach((test) => {
+      it ("should return 'null' if message is " + test.arg + " (" + typeof test.arg + ")", () => {
         assert.isNull(blinding.unblind_message(test.arg, new BlindingInformation()));
       });
     });
 
-    it ("should return 'null' if not all blinding information are available", function() {
+    it ("should return 'null' if not all blinding information are available", () => {
       const message = util.str2BigInt("message");
       assert.isNull(blinding.unblind_message(message, new BlindingInformation()));
     });
 
-    it ("should return an unblinded 'BigInteger' with correct input", function () {
+    it ("should return an unblinded 'BigInteger' with correct input", () => {
       const blinding_information = new BlindingInformation();
       blinding_information.fromKey(client.getPublicKey());
       blinding_information.blinding_factor = util.int2BigInt(3);
@@ -113,8 +111,8 @@ describe("blinding", function() {
       { args: {blinded_message: "5", blinding_factor: 17, modulus: 23 }, expected: "3" }
     ];
 
-    tests.forEach(function(test) {
-      it ("should return '" + test.expected + "' for sepcified input", function() {
+    tests.forEach((test) => {
+      it ("should return '" + test.expected + "' for sepcified input", () => {
 
         let blinding_information = new BlindingInformation();
         blinding_information.blinding_factor = util.int2BigInt(test.args.blinding_factor);

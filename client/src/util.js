@@ -75,10 +75,10 @@ module.exports = {
 
     /// TODO: unsafe due to timing issues ... refactore to Promise
     let key = null;
-    kbpgp.KeyManager.import_from_armored_pgp({ armored: key_as_string },
-      function(err, key_manager) {
-        if (!err) { key = key_manager; }
-      });
+    kbpgp.KeyManager.import_from_armored_pgp(
+      { armored: key_as_string },
+      (err, key_manager) => { if (!err) { key = key_manager; }
+    });
 
     return key;
   },
@@ -98,13 +98,13 @@ module.exports = {
       nbits: primeBitLength * 2
     };
 
-    return new Promise(function(resolve, reject) {
-      kbpgp.asym.RSA.generate(key_arguments, function(err, key) {
+    return new Promise((resolve, reject) => {
+      kbpgp.asym.RSA.generate(key_arguments, (err, key) => {
         if (err) {
           reject(err);
-        } else {
-          resolve([key.priv.p, key.priv.q]);
         }
+
+        resolve([key.priv.p, key.priv.q]);
       });
     });
   },
@@ -120,9 +120,7 @@ module.exports = {
 
     const sub_prime_length = Math.floor(bitLength / 2);
     return this.generateTwoPrimeNumbers(sub_prime_length)
-      .then(function(primes) {
-        return primes[0].multiply(primes[1]);
-      });
+      .then(primes => primes[0].multiply(primes[1]));
   },
 
   /// Loads content from textarea with specific id.

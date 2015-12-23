@@ -144,13 +144,14 @@ module.exports = {
       return Promise.reject("Message is not of type string but '" + typeof messsage + "'");
     }
 
-    return new Promise(function(resolve, reject) {
+    return new Promise((resolve, reject) => {
 
       let xhttp = new XMLHttpRequest();
       xhttp.open("POST", "/");
       xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 
-      xhttp.onload = function () {
+      xhttp.onload = () => {
+
         if (xhttp.readyState === 4 && xhttp.status === 200) {
           resolve(xhttp.responseText);
         } else {
@@ -158,9 +159,7 @@ module.exports = {
         }
       };
 
-      xhttp.onerror = function(error) {
-        reject(new Error("error handler called with: " + error));
-      };
+      xhttp.onerror = (error) => { reject(new Error("error handler called with: " + error)) };
 
       xhttp.send(message);
     });
