@@ -1,9 +1,9 @@
 "use strict";
 
-var blinding = require("./blinding");
-var client = require("./client");
-var pgp = require("./pgp");
-var util = require("./util");
+import * as blinding from "./blinding"
+import * as client from "./client"
+import * as pgp from "./pgp"
+import * as util from "./util"
 
 /// TODO
 function requestPseudonym()

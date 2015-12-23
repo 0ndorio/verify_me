@@ -1,6 +1,6 @@
 "use strict";
 
-var util = require("../util");
+import * as util from "../util"
 
 /**
  * A rsa blinding context.

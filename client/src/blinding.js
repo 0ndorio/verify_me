@@ -1,7 +1,7 @@
 "use strict";
 
-var BlindingInformation = require("./types/blinding_information");
-var util = require("./util");
+import BlindingInformation from "./types/blinding_information"
+import * as util from "./util"
 
 module.exports = {
 

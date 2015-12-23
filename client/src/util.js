@@ -1,6 +1,7 @@
 "use strict";
-var BigInteger = require("../node_modules/kbpgp/lib/bn").BigInteger;
-var kbpgp = require("kbpgp");
+
+import { BigInteger } from "../node_modules/kbpgp/lib/bn"
+import * as kbpgp from "kbpgp"
 
 module.exports = {
 

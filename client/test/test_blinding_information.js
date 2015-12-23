@@ -1,12 +1,12 @@
 "use strict";
 
-var assert = require("chai").assert;
+import { assert } from "chai"
 
-var client = require("../src/client");
-var util = require("../src/util");
-var BlindingInformation = require("../src/types/blinding_information");
+import * as client from "../src/client"
+import * as util from "../src/util"
+import BlindingInformation from "../src/types/blinding_information"
 
-var controls = require("./helper/helper").controls;
+import { controls } from "./helper/helper"
 
 describe("blinding_information", function() {
 

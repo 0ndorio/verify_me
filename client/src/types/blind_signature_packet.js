@@ -1,12 +1,12 @@
 "use strict";
 
-var kbpgp = require("kbpgp");
+import * as kbpgp from "kbpgp"
 var Constants = kbpgp.const;
 
-var sig = require("../../node_modules/kbpgp/lib/openpgp/packet/signature");
-var pad = require("../../node_modules/kbpgp/lib/pad");
+import * as sig from "../../node_modules/kbpgp/lib/openpgp/packet/signature"
+import * as pad from "../../node_modules/kbpgp/lib/pad"
 
-var util = require("../util");
+import * as util from "../util"
 
 /// TODO
 /// @parameter {KeyManager} target_key

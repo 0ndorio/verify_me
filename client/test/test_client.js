@@ -1,12 +1,14 @@
 "use strict";
 
-var assert = require("chai").assert;
-var BlindingInformation = require("../src/types/blinding_information");
-var client = require("../src/client");
-var controls = require("./helper/helper").controls;
-var kbpgp = require("kbpgp");
-var sinon = require('sinon');
-var util = require("../src/util");
+import { assert } from "chai"
+import * as kbpgp from "kbpgp"
+import * as sinon from "sinon"
+
+import * as client from "../src/client"
+import * as util from "../src/util"
+import BlindingInformation from "../src/types/blinding_information"
+
+import { controls } from "./helper/helper"
 
 describe("client", function() {
 

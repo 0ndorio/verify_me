@@ -1,6 +1,6 @@
 "use strict";
 
-var kbpgp = require("kbpgp");
+import * as kbpgp from "kbpgp"
 
 module.exports = {
 
