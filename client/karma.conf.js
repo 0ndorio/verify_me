@@ -79,8 +79,8 @@ module.exports = function(config) {
     browserify: {
       debug: true,
       transform: [
-        'browserify-istanbul',
-        ['babelify',{presets: ['es2015']}]]
+        ['babelify',{presets: ['es2015']}],
+        'browserify-babel-istanbul']
     },
 
 

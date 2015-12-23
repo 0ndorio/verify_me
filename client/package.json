@@ -13,7 +13,7 @@
     "babelify": "latest",
     "babel-preset-es2015": "latest",
     "browserify": "latest",
-    "browserify-istanbul": "latest",
+    "browserify-babel-istanbul": "latest",
     "chai": "latest",
     "karma": "latest",
     "karma-browserify": "latest",
