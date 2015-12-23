@@ -55,7 +55,7 @@ describe("client", function() {
       assert.isNull(client.getPublicKeyString(), Error);
     });
 
-    var tests = [
+    const tests = [
       {arg: "a",       expected: "a"},
       {arg: "\u0000",  expected: "\u0000"},
       {arg: "\u0001",  expected: "\u0001"},
@@ -75,12 +75,12 @@ describe("client", function() {
   describe("#getToken()", function() {
 
     it ("should return Token as BigInteger", function () {
-      var token = client.getToken();
+      const token = client.getToken();
       assert.isTrue(util.isBigInteger(token));
     });
 
     it ("result must pass prime test", function () {
-      var token = client.getToken();
+      const token = client.getToken();
       assert.isTrue(token.isProbablePrime());
     });
 
@@ -102,7 +102,7 @@ describe("client", function() {
       assert.isNull(client.getTokenString(), Error);
     });
 
-    var tests = [
+    const tests = [
       {arg: "a",       expected: "a"},
       {arg: "\u0000",  expected: "\u0000"},
       {arg: "\u0001",  expected: "\u0001"},
@@ -143,7 +143,7 @@ describe("client", function() {
       assert.isNull(client.getServerPublicKeyString());
     });
 
-    var tests = [
+    const tests = [
       {arg: "a",       expected: "a"},
       {arg: "\u0000",  expected: ""},
       {arg: "\u0001",  expected: "\u0001"},
@@ -167,8 +167,8 @@ describe("client", function() {
     });
 
     it ("should return an object with modulus and public exponent", function () {
-      var blinding_information = client.collectPublicBlindingInformation();
-      var isValid = BlindingInformation.isValidPublicBlindingInformation(blinding_information);
+      const blinding_information = client.collectPublicBlindingInformation();
+      const isValid = BlindingInformation.isValidPublicBlindingInformation(blinding_information);
       assert.isTrue(isValid);
     });
   });
@@ -190,7 +190,7 @@ describe("client", function() {
 
     it("should reject with wrong typed input for blinding_information", function(done) {
 
-      var blinding_information = new BlindingInformation();
+      const blinding_information = new BlindingInformation();
       blinding_information.hashed_token = 123;
 
       return client.sendBlindingRequest("1234", blinding_information)
@@ -203,10 +203,10 @@ describe("client", function() {
 
     it("should reject when a network error occures", function(done) {
 
-      var blinding_information = new BlindingInformation();
+      const blinding_information = new BlindingInformation();
       blinding_information.hashed_token = util.bytes2BigInt("\u0000");
 
-      var request_promise = client.sendBlindingRequest("1234", blinding_information)
+      const request_promise = client.sendBlindingRequest("1234", blinding_information)
         .then(function (answer) { done("Should not happend: " + answer); })
         .catch(function(error) {
           assert.instanceOf(error, Error);
@@ -222,10 +222,10 @@ describe("client", function() {
 
     it("should reject and return status text error if status is not 200", function(done) {
 
-      var expected = { code: 404, status_text: new Error("Not Found") };
+      const expected = { code: 404, status_text: new Error("Not Found") };
       this.server.respondWith([expected.code, { "Content-Type": "text/plain" }, ""]);
 
-      var blinding_information = new BlindingInformation();
+      let blinding_information = new BlindingInformation();
       blinding_information.hashed_token = util.bytes2BigInt("\u0000");
 
       return client.sendBlindingRequest("" , blinding_information)
@@ -238,10 +238,10 @@ describe("client", function() {
 
     it("should resolve and return server response if status is 200", function() {
 
-      var expected = "My expected response";
+      const expected = "My expected response";
       this.server.respondWith([200, { "Content-Type": "text/plain" }, expected]);
 
-      var blinding_information = new BlindingInformation();
+      let blinding_information = new BlindingInformation();
       blinding_information.hashed_token = util.bytes2BigInt("\u0000");
 
       return client.sendBlindingRequest("" , blinding_information)

@@ -8,9 +8,9 @@ import * as util from "./util"
 /// TODO
 function requestPseudonym()
 {
-  var blind_signature_request = client.prepareBlindSignatureRequest();
-  var blind_signature = blind_signature_request.packet;
-  var blinding_context = blind_signature_request.context;
+  const blind_signature_request = client.prepareBlindSignatureRequest();
+  let blind_signature = blind_signature_request.packet;
+  let blinding_context = blind_signature_request.context;
 
   return util.generateBlindingFactor(blinding_context.modulus.bitLength())
     .then(function(blinding_factor) {
@@ -22,8 +22,8 @@ function requestPseudonym()
     })
     .then(function (signed_blinded_message) {
 
-      var message = new util.BigInteger(signed_blinded_message, 10);
-      var unblinded_message = blinding.unblind_message(message, blinding_context);
+      const message = new util.BigInteger(signed_blinded_message, 10);
+      const unblinded_message = blinding.unblind_message(message, blinding_context);
       blind_signature.sig = unblinded_message.to_mpi_buffer();
 
       return pgp.export_key_with_signature(blind_signature.target_key, blind_signature);

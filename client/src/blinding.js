@@ -13,9 +13,9 @@ module.exports = {
       return null;
     }
 
-    var r = blinding_information.blinding_factor;
-    var e = blinding_information.public_exponent;
-    var N = blinding_information.modulus;
+    const r = blinding_information.blinding_factor;
+    const e = blinding_information.public_exponent;
+    const N = blinding_information.modulus;
 
     return message.multiply(r.modPow(e, N));
   },
@@ -28,10 +28,10 @@ module.exports = {
       return null;
     }
 
-    var N = blinding_information.modulus;
-    var r = blinding_information.blinding_factor;
+    const N = blinding_information.modulus;
+    const r = blinding_information.blinding_factor;
 
-    var r_inv = r.modInverse(N);
+    const r_inv = r.modInverse(N);
     return message.multiply(r_inv).mod(N);
   }
 };

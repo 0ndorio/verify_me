@@ -14,7 +14,7 @@ describe("blinding_information", function() {
   // suite functions
   //
 
-  var blinding_information = null;
+  let blinding_information = null;
 
   beforeEach(function () {
     blinding_information = new BlindingInformation(null);
@@ -83,7 +83,7 @@ describe("blinding_information", function() {
 
   describe("#fromKey", function() {
 
-    var tests = [
+    const tests = [
       {arg: null,      expected: false},
       {arg: undefined, expected: false},
       {arg: true,      expected: false},
@@ -101,8 +101,7 @@ describe("blinding_information", function() {
     it ("should return 'true' if input is a openpgp.key.Key", function() {
       controls.loadFixture("test/fixture/keys_2048bit.html");
 
-      var blinding_information = new BlindingInformation();
-
+      const blinding_information = new BlindingInformation();
       assert.isTrue(blinding_information.fromKey(client.getServerPublicKey()));
       assert.isTrue(blinding_information.containsPublicBlindingInformation());
     });
@@ -110,7 +109,7 @@ describe("blinding_information", function() {
 
   describe("#isValidFullBlindingInformation", function() {
 
-    var tests = [
+    const tests = [
       {arg: null,      expected: false},
       {arg: undefined, expected: false},
       {arg: true,      expected: false},
@@ -154,7 +153,7 @@ describe("blinding_information", function() {
 
   describe("#isValidPublicBlindingInformation", function() {
 
-    var tests = [
+    const tests = [
       {arg: null,      expected: false},
       {arg: undefined, expected: false},
       {arg: true,      expected: false},

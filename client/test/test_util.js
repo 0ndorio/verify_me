@@ -11,7 +11,7 @@ describe("util", function() {
 
   describe("#bigInt2Bytes()", function() {
 
-    var tests = [
+    let tests = [
       {arg: 1111, expected: "\u0004W"},
       {arg: 256,  expected: "\u0001\u0000"},
       {arg: 1,  expected: "\u0001"},
@@ -25,9 +25,9 @@ describe("util", function() {
 
     tests.forEach(function(test) {
       it("should return the byte string '" + test.expected + "' when input is BigInt with '" + test.arg + "'", function(){
-        var bigInt = new util.BigInteger(test.arg.toString());
-        var result = util.bigInt2Bytes(bigInt);
 
+        const bigInt = new util.BigInteger(test.arg.toString());
+        const result = util.bigInt2Bytes(bigInt);
         assert.equal(test.expected, result);
       });
     });
@@ -43,7 +43,7 @@ describe("util", function() {
 
     tests.forEach(function(test) {
       it("should return 'null' when parameter is a " + typeof test.arg, function(){
-        var result = util.bigInt2Bytes(test.arg);
+        const result = util.bigInt2Bytes(test.arg);
         assert.equal(test.expected, result);
       });
     });
@@ -51,7 +51,7 @@ describe("util", function() {
 
   describe("#bytes2hex", function() {
 
-    var tests = [
+    const tests = [
       {arg: null, expected: ""},
       {arg: "\u0000", expected: "00"},
       {arg: "\u000f", expected: "0f"},
@@ -69,7 +69,7 @@ describe("util", function() {
 
   describe("#hex2bytes", function() {
 
-    var tests = [
+    const tests = [
       {arg: null, expected: ""},
       {arg: "00", expected: "\u0000"},
       {arg: "0f", expected: "\u000f"},
@@ -96,7 +96,7 @@ describe("util", function() {
     });
 
     it("should return a {Key} object if input is a valid ascii armored key", function() {
-      var keyString =
+      const keyString =
         ['-----BEGIN PGP PUBLIC KEY BLOCK-----',
           'Version: GnuPG v2',
           '',
@@ -117,7 +117,7 @@ describe("util", function() {
           '=w97z',
           '-----END PGP PUBLIC KEY BLOCK-----'].join('\n');
 
-      var key = util.generateKeyFromString(keyString);
+      const key = util.generateKeyFromString(keyString);
       assert.isNotNull(key);
       assert.isTrue(util.isOpenPGPKey(key));
     });
@@ -147,7 +147,7 @@ describe("util", function() {
     });
 
     it("should return two {BigInteger} prime numbers of given bit length", function() {
-      var bitLength = 256;
+      const bitLength = 256;
 
       return util.generateTwoPrimeNumbers(bitLength)
         .then(function(primeNumbers) {
@@ -179,10 +179,10 @@ describe("util", function() {
     });
 
     it("should return a string with the textarea content if input id exists", function() {
-      var string = "123";
+      const string = "123";
       controls.userPublicKeyString = string;
 
-      var result = util.getTextAreaContent(client.user_public_key_element_id);
+      const result = util.getTextAreaContent(client.user_public_key_element_id);
       assert.isTrue(util.isString(result));
       assert.equal(string, result);
     });
@@ -195,9 +195,10 @@ describe("util", function() {
     });
 
     it("should return a hash digest with bit length 512", function() {
-      var expected_hex = "ddaf35a193617abacc417349ae20413112e6fa4e89a97ea20a9eeee64b55d39a2192992a274fc1a836ba3c23a3feebbd454d4423643ce80e2a9ac94fa54ca49f";
-      var result = util.hashMessage("abc");
+      const expected_hex = "ddaf35a193617abacc417349ae20413112e6fa4e89a97ea20a9eeee64b55d39a"
+                         + "2192992a274fc1a836ba3c23a3feebbd454d4423643ce80e2a9ac94fa54ca49f";
 
+      const result = util.hashMessage("abc");
       assert.equal(512, result.bitLength());
       assert.equal(expected_hex, result.toString(16));
     });
@@ -205,7 +206,7 @@ describe("util", function() {
 
   describe("#int2BigInt()", function() {
 
-    var tests = [
+    let tests = [
       {arg: "123"}, {arg: true}, {arg: {}}, {arg: null}, {arg: undefined}, {arg: 123.12}
     ];
 
@@ -234,7 +235,7 @@ describe("util", function() {
 
   describe("#isBigInteger()", function() {
 
-    var tests = [
+    const tests = [
       {arg: "123", expected: false},
       {arg: 123,   expected: false},
       {arg: true,  expected: false},
@@ -245,7 +246,7 @@ describe("util", function() {
 
     tests.forEach(function(test) {
       it("should return '" + test.expected + "' when parameter is a " + test.arg + " {" + typeof test.arg + "}", function() {
-        var result = util.isBigInteger(test.arg);
+        const result = util.isBigInteger(test.arg);
         assert.equal(test.expected, result);
       });
     });
@@ -253,7 +254,7 @@ describe("util", function() {
 
   describe("#isInteger()", function() {
 
-    var tests = [
+    const tests = [
       {arg: true,  expected: false},
       {arg: {},    expected: false},
       {arg: undefined, expected: false},
@@ -263,7 +264,7 @@ describe("util", function() {
 
     tests.forEach(function(test) {
       it("should return '" + test.expected + "' when parameter is a " + test.arg + " {" + typeof test.arg + "}", function() {
-        var result = util.isInteger(test.arg);
+        const result = util.isInteger(test.arg);
         assert.equal(test.expected, result);
       });
     });
@@ -271,7 +272,7 @@ describe("util", function() {
 
   describe("#isKeyReadSuccessful()", function() {
 
-    var tests = [
+    const tests = [
       {arg: null, expected: false},
       {arg: undefined, expected: false},
       {arg: [], expected: false},
@@ -283,7 +284,7 @@ describe("util", function() {
 
     tests.forEach(function(test) {
       it("should return '" + test.expected + "' when parameter is " + test.arg, function() {
-        var result = util.isKeyReadSuccessful(test.arg);
+        const result = util.isKeyReadSuccessful(test.arg);
         assert.equal(test.expected, result);
       });
     });
@@ -291,7 +292,7 @@ describe("util", function() {
 
   describe("#isObject()", function() {
 
-    var tests = [
+    const tests = [
       {arg: undefined, expected: false},
       {arg: 123,   expected: false},
       {arg: true,  expected: false},
@@ -303,7 +304,7 @@ describe("util", function() {
 
     tests.forEach(function(test) {
       it("should return '" + test.expected + "' when parameter is a " + test.arg + " {" + typeof test.arg + "}", function() {
-        var result = util.isObject(test.arg);
+        const result = util.isObject(test.arg);
         assert.equal(test.expected, result);
       });
     });
@@ -311,7 +312,7 @@ describe("util", function() {
 
   describe("#isOpenPGPKey()", function() {
 
-    var keyString =
+    const keyString =
       ['-----BEGIN PGP PUBLIC KEY BLOCK-----',
         'Version: GnuPG v2',
         '',
@@ -332,7 +333,7 @@ describe("util", function() {
         '=w97z',
         '-----END PGP PUBLIC KEY BLOCK-----'].join('\n');
 
-    var tests = [
+    const tests = [
       {arg: undefined, expected: false},
       {arg: 123,   expected: false},
       {arg: true,  expected: false},
@@ -344,7 +345,7 @@ describe("util", function() {
 
     tests.forEach(function(test) {
       it("should return '" + test.expected + "' when parameter is a " + test.arg + " {" + typeof test.arg + "}", function() {
-        var result = util.isOpenPGPKey(test.arg);
+        const result = util.isOpenPGPKey(test.arg);
         assert.equal(test.expected, result);
       });
     });
@@ -352,7 +353,7 @@ describe("util", function() {
 
   describe("#isString()", function() {
 
-    var tests = [
+    const tests = [
       {arg: 123,   expected: false},
       {arg: true,  expected: false},
       {arg: {},    expected: false},
@@ -362,7 +363,7 @@ describe("util", function() {
 
     tests.forEach(function(test) {
       it("should return '" + test.expected + "' when parameter is a " + test.arg + " {" + typeof test.arg + "}", function() {
-        var result = util.isString(test.arg);
+        const result = util.isString(test.arg);
         assert.equal(test.expected, result);
       });
     });
@@ -375,15 +376,15 @@ describe("util", function() {
     });
 
     it("should return a BigInteger object if input a string", function() {
-      var input = "message";
-      var result = util.str2BigInt(input);
+      const input = "message";
+      const result = util.str2BigInt(input);
 
       assert.instanceOf(result, util.BigInteger);
     });
 
     it("should be able to convert ascii encoded messages", function() {
-      var input = "--- my ascii encoded message ---";
-      var result = util.str2BigInt(input);
+      const input = "--- my ascii encoded message ---";
+      const result = util.str2BigInt(input);
 
       assert.equal(input, result.toBuffer().toString("utf8"));
       assert.equal(input, result.toBuffer().toString("binary"));

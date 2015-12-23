@@ -40,7 +40,7 @@ BlindingInformation.prototype.fromKey = function(key)
     return false;
   }
 
-  var public_key_package = key.get_primary_keypair().pub;
+  const public_key_package = key.get_primary_keypair().pub;
   this.modulus = public_key_package.n;
   this.public_exponent = public_key_package.e;
 

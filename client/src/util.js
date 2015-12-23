@@ -18,16 +18,16 @@ module.exports = {
    */
   bigInt2Bytes: function(bigInteger)
   {
-    var result = null;
-    if (bigInteger instanceof BigInteger) {
-
-      // toBuffer() called on 0 creates an empty buffer which is represented
-      // by an empty string. To avoid this we enforce a buffer of minimum size 1.
-      var buffer_size = (bigInteger.byteLength() === 0) ? 1 : bigInteger.byteLength();
-      result = bigInteger.toBuffer(buffer_size).toString("binary");
+    if (!(bigInteger instanceof BigInteger)) {
+      return null;
     }
 
-    return result;
+    // toBuffer() called on 0 creates an empty buffer which is represented
+    // by an empty string. To avoid this we enforce a buffer of minimum size 1.
+    const buffer_size = (bigInteger.byteLength() === 0) ? 1 : bigInteger.byteLength();
+    const buffer = bigInteger.toBuffer(buffer_size);
+
+    return buffer.toString("binary");
   },
 
   /// TODO
@@ -43,7 +43,7 @@ module.exports = {
       return "";
     }
 
-    var buffer = new kbpgp.Buffer(byte_string, "binary");
+    const buffer = new kbpgp.Buffer(byte_string, "binary");
     return buffer.toString("hex");
   },
 
@@ -58,7 +58,7 @@ module.exports = {
       hex_as_string = "0" + hex_as_string;
     }
 
-    var bytes = new kbpgp.Buffer(hex_as_string, "hex");
+    const bytes = new kbpgp.Buffer(hex_as_string, "hex");
     return bytes.toString("binary");
   },
 
@@ -73,7 +73,8 @@ module.exports = {
   {
     if (!this.isString(key_as_string)) { return null; }
 
-    var key = null;
+    /// TODO: unsafe due to timing issues ... refactore to Promise
+    let key = null;
     kbpgp.KeyManager.import_from_armored_pgp({ armored: key_as_string },
       function(err, key_manager) {
         if (!err) { key = key_manager; }
@@ -92,7 +93,7 @@ module.exports = {
       return Promise.reject("The prime bit length must be a multiple of 8 bits and >= 128 and <= 8192");
     }
 
-    var key_arguments = {
+    const key_arguments = {
       e: 65537,
       nbits: primeBitLength * 2
     };
@@ -117,7 +118,7 @@ module.exports = {
       return Promise.reject("The prime bit length must be a multiple of 8 bits and >= 256 and <= 16384");
     }
 
-    var sub_prime_length = Math.floor(bitLength / 2);
+    const sub_prime_length = Math.floor(bitLength / 2);
     return this.generateTwoPrimeNumbers(sub_prime_length)
       .then(function(primes) {
         return primes[0].multiply(primes[1]);
@@ -135,9 +136,9 @@ module.exports = {
   {
     if (!this.isString(text_area_name)) { return null; }
 
-    var textarea = document.getElementById(text_area_name);
+    const textarea = document.getElementById(text_area_name);
 
-    var content = null;
+    let content = null;
     if (textarea !== null) {
       content = textarea.value;
     }
@@ -155,13 +156,12 @@ module.exports = {
    */
   hashMessage: function(message)
   {
-    var digest = null;
-    if (this.isString(message)) {
-      var hash_buffer = kbpgp.hash.SHA512(new kbpgp.Buffer(message));
-      digest = BigInteger.fromBuffer(hash_buffer);
+    if (!this.isString(message)) {
+      return null;
     }
 
-    return digest;
+    const hash_buffer = kbpgp.hash.SHA512(new kbpgp.Buffer(message));
+    return BigInteger.fromBuffer(hash_buffer);
   },
 
   /// Converts an integer in a {BigInteger}.
@@ -172,13 +172,11 @@ module.exports = {
   ///   A {BigInteger} object IF input is a valid integer ELSE {null}
   int2BigInt: function(integer)
   {
-    var bigInt = null;
-
-    if (this.isInteger(integer)) {
-      bigInt = new BigInteger(integer.toString());
+    if (!this.isInteger(integer)) {
+      return null;
     }
 
-    return bigInt;
+    return new BigInteger(integer.toString());
   },
 
   /// TODO
@@ -231,7 +229,7 @@ module.exports = {
       return null;
     }
 
-    var buffer = new kbpgp.Buffer(string, "ascii");
+    const buffer = new kbpgp.Buffer(string, "ascii");
     return BigInteger.fromBuffer(buffer);
   }
 };

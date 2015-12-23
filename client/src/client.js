@@ -17,12 +17,12 @@ module.exports = {
   ///      public key as openpgp.key object
   getPublicKey: function()
   {
-    var public_key_string = this.getPublicKeyString();
+    const public_key_string = this.getPublicKeyString();
     if (public_key_string === null) {
       throw new Error("Couldn't read the public key input. Please reload page.");
     }
 
-    var public_key = util.generateKeyFromString(public_key_string);
+    const public_key = util.generateKeyFromString(public_key_string);
     if (public_key === null) {
       throw new Error("Could not generate public key. Please check your input.");
     }
@@ -36,7 +36,7 @@ module.exports = {
   ///      "public_key_textarea" value as {string} or null if the id is missing
   getPublicKeyString: function()
   {
-    var content = util.getTextAreaContent(this.user_public_key_element_id);
+    const content = util.getTextAreaContent(this.user_public_key_element_id);
     if (!util.isString(content)) {
       return null;
     }
@@ -52,13 +52,12 @@ module.exports = {
    */
   getToken: function()
   {
-    var token_string = this.getTokenString();
+    const token_string = this.getTokenString();
     if (token_string === null) {
       throw new Error("Couldn't read the token input. Please reload page.");
     }
 
-    var token = new util.BigInteger(token_string, 16);
-
+    const token = new util.BigInteger(token_string, 16);
     if (!token.isProbablePrime()) {
       throw new Error("Unsecure Token. Please check your input.");
     }
@@ -72,7 +71,7 @@ module.exports = {
   ///      "token_textarea" value as {string}
   getTokenString: function()
   {
-    var content = util.getTextAreaContent(this.user_token_element_id);
+    const content = util.getTextAreaContent(this.user_token_element_id);
     if (!util.isString(content)) {
       return null;
     }
@@ -83,12 +82,12 @@ module.exports = {
   /// TODO
   getServerPublicKey: function()
   {
-    var public_key_string = this.getServerPublicKeyString();
+    const public_key_string = this.getServerPublicKeyString();
     if (!util.isString(public_key_string)) {
       throw new Error("Couldn't read servers public key. Please reload page.");
     }
 
-    var public_key = util.generateKeyFromString(public_key_string);
+    const public_key = util.generateKeyFromString(public_key_string);
     if (public_key === null) {
       throw new Error("Couldn't convert server public key. Please reload page.");
     }
@@ -99,7 +98,7 @@ module.exports = {
   /// TODO
   getServerPublicKeyString: function()
   {
-    var element = document.getElementById(this.server_public_key_element_id);
+    const element = document.getElementById(this.server_public_key_element_id);
     if (element === null) {
       return null;
     }
@@ -110,11 +109,12 @@ module.exports = {
   /// TODO
   collectPublicBlindingInformation: function()
   {
-    var server_public_key = this.getServerPublicKey();
-    var blinding_information = new BlindingInformation();
+    let blinding_information = new BlindingInformation();
+
+    const server_public_key = this.getServerPublicKey();
     blinding_information.fromKey(server_public_key);
 
-    var token = this.getToken();
+    const token = this.getToken();
     blinding_information.hashed_token = util.hashMessage(token.toRadix());
 
     return blinding_information;
@@ -130,7 +130,7 @@ module.exports = {
       return Promise.reject("no hashed token stored in blinding_information");
     }
 
-    var message = JSON.stringify({
+    const message = JSON.stringify({
       message: blinded_message,
       token_hash: blinding_information.hashed_token.toString(16)
     });
@@ -146,7 +146,7 @@ module.exports = {
 
     return new Promise(function(resolve, reject) {
 
-      var xhttp = new XMLHttpRequest();
+      let xhttp = new XMLHttpRequest();
       xhttp.open("POST", "/");
       xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 
@@ -168,14 +168,13 @@ module.exports = {
 
   prepareBlindSignatureRequest: function ()
   {
-    var public_key = this.getPublicKey();
-    var server_public_key = this.getServerPublicKey();
-    var token = this.getToken();
+    const public_key = this.getPublicKey();
+    const server_public_key = this.getServerPublicKey();
 
     return {
       context: this.collectPublicBlindingInformation(),
       packet: new BlindSignaturePacket(public_key, server_public_key),
-      token: token
+      token: this.getToken()
     };
   }
 };
