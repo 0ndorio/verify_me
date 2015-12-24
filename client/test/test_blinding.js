@@ -42,8 +42,8 @@ describe("blinding", function() {
     });
 
     it ("should return a blinded 'BigInteger' with correct input", () => {
-      let blinding_information = new BlindingInformation();
-      blinding_information.fromKey(client.getPublicKey());
+      const key = client.getPublicKey();
+      let blinding_information = BlindingInformation.fromKey(key);
       blinding_information.blinding_factor = util.int2BigInt(3);
       blinding_information.hashed_token = util.int2BigInt(3);
 
@@ -93,8 +93,8 @@ describe("blinding", function() {
     });
 
     it ("should return an unblinded 'BigInteger' with correct input", () => {
-      const blinding_information = new BlindingInformation();
-      blinding_information.fromKey(client.getPublicKey());
+      const key = client.getPublicKey();
+      let blinding_information = BlindingInformation.fromKey(key);
       blinding_information.blinding_factor = util.int2BigInt(3);
       blinding_information.hashed_token = util.int2BigInt(3);
 

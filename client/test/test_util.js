@@ -127,24 +127,20 @@ describe("util", function() {
 
     it("should return a rejected Promise if input parameter is no integer", () => {
       return util.generateTwoPrimeNumbers(null)
-        .then(() => { assert.fail(); })
-        .catch((error) => {
-          assert.typeOf(error, "string");
-        });
+        .then(() => assert.fail())
+        .catch((error) => assert.typeOf(error, "string"));
     });
 
     it("should throw an error when sth. wents wrong", (done) => {
       return util.generateTwoPrimeNumbers(7)
-        .then((answer) => {
-          done(answer);
-        })
+        .then((answer) => done(answer))
         .catch((error) => {
           assert.typeOf(error, "string");
           done();
         });
     });
 
-    it("should return two {BigInteger} prime numbers of given bit length", () => {
+    it("should return two {BigInteger} prime numbers of given bit length", (done) => {
       const bitLength = 256;
 
       return util.generateTwoPrimeNumbers(bitLength)
@@ -157,8 +153,8 @@ describe("util", function() {
             assert.isTrue(prime.isProbablePrime());
             assert.equal(bitLength, prime.bitLength());
           });
-
-        });
+          done();
+        })
     });
   });
 

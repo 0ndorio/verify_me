@@ -109,10 +109,8 @@ module.exports = {
   /// TODO
   collectPublicBlindingInformation: function()
   {
-    let blinding_information = new BlindingInformation();
-
     const server_public_key = this.getServerPublicKey();
-    blinding_information.fromKey(server_public_key);
+    let blinding_information = BlindingInformation.fromKey(server_public_key);
 
     const token = this.getToken();
     blinding_information.hashed_token = util.hashMessage(token.toRadix());

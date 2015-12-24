@@ -35,17 +35,19 @@ export default class BlindingInformation
   }
 
   /// TODO
-  fromKey(key)
+  static fromKey(key)
   {
     if (!util.isOpenPGPKey(key)) {
-      return false;
+      return null;
     }
 
     const public_key_package = key.get_primary_keypair().pub;
-    this.modulus = public_key_package.n;
-    this.public_exponent = public_key_package.e;
 
-    return true;
+    let blinding_context = new BlindingInformation();
+    blinding_context.modulus = public_key_package.n;
+    blinding_context.public_exponent = public_key_package.e;
+
+    return blinding_context;
   }
 
   /// TODO
