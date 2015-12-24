@@ -110,17 +110,18 @@ module.exports = {
   },
 
   /// TODO
-  generateBlindingFactor: function(bitLength)
+  generateBlindingFactor: async function(bitLength)
   {
     if (!this.isInteger(bitLength)) {
-      return Promise.reject("The prime bit length is no integer but a '" + bitLength + "'");
+      throw new Error("The prime bit length is no integer but a '" + bitLength + "'");
     } else if(!((bitLength % 8 === 0) && bitLength >= 256 && bitLength <= 16384)) {
-      return Promise.reject("The prime bit length must be a multiple of 8 bits and >= 256 and <= 16384");
+      throw new Error("The prime bit length must be a multiple of 8 bits and >= 256 and <= 16384");
     }
 
     const sub_prime_length = Math.floor(bitLength / 2);
-    return this.generateTwoPrimeNumbers(sub_prime_length)
-      .then(primes => primes[0].multiply(primes[1]));
+    let primes = await this.generateTwoPrimeNumbers(sub_prime_length);
+
+    return primes[0].multiply(primes[1]);
   },
 
   /// Loads content from textarea with specific id.

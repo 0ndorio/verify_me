@@ -1,35 +1,33 @@
 "use strict";
 
+import "babel-polyfill"
+
 import * as blinding from "./blinding"
 import * as client from "./client"
 import * as pgp from "./pgp"
 import * as util from "./util"
 
 /// TODO
-function requestPseudonym()
+async function requestPseudonym()
 {
   const blind_signature_request = client.prepareBlindSignatureRequest();
   let blind_signature = blind_signature_request.packet;
   let blinding_context = blind_signature_request.context;
 
-  return util
-    .generateBlindingFactor(blinding_context.modulus.bitLength())
-    .then((blinding_factor) => {
+  const blinding_factor = await util.generateBlindingFactor(blinding_context.modulus.bitLength());
+  blinding_context.blinding_factor = blind_signature_request.token.multiply(blinding_factor);
 
-      blinding_context.blinding_factor = blind_signature_request.token.multiply(blinding_factor);
-      return blinding.blind_message(blind_signature.raw_signature, blinding_context).toRadix();
-    })
-    .then((blinded_message) => client.sendBlindingRequest(blinded_message, blinding_context))
-    .then((signed_blinded_message) => {
+  const blinded_message = blinding.blind_message(blind_signature.raw_signature, blinding_context).toRadix();
+  const signed_blinded_message = await client.sendBlindingRequest(blinded_message, blinding_context);
 
-      const message = new util.BigInteger(signed_blinded_message, 10);
-      const unblinded_message = blinding.unblind_message(message, blinding_context);
-      blind_signature.sig = unblinded_message.to_mpi_buffer();
+  const message = new util.BigInteger(signed_blinded_message, 10);
+  const unblinded_message = blinding.unblind_message(message, blinding_context);
+  blind_signature.sig = unblinded_message.to_mpi_buffer();
 
-      return pgp.export_key_with_signature(blind_signature.target_key, blind_signature);
-    })
-    .then((key_ascii) => console.log(key_ascii))
-    .catch((error) => console.log(error));
+  const key_ascii = await pgp.export_key_with_signature(blind_signature.target_key, blind_signature);
+  console.log(key_ascii);
+
+  return key_ascii;
 }
 
 // set request button active
