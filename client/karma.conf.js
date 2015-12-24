@@ -15,6 +15,7 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
+      'node_modules/babel-polyfill/dist/polyfill.js',
       'src/*.js',
       'test/*.js',
       'test/fixture/*.html'
@@ -22,7 +23,9 @@ module.exports = function(config) {
 
 
     // list of files to exclude
-    exclude: [],
+    exclude: [
+      'src/main.js'
+    ],
 
 
     // preprocess matching files before serving them to the browser
@@ -79,7 +82,7 @@ module.exports = function(config) {
     browserify: {
       debug: true,
       transform: [
-        ['babelify',{presets: ['es2015']}],
+        ['babelify', {presets: ['stage-3', 'es2015']}],
         'browserify-babel-istanbul']
     },
 
