@@ -9,82 +9,6 @@ import { controls } from "./helper/helper"
 
 describe("util", function() {
 
-  describe("#bigInt2Bytes()", () => {
-
-    let tests = [
-      {arg: 1111, expected: "\u0004W"},
-      {arg: 256,  expected: "\u0001\u0000"},
-      {arg: 1,  expected: "\u0001"},
-      {arg: 0,  expected: "\u0000"},
-      {arg: "",  expected: "\u0000"},
-      {arg: -1,  expected: "ÿ"},
-      {arg: -2,  expected: "þ"},
-      {arg: -256,  expected: "ÿ\u0000"},
-      {arg: -1111,  expected: "û©"}
-    ];
-
-    tests.forEach((test) => {
-      it("should return the byte string '" + test.expected + "' when input is BigInt with '" + test.arg + "'", () => {
-
-        const bigInt = new util.BigInteger(test.arg.toString());
-        const result = util.bigInt2Bytes(bigInt);
-        assert.equal(test.expected, result);
-      });
-    });
-
-    tests = [
-      {arg: "123", expected: null},
-      {arg: 123,   expected: null},
-      {arg: true,  expected: null},
-      {arg: {},    expected: null},
-      {arg: null,    expected: null},
-      {arg: undefined, expected: null}
-    ];
-
-    tests.forEach((test) => {
-      it("should return 'null' when parameter is a " + typeof test.arg, () => {
-        const result = util.bigInt2Bytes(test.arg);
-        assert.equal(test.expected, result);
-      });
-    });
-  });
-
-  describe("#bytes2hex", () => {
-
-    const tests = [
-      {arg: null, expected: ""},
-      {arg: "\u0000", expected: "00"},
-      {arg: "\u000f", expected: "0f"},
-      {arg: "\u0010", expected: "10"},
-      {arg: "a", expected: "61"},
-      {arg: "a\u0001", expected: "6101"}
-    ];
-
-    tests.forEach((test) => {
-      it("should return '" + test.expected + "' when input is '" + escape(test.arg) + "'", () => {
-        assert.equal(test.expected, util.bytes2hex(test.arg));
-      });
-    });
-  });
-
-  describe("#hex2bytes", () => {
-
-    const tests = [
-      {arg: null, expected: ""},
-      {arg: "00", expected: "\u0000"},
-      {arg: "0f", expected: "\u000f"},
-      {arg: "10", expected: "\u0010"},
-      {arg: "61", expected: "a"},
-      {arg: "6101", expected: "a\u0001"}
-    ];
-
-    tests.forEach((test) => {
-      it("should return '" + test.expected + "' when input is '" + escape(test.arg) + "'", () => {
-        assert.equal(test.expected, util.hex2bytes(test.arg));
-      });
-    });
-  });
-
   describe("#generateKeyFromString", () => {
 
     it("should return null if input is not a string", () => {
@@ -119,7 +43,7 @@ describe("util", function() {
 
       const key = util.generateKeyFromString(keyString);
       assert.isNotNull(key);
-      assert.isTrue(util.isOpenPGPKey(key));
+      assert.isTrue(util.isKeyManager(key));
     });
   });
 
@@ -198,35 +122,6 @@ describe("util", function() {
     });
   });
 
-  describe("#int2BigInt()", () => {
-
-    let tests = [
-      {arg: "123"}, {arg: true}, {arg: {}}, {arg: null}, {arg: undefined}, {arg: 123.12}
-    ];
-
-    tests.forEach((test) => {
-      it("should return 'null' when parameter is a " + typeof test.arg, () => {
-        assert.equal(test.expected, util.int2BigInt(test.arg));
-      });
-    });
-
-    it("should return a 'BigInteger' when parameter is an integer", () => {
-      assert.instanceOf(util.int2BigInt(0), util.BigInteger);
-    });
-
-    tests = [
-      {arg: 0},
-      {arg: 1}, {arg: -1},
-      {arg: util.BigInteger.ZERO.DV}, {arg: -util.BigInteger.ZERO.DV}
-    ];
-
-    tests.forEach((test) => {
-      it("should return '" + test.arg + "' when parameter is " + test.arg, () => {
-        assert.equal(test.arg, util.int2BigInt(test.arg));
-      });
-    });
-  });
-
   describe("#isBigInteger()", () => {
 
     const tests = [
@@ -264,26 +159,6 @@ describe("util", function() {
     });
   });
 
-  describe("#isKeyReadSuccessful()", () => {
-
-    const tests = [
-      {arg: null, expected: false},
-      {arg: undefined, expected: false},
-      {arg: [], expected: false},
-      {arg: {}, expected: false},
-      {arg: {"err": 1}, expected: false},
-      {arg: {"err": 1, "keys": 1}, expected: false},
-      {arg: {"keys": 1}, expected: true}
-    ];
-
-    tests.forEach((test) => {
-      it("should return '" + test.expected + "' when parameter is " + test.arg, () => {
-        const result = util.isKeyReadSuccessful(test.arg);
-        assert.equal(test.expected, result);
-      });
-    });
-  });
-
   describe("#isObject()", () => {
 
     const tests = [
@@ -304,7 +179,7 @@ describe("util", function() {
     });
   });
 
-  describe("#isOpenPGPKey()", () => {
+  describe("#isKeyManager()", () => {
 
     const keyString =
       ['-----BEGIN PGP PUBLIC KEY BLOCK-----',
@@ -339,7 +214,7 @@ describe("util", function() {
 
     tests.forEach((test) => {
       it("should return '" + test.expected + "' when parameter is a " + test.arg + " {" + typeof test.arg + "}", () => {
-        const result = util.isOpenPGPKey(test.arg);
+        const result = util.isKeyManager(test.arg);
         assert.equal(test.expected, result);
       });
     });

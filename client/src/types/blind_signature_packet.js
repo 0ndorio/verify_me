@@ -46,7 +46,7 @@ export default class BlindSignaturePacket extends sig.Signature
   /// @parameter {KeyManager} target_public_key
   static calculateRandomCreationDate(target_key)
   {
-    if (!util.isOpenPGPKey(target_key)) {
+    if (!util.isKeyManager(target_key)) {
       return false;
     }
 

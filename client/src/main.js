@@ -7,27 +7,28 @@ import * as client from "./client"
 import * as pgp from "./pgp"
 import * as util from "./util"
 
-/// TODO
+/// TODO: think about function extraction
 async function requestPseudonym()
 {
-  const blind_signature_request = client.prepareBlindSignatureRequest();
-  let blind_signature = blind_signature_request.packet;
-  let blinding_context = blind_signature_request.context;
+  // prepare
+  const {context, packet, token} = client.prepareBlindSignatureRequest();
 
-  const blinding_factor = await util.generateBlindingFactor(blinding_context.modulus.bitLength());
-  blinding_context.blinding_factor = blind_signature_request.token.multiply(blinding_factor);
+  // blind
+  const blinding_factor = await util.generateBlindingFactor(context.modulus.bitLength());
+  context.blinding_factor = token.multiply(blinding_factor);
+  const blinded_message = blinding.blind_message(packet.raw_signature, context).toRadix();
 
-  const blinded_message = blinding.blind_message(blind_signature.raw_signature, blinding_context).toRadix();
-  const signed_blinded_message = await client.sendBlindingRequest(blinded_message, blinding_context);
+  // sign
+  const signed_blinded_message = await client.sendBlindingRequest(blinded_message, context);
 
+  // unblind
   const message = new util.BigInteger(signed_blinded_message, 10);
-  const unblinded_message = blinding.unblind_message(message, blinding_context);
-  blind_signature.sig = unblinded_message.to_mpi_buffer();
+  const unblinded_message = blinding.unblind_message(message, context);
+  packet.sig = unblinded_message.to_mpi_buffer();
 
-  const key_ascii = await pgp.export_key_with_signature(blind_signature.target_key, blind_signature);
+  // finish
+  const key_ascii = await pgp.export_key_with_signature(packet.target_key, packet);
   console.log(key_ascii);
-
-  return key_ascii;
 }
 
 // set request button active

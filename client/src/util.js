@@ -1,66 +1,11 @@
 "use strict";
 
-import { BigInteger } from "../node_modules/kbpgp/lib/bn"
+import { BigInteger, nbi, nbs } from "../node_modules/kbpgp/lib/bn"
 import * as kbpgp from "kbpgp"
 
 module.exports = {
 
   BigInteger: BigInteger,
-
-  /**
-   * Converts the binary data in BigInteger into a byte string.
-   *
-   * @param bigInteger
-   *    {BigInteger} to convert into byte string.
-   * @returns {string|null}
-   *    {string} representation of the given {BigInteger} or null
-   *    if input parameter is no {BigInteger}.
-   */
-  bigInt2Bytes: function(bigInteger)
-  {
-    if (!this.isBigInteger(bigInteger)) {
-      return null;
-    }
-
-    // toBuffer() called on 0 creates an empty buffer which is represented
-    // by an empty string. To avoid this we enforce a buffer of minimum size 1.
-    const buffer_size = (bigInteger.byteLength() === 0) ? 1 : bigInteger.byteLength();
-    const buffer = bigInteger.toBuffer(buffer_size);
-
-    return buffer.toString("binary");
-  },
-
-  /// TODO
-  bytes2BigInt: function(byte_string)
-  {
-    return BigInteger.fromBuffer(new kbpgp.Buffer(byte_string, "binary"));
-  },
-
-  /// bytes to hex
-  bytes2hex: function(byte_string)
-  {
-    if (!this.isString(byte_string)) {
-      return "";
-    }
-
-    const buffer = new kbpgp.Buffer(byte_string, "binary");
-    return buffer.toString("hex");
-  },
-
-  /// hex to bytes
-  hex2bytes: function(hex_as_string)
-  {
-    if (!this.isString(hex_as_string)) {
-      return "";
-    }
-
-    if ((hex_as_string.length % 2) === 1) {
-      hex_as_string = "0" + hex_as_string;
-    }
-
-    const bytes = new kbpgp.Buffer(hex_as_string, "hex");
-    return bytes.toString("binary");
-  },
 
   /// Converts a given armored key string into a kbpgp key object.
   ///
@@ -163,21 +108,6 @@ module.exports = {
     return BigInteger.fromBuffer(hash_buffer);
   },
 
-  /// Converts an integer in a {BigInteger}.
-  ///
-  /// @parameter {number} integer
-  ///   The integer to convert into a BigInteger object.
-  /// @return
-  ///   A {BigInteger} object IF input is a valid integer ELSE {null}
-  int2BigInt: function(integer)
-  {
-    if (!this.isInteger(integer)) {
-      return null;
-    }
-
-    return new BigInteger(integer.toString());
-  },
-
   /// TODO
   isBigInteger: function(bigInteger)
   {
@@ -188,15 +118,6 @@ module.exports = {
   isInteger: function(integer)
   {
     return (typeof integer === "number") && (integer % 1 === 0);
-  },
-
-  /// Checks if the given input is the result of a successful key read operation.
-  isKeyReadSuccessful: function(key)
-  {
-    return this.isObject(key)
-      && !Array.isArray(key)
-      && !key.hasOwnProperty("err")
-      && key.hasOwnProperty("keys");
   },
 
   /**
@@ -210,7 +131,7 @@ module.exports = {
   },
 
   // TODO
-  isOpenPGPKey: function(key)
+  isKeyManager: function(key)
   {
     return (key instanceof kbpgp.KeyManager);
   },

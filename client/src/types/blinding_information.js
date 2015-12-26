@@ -37,7 +37,7 @@ export default class BlindingInformation
   /// TODO
   static fromKey(key)
   {
-    if (!util.isOpenPGPKey(key)) {
+    if (!util.isKeyManager(key)) {
       return null;
     }
 

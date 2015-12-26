@@ -200,7 +200,7 @@ describe("client", function() {
     it("should reject when a network error occures", (done) => {
 
       const blinding_information = new BlindingInformation();
-      blinding_information.hashed_token = util.bytes2BigInt("\u0000");
+      blinding_information.hashed_token = new util.BigInteger("0");
 
       const request_promise = client.sendBlindingRequest("1234", blinding_information)
         .then((answer) => { done("Should not happend: " + answer); })
@@ -222,7 +222,7 @@ describe("client", function() {
       this.server.respondWith([expected.code, { "Content-Type": "text/plain" }, ""]);
 
       let blinding_information = new BlindingInformation();
-      blinding_information.hashed_token = util.bytes2BigInt("\u0000");
+      blinding_information.hashed_token = new util.BigInteger("0");
 
       return client.sendBlindingRequest("" , blinding_information)
         .then((answer) => { done(answer); })
@@ -238,7 +238,7 @@ describe("client", function() {
       this.server.respondWith([200, { "Content-Type": "text/plain" }, expected]);
 
       let blinding_information = new BlindingInformation();
-      blinding_information.hashed_token = util.bytes2BigInt("\u0000");
+      blinding_information.hashed_token = new util.BigInteger("0");
 
       return client.sendBlindingRequest("" , blinding_information)
         .then((answer) => {
