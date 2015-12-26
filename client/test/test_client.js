@@ -176,16 +176,15 @@ describe("client", function() {
   describe("#sendBlindingRequest()", () => {
 
     it("should return a promise", () => {
-      assert.instanceOf(client.sendBlindingRequest(), Promise);
+      let task = client.sendBlindingRequest().catch(() => {});
+      assert.instanceOf(task, Promise);
     });
 
-    it("should reject with wrong typed input for blinded_message", () => {
+    it("should reject with wrong typed input for blinded_message", (done) => {
 
       return client.sendBlindingRequest(123)
-        .then(() => { assert.fail(); })
-        .catch((error) => {
-          assert.typeOf(error, 'string');
-        });
+        .then((answer) => done(answer))
+        .catch(() => done());
     });
 
     it("should reject with wrong typed input for blinding_information", (done) => {
@@ -195,10 +194,7 @@ describe("client", function() {
 
       return client.sendBlindingRequest("1234", blinding_information)
         .then((answer) => { done(answer); })
-        .catch((error) => {
-          assert.typeOf(error, 'string');
-          done();
-        });
+        .catch(() => done());
     });
 
     it("should reject when a network error occures", (done) => {

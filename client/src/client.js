@@ -121,11 +121,11 @@ module.exports = {
   sendBlindingRequest: function(blinded_message, blinding_information)
   {
     if (!util.isString(blinded_message)) {
-      return Promise.reject("blinded_message is not type of string but '" + typeof blinded_message + "'");
+      return Promise.reject(new Error("blinded_message is not type of string but '" + typeof blinded_message + "'"));
     }
 
     if(!(blinding_information instanceof BlindingInformation && util.isBigInteger(blinding_information.hashed_token))) {
-      return Promise.reject("no hashed token stored in blinding_information");
+      return Promise.reject(new Error("no hashed token stored in blinding_information"));
     }
 
     const message = JSON.stringify({

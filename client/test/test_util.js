@@ -362,29 +362,4 @@ describe("util", function() {
       });
     });
   });
-
-  describe("#str2BigInt()", () => {
-
-    it("should return null if input not a string", () => {
-      assert.isNull(util.str2BigInt(123));
-    });
-
-    it("should return a BigInteger object if input a string", () => {
-      const input = "message";
-      const result = util.str2BigInt(input);
-
-      assert.instanceOf(result, util.BigInteger);
-    });
-
-    it("should be able to convert ascii encoded messages", () => {
-      const input = "--- my ascii encoded message ---";
-      const result = util.str2BigInt(input);
-
-      assert.equal(input, result.toBuffer().toString("utf8"));
-      assert.equal(input, result.toBuffer().toString("binary"));
-      assert.equal(input, result.toBuffer().toString("ascii"));
-      assert.notEqual(input, result.toBuffer().toString("hex"));
-      assert.notEqual(input, result.toBuffer().toString("base64"));
-    });
-  });
 });

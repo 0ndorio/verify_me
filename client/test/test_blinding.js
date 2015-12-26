@@ -37,8 +37,7 @@ describe("blinding", function() {
     });
 
     it ("should return 'null' if not all blinding information are available", () => {
-      const message = util.BigInteger.fromBuffer(kbpgp.util.bufferify("message"));
-      assert.isNull(blinding.blind_message(message, new BlindingInformation()));
+      assert.isNull(blinding.blind_message(util.BigInteger.ZERO, new BlindingInformation()));
     });
 
     it ("should return a blinded 'BigInteger' with correct input", () => {
@@ -47,17 +46,17 @@ describe("blinding", function() {
       blinding_information.blinding_factor = util.int2BigInt(3);
       blinding_information.hashed_token = util.int2BigInt(3);
 
-      const message = util.str2BigInt("bob");
-      assert.isTrue(util.isBigInteger(blinding.blind_message(message, blinding_information)));
+      const blinded_message = blinding.blind_message(util.BigInteger.ONE, blinding_information);
+      assert.isTrue(util.isBigInteger(blinded_message));
     });
 
     tests = [
-      { args: {message: "\u0000", blinding_factor:  3, modulus: 5,  public_exponent: 3}, expected: "0" },
-      { args: {message: "\u0001", blinding_factor:  5, modulus: 7,  public_exponent: 3}, expected: "6" },
-      { args: {message: "\u0002", blinding_factor:  7, modulus: 11, public_exponent: 3}, expected: "4" },
-      { args: {message: "\u0003", blinding_factor: 11, modulus: 13, public_exponent: 3}, expected: "15" },
-      { args: {message: "\u0004", blinding_factor: 13, modulus: 17, public_exponent: 3}, expected: "16" },
-      { args: {message: "\u0005", blinding_factor: 17, modulus: 23, public_exponent: 3}, expected: "70" }
+      { args: {message: "0", blinding_factor:  3, modulus: 5,  public_exponent: 3}, expected: "0" },
+      { args: {message: "1", blinding_factor:  5, modulus: 7,  public_exponent: 3}, expected: "6" },
+      { args: {message: "2", blinding_factor:  7, modulus: 11, public_exponent: 3}, expected: "4" },
+      { args: {message: "3", blinding_factor: 11, modulus: 13, public_exponent: 3}, expected: "15" },
+      { args: {message: "4", blinding_factor: 13, modulus: 17, public_exponent: 3}, expected: "16" },
+      { args: {message: "5", blinding_factor: 17, modulus: 23, public_exponent: 3}, expected: "70" }
     ];
 
     tests.forEach((test) => {
@@ -69,7 +68,7 @@ describe("blinding", function() {
         blinding_information.public_exponent = util.int2BigInt(test.args.public_exponent);
         blinding_information.hashed_token = util.int2BigInt(3);
 
-        const message = util.str2BigInt(test.args.message);
+        const message = new util.BigInteger(test.args.message, 10);
         assert.equal(test.expected, blinding.blind_message(message, blinding_information).toString());
       });
     });
@@ -88,8 +87,7 @@ describe("blinding", function() {
     });
 
     it ("should return 'null' if not all blinding information are available", () => {
-      const message = util.str2BigInt("message");
-      assert.isNull(blinding.unblind_message(message, new BlindingInformation()));
+      assert.isNull(blinding.unblind_message(util.BigInteger.ONE, new BlindingInformation()));
     });
 
     it ("should return an unblinded 'BigInteger' with correct input", () => {
@@ -98,8 +96,8 @@ describe("blinding", function() {
       blinding_information.blinding_factor = util.int2BigInt(3);
       blinding_information.hashed_token = util.int2BigInt(3);
 
-      const message = util.str2BigInt("123");
-      assert.isTrue(util.isBigInteger(blinding.unblind_message(message, blinding_information)));
+      const unblinded_message = blinding.unblind_message(util.BigInteger.ZERO, blinding_information);
+      assert.isTrue(util.isBigInteger(unblinded_message));
     });
 
     tests = [

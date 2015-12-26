@@ -18,7 +18,7 @@ module.exports = {
    */
   bigInt2Bytes: function(bigInteger)
   {
-    if (!(bigInteger instanceof BigInteger)) {
+    if (!this.isBigInteger(bigInteger)) {
       return null;
     }
 
@@ -219,16 +219,5 @@ module.exports = {
   isString: function(string)
   {
     return (typeof string === "string");
-  },
-
-  /// TODO
-  str2BigInt: function(string)
-  {
-    if (!this.isString(string)) {
-      return null;
-    }
-
-    const buffer = new kbpgp.Buffer(string, "ascii");
-    return BigInteger.fromBuffer(buffer);
   }
 };
