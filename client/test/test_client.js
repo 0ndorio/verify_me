@@ -8,7 +8,7 @@ import * as client from "../src/client"
 import * as util from "../src/util"
 import BlindingInformation from "../src/types/blinding_information"
 
-import { controls } from "./helper/helper"
+import { controls } from "./helper/client_control"
 
 describe("client", function() {
 

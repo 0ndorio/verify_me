@@ -5,7 +5,7 @@ import { assert } from "chai"
 import * as client from "../src/client"
 import * as util from "../src/util"
 
-import { controls } from "./helper/helper"
+import { controls } from "./helper/client_control"
 
 describe("util", function() {
 
