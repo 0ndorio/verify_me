@@ -6,6 +6,7 @@ import * as client from "../src/client"
 import * as util from "../src/util"
 
 import { controls } from "./helper/client_control"
+import { public_keys } from "./helper/keys"
 
 describe("util", function() {
 
@@ -19,32 +20,12 @@ describe("util", function() {
       assert.isNull(util.generateKeyFromString("a broken key"));
     });
 
-    it("should return a {Key} object if input is a valid ascii armored key", () => {
-      const keyString =
-        ['-----BEGIN PGP PUBLIC KEY BLOCK-----',
-          'Version: GnuPG v2',
-          '',
-          'mI0EVmmWTQEEALumEkoJ2JTwSJ+U+aUrKmpAu0B6Rm5FKLagRC6sRrU/2RU12jBi',
-          'q/c+SyJriC6Rfar73MXuaXmTOtkBfz6XkEV70FZVdavciZhEBIYzBvJDOuP4cyXA',
-          'vwFa+pfn1myoW67JNHANkiSM5KJQXtOuvCtofH07lG5WiH2MuLGLImtDABEBAAG0',
-          'G0pvaG4gRG9lIDxqb2huLmRvZUBmb28uY29tPoi3BBMBCAAhBQJWaZZNAhsDBQsJ',
-          'CAcCBhUICQoLAgQWAgMBAh4BAheAAAoJEGs7P8KYU1e8x9gEAI+1rRdNtBCLou1R',
-          'twaBDv/mMkmFfhcDqSk5TzK451cnOSI5YIm5IQFISjTdJm49v4h7UVJB0wNM4QKX',
-          'bioX1e0AyOXTfqMHCfgZMpkbbMMvI4MBjp+hvQ/qByu3whsbVb0b4zJ1HPOoKc4o',
-          'C/SCtSWGyTFV/YLRSBZEPEs/wyJnuI0EVmmWTQEEAL9VPU4uNMXgIGikhwkawDUw',
-          'bgXWc/Cx/CSPbK+PXAGddTyrMWW9xrKvPrJfBiMq5kQlwD7IhCbmPu10h+brWZmj',
-          'pXLxcWUWPnaWIXRR4f/lZSai6k7SZmTpKGXLLliO+Sna/uzBsgijAtOsK5EWEqj1',
-          'FZzt1jSRApRarKcHgy6pABEBAAGInwQYAQgACQUCVmmWTQIbDAAKCRBrOz/CmFNX',
-          'vAx9A/9A1atvnTlGj+lKh9VrlN5CZ4jZMMEsSy5iw311YNnAZhn4gMTMrbWrNyWI',
-          '9PX2VpMxQHlT21l4OJgbof5gp7mOw0HdD0akMa0L3U4Ybd/JgloBDu9HUVB9mT0+',
-          'CVKecnStCMounFvM2rc5uv9HcIgeLes4ccFJUzGSpeThYhyPEw==',
-          '=w97z',
-          '-----END PGP PUBLIC KEY BLOCK-----'].join('\n');
-
-      const key = util.generateKeyFromString(keyString);
-      assert.isNotNull(key);
-      assert.isTrue(util.isKeyManager(key));
-    });
+    for (const key_string of public_keys) {
+      it("should return a {KeyManager} object if input is a valid ascii armored key", () => {
+        const key = util.generateKeyFromString(key_string);
+        assert.isTrue(util.isKeyManager(key));
+      });
+    }
   });
 
   describe("#generateTwoPrimeNumbers", () => {
@@ -52,16 +33,25 @@ describe("util", function() {
     it("should return a rejected Promise if input parameter is no integer", () => {
       return util.generateTwoPrimeNumbers(null)
         .then(() => assert.fail())
-        .catch((error) => assert.typeOf(error, "string"));
+        .catch((error) => assert.include(error, "no integer"));
     });
 
-    it("should throw an error when sth. wents wrong", (done) => {
-      return util.generateTwoPrimeNumbers(7)
-        .then((answer) => done(answer))
-        .catch((error) => {
-          assert.typeOf(error, "string");
-          done();
-        });
+    it("should throw an error if input bit size is not multiple of 8", () => {
+      return util.generateTwoPrimeNumbers(15)
+        .then((answer) => assert.fail())
+        .catch((error) => assert.include(error, "multiple of 8"));
+    });
+
+    it("should throw an error if input bit size is to small", () => {
+      return util.generateTwoPrimeNumbers(127)
+        .then((answer) => assert.fail())
+        .catch((error) => assert.include(error, ">= 128"));
+    });
+
+    it("should throw an error if input bit size is to big", () => {
+      return util.generateTwoPrimeNumbers(8193)
+        .then((answer) => assert.fail())
+        .catch((error) => assert.include(error, "<= 8192"));
     });
 
     it("should return two {BigInteger} prime numbers of given bit length", (done) => {
@@ -82,28 +72,8 @@ describe("util", function() {
     });
   });
 
-  describe("#getTextAreaContent", () => {
-
-    beforeEach(() => {
-      controls.loadFixture("test/fixture/minimal.html");
-    });
-
-    it("should return null if input parameter is no string", () => {
-      assert.isNull(util.getTextAreaContent(123));
-    });
-
-    it("should return null if input id does not exists", () => {
-      assert.isNull(util.getTextAreaContent("myNonExistingID"));
-    });
-
-    it("should return a string with the textarea content if input id exists", () => {
-      const string = "123";
-      controls.userPublicKeyString = string;
-
-      const result = util.getTextAreaContent(client.user_public_key_element_id);
-      assert.isTrue(util.isString(result));
-      assert.equal(string, result);
-    });
+  describe("#generateBlindingFactor", () => {
+    it("should ...");
   });
 
   describe("#hashMessage()", () => {
@@ -125,116 +95,92 @@ describe("util", function() {
   describe("#isBigInteger()", () => {
 
     const tests = [
-      {arg: "123", expected: false},
-      {arg: 123,   expected: false},
-      {arg: true,  expected: false},
-      {arg: {},    expected: false},
-      {arg: undefined, expected: false},
-      {arg: util.BigInteger.ONE, expected: true}
+      {arg: "123"}, {arg: 123}, {arg: true}, {arg: {}}, {arg: []}, {arg: undefined}
     ];
 
-    tests.forEach((test) => {
-      it("should return '" + test.expected + "' when parameter is a " + test.arg + " {" + typeof test.arg + "}", () => {
-        const result = util.isBigInteger(test.arg);
-        assert.equal(test.expected, result);
+    for (const test of tests) {
+      it("should return false when parameter is a not a BigInteger", () => {
+        assert.isFalse(util.isBigInteger(test.arg));
       });
+    }
+
+    it ("should return true when input parameter is a valid {BigInteger}", () => {
+      assert.isTrue(util.isBigInteger(util.BigInteger.ZERO));
     });
   });
 
   describe("#isInteger()", () => {
 
     const tests = [
-      {arg: true,  expected: false},
-      {arg: {},    expected: false},
-      {arg: undefined, expected: false},
-      {arg: "123", expected: false},
-      {arg: 123,   expected: true}
+      {arg: "123"}, {arg: 123.45}, {arg: true}, {arg: {}}, {arg: []}, {arg: undefined}
     ];
 
-    tests.forEach((test) => {
-      it("should return '" + test.expected + "' when parameter is a " + test.arg + " {" + typeof test.arg + "}", () => {
-        const result = util.isInteger(test.arg);
-        assert.equal(test.expected, result);
+    for (const test of tests) {
+      it ("should return false when input parameter is not a valid integer", () => {
+        assert.isFalse(util.isInteger(test.arg));
       });
+    }
+
+    it ("should return true when input parameter is a valid integer", () => {
+      assert.isTrue(util.isInteger(123));
     });
   });
 
   describe("#isObject()", () => {
 
-    const tests = [
-      {arg: undefined, expected: false},
-      {arg: 123,   expected: false},
-      {arg: true,  expected: false},
-      {arg: "123", expected: false},
-      {arg: {},    expected: true},
-      {arg: [],    expected: true},
-      {arg: () => {}, expected: true}
+    const false_tests = [
+      {arg: undefined}, {arg: 123}, {arg: true}, {arg: "123"}
     ];
 
-    tests.forEach((test) => {
-      it("should return '" + test.expected + "' when parameter is a " + test.arg + " {" + typeof test.arg + "}", () => {
-        const result = util.isObject(test.arg);
-        assert.equal(test.expected, result);
+    for (const test of false_tests) {
+      it("should return false when parameter is not an object", () => {
+        assert.isFalse(util.isObject(test.arg));
       });
-    });
+    }
+
+    const true_tests = [
+      {arg: {}}, {arg: []}, {arg: () => {}}, {arg: util.BigInteger.ZERO}
+    ];
+
+    for (const test of true_tests) {
+      it("should return true when parameter is an object", () => {
+        assert.isTrue(util.isObject(test.arg));
+      });
+    }
   });
 
   describe("#isKeyManager()", () => {
 
-    const keyString =
-      ['-----BEGIN PGP PUBLIC KEY BLOCK-----',
-        'Version: GnuPG v2',
-        '',
-        'mI0EVmmWTQEEALumEkoJ2JTwSJ+U+aUrKmpAu0B6Rm5FKLagRC6sRrU/2RU12jBi',
-        'q/c+SyJriC6Rfar73MXuaXmTOtkBfz6XkEV70FZVdavciZhEBIYzBvJDOuP4cyXA',
-        'vwFa+pfn1myoW67JNHANkiSM5KJQXtOuvCtofH07lG5WiH2MuLGLImtDABEBAAG0',
-        'G0pvaG4gRG9lIDxqb2huLmRvZUBmb28uY29tPoi3BBMBCAAhBQJWaZZNAhsDBQsJ',
-        'CAcCBhUICQoLAgQWAgMBAh4BAheAAAoJEGs7P8KYU1e8x9gEAI+1rRdNtBCLou1R',
-        'twaBDv/mMkmFfhcDqSk5TzK451cnOSI5YIm5IQFISjTdJm49v4h7UVJB0wNM4QKX',
-        'bioX1e0AyOXTfqMHCfgZMpkbbMMvI4MBjp+hvQ/qByu3whsbVb0b4zJ1HPOoKc4o',
-        'C/SCtSWGyTFV/YLRSBZEPEs/wyJnuI0EVmmWTQEEAL9VPU4uNMXgIGikhwkawDUw',
-        'bgXWc/Cx/CSPbK+PXAGddTyrMWW9xrKvPrJfBiMq5kQlwD7IhCbmPu10h+brWZmj',
-        'pXLxcWUWPnaWIXRR4f/lZSai6k7SZmTpKGXLLliO+Sna/uzBsgijAtOsK5EWEqj1',
-        'FZzt1jSRApRarKcHgy6pABEBAAGInwQYAQgACQUCVmmWTQIbDAAKCRBrOz/CmFNX',
-        'vAx9A/9A1atvnTlGj+lKh9VrlN5CZ4jZMMEsSy5iw311YNnAZhn4gMTMrbWrNyWI',
-        '9PX2VpMxQHlT21l4OJgbof5gp7mOw0HdD0akMa0L3U4Ybd/JgloBDu9HUVB9mT0+',
-        'CVKecnStCMounFvM2rc5uv9HcIgeLes4ccFJUzGSpeThYhyPEw==',
-        '=w97z',
-        '-----END PGP PUBLIC KEY BLOCK-----'].join('\n');
-
     const tests = [
-      {arg: undefined, expected: false},
-      {arg: 123,   expected: false},
-      {arg: true,  expected: false},
-      {arg: "123", expected: false},
-      {arg: {},    expected: false},
-      {arg: [],    expected: false},
-      {arg: util.generateKeyFromString(keyString), expected: true}
+      {arg: undefined}, {arg: 123}, {arg: true}, {arg: "123"}, {arg: {}}, {arg: []}
     ];
 
-    tests.forEach((test) => {
-      it("should return '" + test.expected + "' when parameter is a " + test.arg + " {" + typeof test.arg + "}", () => {
-        const result = util.isKeyManager(test.arg);
-        assert.equal(test.expected, result);
+    for (const test of tests) {
+      it("should return false when parameter is not a {KeyManager}", () => {
+        assert.isFalse(util.isKeyManager(test.arg));
       });
+    }
+
+    it("should return true when parameter is a {KeyManager}", () => {
+      const key_manager = util.generateKeyFromString(public_keys[0]);
+      assert.isFalse(util.isKeyManager(key_manager));
     });
   });
 
   describe("#isString()", () => {
 
     const tests = [
-      {arg: 123,   expected: false},
-      {arg: true,  expected: false},
-      {arg: {},    expected: false},
-      {arg: undefined, expected: false},
-      {arg: "123", expected: true}
+      {arg: undefined}, {arg: 123}, {arg: true}, {arg: {}}, {arg: []}
     ];
 
-    tests.forEach((test) => {
-      it("should return '" + test.expected + "' when parameter is a " + test.arg + " {" + typeof test.arg + "}", () => {
-        const result = util.isString(test.arg);
-        assert.equal(test.expected, result);
+    for (const test in tests) {
+      it("should return false when parameter is not a string", () => {
+        assert.isFalse(util.isString(test.arg));
       });
+    }
+
+    it("should return true when parameter is a string", () => {
+      assert.isTrue(util.isString("123"));
     });
   });
 });

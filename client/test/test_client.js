@@ -160,6 +160,30 @@ describe("client", function() {
     });
   });
 
+  describe("#getTextAreaContent", () => {
+
+    beforeEach(() => {
+      controls.loadFixture("test/fixture/minimal.html");
+    });
+
+    it("should return null if input parameter is no string", () => {
+      assert.isNull(client.getTextAreaContent(123));
+    });
+
+    it("should return null if input id does not exists", () => {
+      assert.isNull(client.getTextAreaContent("myNonExistingID"));
+    });
+
+    it("should return a string with the textarea content if input id exists", () => {
+      const string = "123";
+      controls.userPublicKeyString = string;
+
+      const result = client.getTextAreaContent(client.user_public_key_element_id);
+      assert.isTrue(util.isString(result));
+      assert.equal(string, result);
+    });
+  });
+
   describe("#collectPublicBlindingInformation()", () => {
 
     it ("should return an BlindingInformation object", () => {

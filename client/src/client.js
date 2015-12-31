@@ -36,7 +36,7 @@ module.exports = {
   ///      "public_key_textarea" value as {string} or null if the id is missing
   getPublicKeyString: function()
   {
-    const content = util.getTextAreaContent(this.user_public_key_element_id);
+    const content = this.getTextAreaContent(this.user_public_key_element_id);
     if (!util.isString(content)) {
       return null;
     }
@@ -71,7 +71,7 @@ module.exports = {
   ///      "token_textarea" value as {string}
   getTokenString: function()
   {
-    const content = util.getTextAreaContent(this.user_token_element_id);
+    const content = this.getTextAreaContent(this.user_token_element_id);
     if (!util.isString(content)) {
       return null;
     }
@@ -104,6 +104,27 @@ module.exports = {
     }
 
     return element.innerHTML.trim();
+  },
+
+  /// Loads content from textarea with specific id.
+  ///
+  /// @param {string} text_area_name
+  ///      id of the requested text area
+  /// @return
+  ///      {string} if text area id is valid,
+  ///      else {null}
+  getTextAreaContent: function(text_area_name)
+  {
+    if (!util.isString(text_area_name)) { return null; }
+
+    const textarea = document.getElementById(text_area_name);
+
+    let content = null;
+    if (textarea !== null) {
+      content = textarea.value;
+    }
+
+    return content;
   },
 
   /// TODO

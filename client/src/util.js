@@ -69,27 +69,6 @@ module.exports = {
     return primes[0].multiply(primes[1]);
   },
 
-  /// Loads content from textarea with specific id.
-  ///
-  /// @param {string} text_area_name
-  ///      id of the requested text area
-  /// @return
-  ///      {string} if text area id is valid,
-  ///      else {null}
-  getTextAreaContent: function(text_area_name)
-  {
-    if (!this.isString(text_area_name)) { return null; }
-
-    const textarea = document.getElementById(text_area_name);
-
-    let content = null;
-    if (textarea !== null) {
-      content = textarea.value;
-    }
-
-    return content;
-  },
-
   /**
    * Hashes the given message with sha512 and returns the digest.
    *
