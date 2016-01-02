@@ -7,25 +7,21 @@ module.exports = {
 
   BigInteger: BigInteger,
 
-  /// Converts a given armored key string into a kbpgp key object.
-  ///
-  /// @param {string} key_as_string
-  ///      The armored key.
-  /// @return
-  ///      {kbpgp.KeyManager} containing the keys represented by the armored key or
-  ///      {null} if sth. went wrong during conversion.
+  /// Converts a given armored key string into a kbpgp {KeyManager} object.
   generateKeyFromString: function(key_as_string)
   {
-    if (!this.isString(key_as_string)) { return null; }
+    if (!this.isString(key_as_string)) {
+      return Promise.reject(new Error("Input parameter is not of type string."));
+    }
 
-    /// TODO: unsafe due to timing issues ... refactore to Promise
-    let key = null;
-    kbpgp.KeyManager.import_from_armored_pgp(
-      { armored: key_as_string },
-      (err, key_manager) => { if (!err) { key = key_manager; }
+    return new Promise((resolve, reject) => {
+      kbpgp.KeyManager.import_from_armored_pgp({ armored: key_as_string }, (err, key_manager) => {
+        if (err) { reject(err); }
+        else {
+          resolve(key_manager);
+        }
+      });
     });
-
-    return key;
   },
 
   /// Generate two prime numbers with n bits using the rsa.generate()

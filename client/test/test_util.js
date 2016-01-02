@@ -12,18 +12,20 @@ describe("util", function() {
 
   describe("#generateKeyFromString", () => {
 
-    it("should return null if input is not a string", () => {
-      assert.isNull(util.generateKeyFromString(123));
+    it("should throw if input is not a string", () => {
+      return util.generateKeyFromString(123)
+        .catch(error => assert.instanceOf(error, Error));
     });
 
-    it("should return null if input string is not an ascii armored key", () => {
-      assert.isNull(util.generateKeyFromString("a broken key"));
+    it("should throw if input string is not an ascii armored key", () => {
+      return util.generateKeyFromString("a broken key")
+        .catch(error => assert.instanceOf(error, Error));
     });
 
     for (const key_string of public_keys) {
       it("should return a {KeyManager} object if input is a valid ascii armored key", () => {
-        const key = util.generateKeyFromString(key_string);
-        assert.isTrue(util.isKeyManager(key));
+        return util.generateKeyFromString(key_string)
+          .then(key => assert.isTrue(util.isKeyManager(key)));
       });
     }
   });
@@ -42,13 +44,13 @@ describe("util", function() {
         .catch((error) => assert.include(error, "multiple of 8"));
     });
 
-    it("should throw an error if input bit size is to small", () => {
+    it("should throw an error if input bit size is smaller than 128", () => {
       return util.generateTwoPrimeNumbers(127)
         .then((answer) => assert.fail())
         .catch((error) => assert.include(error, ">= 128"));
     });
 
-    it("should throw an error if input bit size is to big", () => {
+    it("should throw an error if input bit size is bigger than 8192", () => {
       return util.generateTwoPrimeNumbers(8193)
         .then((answer) => assert.fail())
         .catch((error) => assert.include(error, "<= 8192"));

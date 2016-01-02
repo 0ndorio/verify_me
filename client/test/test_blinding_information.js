@@ -93,13 +93,15 @@ describe("blinding_information", function() {
       });
     });
 
-    it ("should return 'true' if input is a openpgp.key.Key", () => {
+    it ("should return 'true' if input is a kbpgp {KeyManager}", async (done) => {
       controls.loadFixture("test/fixture/keys_2048bit.html");
 
-      const key = client.getServerPublicKey();
+      const key = await client.getServerPublicKey();
       let blinding_information = BlindingInformation.fromKey(key);
       assert.isNotNull(blinding_information);
       assert.isTrue(blinding_information.containsPublicBlindingInformation());
+
+      done();
     });
   });
 

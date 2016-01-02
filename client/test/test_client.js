@@ -33,18 +33,22 @@ describe("client", function() {
 
   describe("#getPublicKey()", () => {
 
-    it ("should return users public key as kbpgp.Key",() => {
-      assert.instanceOf(client.getPublicKey(), kbpgp.KeyManager);
+    it ("should return users public key as kbpgp.Key", () => {
+      return client.getPublicKey()
+        .then(key => assert.instanceOf(key, kbpgp.KeyManager));
     });
 
-    it ("must throw if id is missing from html",() => {
+    it ("must return a rejected promise if id is missing from html", () => {
       controls.loadFixture("test/fixture/missing_id.html");
-      assert.throws(() => {client.getPublicKey()}, Error);
+      return client.getPublicKey()
+        .catch(error => assert.instanceOf(error, Error));
     });
 
-    it ("must throw if string is no key representation",() => {
+    it ("must return a rejected promise if string is no key representation", () => {
       controls.userPublicKeyString = "123";
-      assert.throws(() => {client.getPublicKey()}, Error);
+
+      return client.getPublicKey()
+        .catch(error => assert.instanceOf(error, Error));
     });
   });
 
@@ -121,18 +125,21 @@ describe("client", function() {
 
   describe("#getServerPublicKey()", () => {
 
-    it ("should return server public key as kbpgp.Key",() => {
-      assert.instanceOf(client.getServerPublicKey(), kbpgp.KeyManager);
+    it ("should return server public key as kbpgp.Key", () => {
+      return client.getServerPublicKey()
+        .then(key => assert.instanceOf(key, kbpgp.KeyManager));
     });
 
     it ("must throw if id is missing from html",() => {
       controls.loadFixture("test/fixture/missing_id.html");
-      assert.throws(() => {client.getServerPublicKey()}, Error);
+      return client.getPublicKey()
+        .catch(error => assert.instanceOf(error, Error));
     });
 
     it ("must throw if string is no key representation",() => {
       controls.serverPublicKey = "123";
-      assert.throws(() => {client.getServerPublicKey()}, Error);
+      return client.getPublicKey()
+        .catch(error => assert.instanceOf(error, Error));
     });
   });
 
@@ -187,13 +194,16 @@ describe("client", function() {
   describe("#collectPublicBlindingInformation()", () => {
 
     it ("should return an BlindingInformation object", () => {
-      assert.isTrue(client.collectPublicBlindingInformation() instanceof BlindingInformation);
+      return client.collectPublicBlindingInformation()
+        .then(blinding_context => assert.instanceOf(blinding_context, BlindingInformation));
     });
 
     it ("should return an object with modulus and public exponent",() => {
-      const blinding_information = client.collectPublicBlindingInformation();
-      const isValid = BlindingInformation.isValidPublicBlindingInformation(blinding_information);
-      assert.isTrue(isValid);
+      return client.collectPublicBlindingInformation()
+        .then(blinding_context => {
+          const isValid = BlindingInformation.isValidPublicBlindingInformation(blinding_context);
+          assert.isTrue(isValid);
+        });
     });
   });
 

@@ -40,14 +40,16 @@ describe("blinding", function() {
       assert.isNull(blinding.blind_message(util.BigInteger.ZERO, new BlindingInformation()));
     });
 
-    it ("should return a blinded 'BigInteger' with correct input", () => {
-      const key = client.getPublicKey();
+    it ("should return a blinded 'BigInteger' with correct input", async (done) => {
+      const key = await client.getPublicKey();
       let blinding_information = BlindingInformation.fromKey(key);
       blinding_information.blinding_factor = new util.BigInteger("3", 10);
       blinding_information.hashed_token = new util.BigInteger("3", 10);
 
       const blinded_message = blinding.blind_message(util.BigInteger.ONE, blinding_information);
       assert.isTrue(util.isBigInteger(blinded_message));
+
+      done();
     });
 
     tests = [
@@ -90,14 +92,16 @@ describe("blinding", function() {
       assert.isNull(blinding.unblind_message(util.BigInteger.ONE, new BlindingInformation()));
     });
 
-    it ("should return an unblinded 'BigInteger' with correct input", () => {
-      const key = client.getPublicKey();
+    it ("should return an unblinded 'BigInteger' with correct input", async (done) => {
+      const key = await client.getPublicKey();
       let blinding_information = BlindingInformation.fromKey(key);
       blinding_information.blinding_factor = new util.BigInteger("3", 10);
       blinding_information.hashed_token = new util.BigInteger("3", 10);
 
       const unblinded_message = blinding.unblind_message(util.BigInteger.ZERO, blinding_information);
       assert.isTrue(util.isBigInteger(unblinded_message));
+
+      done();
     });
 
     tests = [

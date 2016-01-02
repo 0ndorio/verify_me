@@ -14,20 +14,15 @@ module.exports = {
   /// Extract users public key from the related textarea
   ///
   /// @return
-  ///      public key as openpgp.key object
+  ///      public key as kbpgp {KeyManager} object
   getPublicKey: function()
   {
     const public_key_string = this.getPublicKeyString();
     if (public_key_string === null) {
-      throw new Error("Couldn't read the public key input. Please reload page.");
+      return Promise.reject(new Error("Couldn't read the public key input. Please reload page."));
     }
 
-    const public_key = util.generateKeyFromString(public_key_string);
-    if (public_key === null) {
-      throw new Error("Could not generate public key. Please check your input.");
-    }
-
-    return public_key;
+    return util.generateKeyFromString(public_key_string);
   },
 
   /// Extracts users public key from textarea "public_key_textarea".
@@ -84,15 +79,10 @@ module.exports = {
   {
     const public_key_string = this.getServerPublicKeyString();
     if (!util.isString(public_key_string)) {
-      throw new Error("Couldn't read servers public key. Please reload page.");
+      return Promise.reject(new Error("Couldn't read servers public key. Please reload page."));
     }
 
-    const public_key = util.generateKeyFromString(public_key_string);
-    if (public_key === null) {
-      throw new Error("Couldn't convert server public key. Please reload page.");
-    }
-
-    return public_key;
+    return util.generateKeyFromString(public_key_string);
   },
 
   /// TODO
@@ -128,9 +118,9 @@ module.exports = {
   },
 
   /// TODO
-  collectPublicBlindingInformation: function()
+  collectPublicBlindingInformation: async function()
   {
-    const server_public_key = this.getServerPublicKey();
+    const server_public_key = await this.getServerPublicKey();
     let blinding_information = BlindingInformation.fromKey(server_public_key);
 
     const token = this.getToken();
@@ -184,13 +174,14 @@ module.exports = {
     });
   },
 
-  prepareBlindSignatureRequest: function ()
+  prepareBlindSignatureRequest: async function ()
   {
-    const public_key = this.getPublicKey();
-    const server_public_key = this.getServerPublicKey();
+    const public_key = await this.getPublicKey();
+    const server_public_key = await this.getServerPublicKey();
+    const blinding_information = await this.collectPublicBlindingInformation();
 
     return {
-      context: this.collectPublicBlindingInformation(),
+      context: blinding_information,
       packet: new BlindSignaturePacket(public_key, server_public_key),
       token: this.getToken()
     };
