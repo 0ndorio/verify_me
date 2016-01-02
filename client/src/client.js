@@ -1,6 +1,6 @@
 "use strict";
 
-import BlindingInformation from "./types/blinding_information"
+import RSABlindingContext from "./types/rsa_blinding_context"
 import BlindSignaturePacket from "./types/blind_signature_packet"
 import * as util from "./util"
 
@@ -118,30 +118,30 @@ module.exports = {
   },
 
   /// TODO
-  collectPublicBlindingInformation: async function()
+  generateRSABlindingContext: async function()
   {
     const server_public_key = await this.getServerPublicKey();
-    let blinding_information = BlindingInformation.fromKey(server_public_key);
+    let context = RSABlindingContext.fromKey(server_public_key);
 
     const token = this.getToken();
-    blinding_information.hashed_token = util.hashMessage(token.toRadix());
+    context.hashed_token = util.hashMessage(token.toRadix());
 
-    return blinding_information;
+    return context;
   },
 
-  sendBlindingRequest: function(blinded_message, blinding_information)
+  sendBlindingRequest: function(blinded_message, blinding_context)
   {
     if (!util.isString(blinded_message)) {
       return Promise.reject(new Error("blinded_message is not type of string but '" + typeof blinded_message + "'"));
     }
 
-    if(!(blinding_information instanceof BlindingInformation && util.isBigInteger(blinding_information.hashed_token))) {
-      return Promise.reject(new Error("no hashed token stored in blinding_information"));
+    if(!(blinding_context instanceof RSABlindingContext && util.isBigInteger(blinding_context.hashed_token))) {
+      return Promise.reject(new Error("no hashed token stored in blinding_context"));
     }
 
     const message = JSON.stringify({
       message: blinded_message,
-      token_hash: blinding_information.hashed_token.toString(16)
+      token_hash: blinding_context.hashed_token.toString(16)
     });
 
     return this.generateBlindingRequestPromise(message);
@@ -178,10 +178,10 @@ module.exports = {
   {
     const public_key = await this.getPublicKey();
     const server_public_key = await this.getServerPublicKey();
-    const blinding_information = await this.collectPublicBlindingInformation();
+    const context = await this.generateRSABlindingContext();
 
     return {
-      context: blinding_information,
+      context: context,
       packet: new BlindSignaturePacket(public_key, server_public_key),
       token: this.getToken()
     };

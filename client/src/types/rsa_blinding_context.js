@@ -5,7 +5,7 @@ import * as util from "../util"
 /**
  * A rsa blinding context.
  */
-export default class BlindingInformation
+export default class RSABlindingContext
 {
   constructor()
   {
@@ -43,7 +43,7 @@ export default class BlindingInformation
 
     const public_key_package = key.get_primary_keypair().pub;
 
-    let blinding_context = new BlindingInformation();
+    let blinding_context = new RSABlindingContext();
     blinding_context.modulus = public_key_package.n;
     blinding_context.public_exponent = public_key_package.e;
 
@@ -51,16 +51,16 @@ export default class BlindingInformation
   }
 
   /// TODO
-  static isValidFullBlindingInformation(blinding_information)
+  static isValidFullBlindingInformation(blinding_context)
   {
-    return (blinding_information instanceof BlindingInformation)
-        && blinding_information.containsAllBlindingInformation();
+    return (blinding_context instanceof RSABlindingContext)
+        && blinding_context.containsAllBlindingInformation();
   }
 
   /// TODO
-  static isValidPublicBlindingInformation(blinding_information)
+  static isValidPublicBlindingInformation(blinding_context)
   {
-    return (blinding_information instanceof BlindingInformation)
-        && blinding_information.containsPublicBlindingInformation();
+    return (blinding_context instanceof RSABlindingContext)
+        && blinding_context.containsPublicBlindingInformation();
   }
 }

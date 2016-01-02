@@ -6,7 +6,7 @@ import * as sinon from "sinon"
 
 import * as client from "../src/client"
 import * as util from "../src/util"
-import BlindingInformation from "../src/types/blinding_information"
+import RSABlindingContext from "../src/types/rsa_blinding_context"
 
 import { controls } from "./helper/client_control"
 
@@ -191,17 +191,17 @@ describe("client", function() {
     });
   });
 
-  describe("#collectPublicBlindingInformation()", () => {
+  describe("#generateRSABlindingContext()", () => {
 
-    it ("should return an BlindingInformation object", () => {
-      return client.collectPublicBlindingInformation()
-        .then(blinding_context => assert.instanceOf(blinding_context, BlindingInformation));
+    it ("should return an RSABlindingContext object", () => {
+      return client.generateRSABlindingContext()
+        .then(blinding_context => assert.instanceOf(blinding_context, RSABlindingContext));
     });
 
     it ("should return an object with modulus and public exponent",() => {
-      return client.collectPublicBlindingInformation()
+      return client.generateRSABlindingContext()
         .then(blinding_context => {
-          const isValid = BlindingInformation.isValidPublicBlindingInformation(blinding_context);
+          const isValid = RSABlindingContext.isValidPublicBlindingInformation(blinding_context);
           assert.isTrue(isValid);
         });
     });
@@ -221,22 +221,22 @@ describe("client", function() {
         .catch(() => done());
     });
 
-    it("should reject with wrong typed input for blinding_information", (done) => {
+    it("should reject with wrong typed input for blinding_context", (done) => {
 
-      const blinding_information = new BlindingInformation();
-      blinding_information.hashed_token = 123;
+      const context = new RSABlindingContext();
+      context.hashed_token = 123;
 
-      return client.sendBlindingRequest("1234", blinding_information)
+      return client.sendBlindingRequest("1234", context)
         .then((answer) => { done(answer); })
         .catch(() => done());
     });
 
     it("should reject when a network error occures", (done) => {
 
-      const blinding_information = new BlindingInformation();
-      blinding_information.hashed_token = new util.BigInteger("0");
+      const context = new RSABlindingContext();
+      context.hashed_token = new util.BigInteger("0");
 
-      const request_promise = client.sendBlindingRequest("1234", blinding_information)
+      const request_promise = client.sendBlindingRequest("1234", context)
         .then((answer) => { done("Should not happend: " + answer); })
         .catch((error) => {
           assert.instanceOf(error, Error);
@@ -255,10 +255,10 @@ describe("client", function() {
       const expected = { code: 404, status_text: new Error("Not Found") };
       this.server.respondWith([expected.code, { "Content-Type": "text/plain" }, ""]);
 
-      let blinding_information = new BlindingInformation();
-      blinding_information.hashed_token = new util.BigInteger("0");
+      let context = new RSABlindingContext();
+      context.hashed_token = new util.BigInteger("0");
 
-      return client.sendBlindingRequest("" , blinding_information)
+      return client.sendBlindingRequest("" , context)
         .then((answer) => { done(answer); })
         .catch((error) => {
           assert.instanceOf(error, Error);
@@ -271,10 +271,10 @@ describe("client", function() {
       const expected = "My expected response";
       this.server.respondWith([200, { "Content-Type": "text/plain" }, expected]);
 
-      let blinding_information = new BlindingInformation();
-      blinding_information.hashed_token = new util.BigInteger("0");
+      let context = new RSABlindingContext();
+      context.hashed_token = new util.BigInteger("0");
 
-      return client.sendBlindingRequest("" , blinding_information)
+      return client.sendBlindingRequest("" , context)
         .then((answer) => {
           assert.equal(expected, answer);
         });

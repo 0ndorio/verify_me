@@ -6,7 +6,7 @@ import * as kbpgp from "kbpgp"
 import * as blinding from "../src/blinding"
 import * as client from "../src/client"
 import * as util from "../src/util"
-import BlindingInformation from "../src/types/blinding_information"
+import RSABlindingContext from "../src/types/rsa_blinding_context"
 
 import { controls } from "./helper/client_control"
 
@@ -32,21 +32,21 @@ describe("blinding", function() {
 
     tests.forEach((test) => {
       it ("should return 'null' if message is a " + typeof test.arg, () => {
-        assert.isNull(blinding.blind_message(test.arg, new BlindingInformation()));
+        assert.isNull(blinding.blind_message(test.arg, new RSABlindingContext()));
       });
     });
 
     it ("should return 'null' if not all blinding information are available", () => {
-      assert.isNull(blinding.blind_message(util.BigInteger.ZERO, new BlindingInformation()));
+      assert.isNull(blinding.blind_message(util.BigInteger.ZERO, new RSABlindingContext()));
     });
 
     it ("should return a blinded 'BigInteger' with correct input", async (done) => {
       const key = await client.getPublicKey();
-      let blinding_information = BlindingInformation.fromKey(key);
-      blinding_information.blinding_factor = new util.BigInteger("3", 10);
-      blinding_information.hashed_token = new util.BigInteger("3", 10);
+      let context = RSABlindingContext.fromKey(key);
+      context.blinding_factor = new util.BigInteger("3", 10);
+      context.hashed_token = new util.BigInteger("3", 10);
 
-      const blinded_message = blinding.blind_message(util.BigInteger.ONE, blinding_information);
+      const blinded_message = blinding.blind_message(util.BigInteger.ONE, context);
       assert.isTrue(util.isBigInteger(blinded_message));
 
       done();
@@ -64,14 +64,14 @@ describe("blinding", function() {
     tests.forEach((test) => {
       it ("should return '" + test.expected + "' for specified input", () => {
 
-        let blinding_information = new BlindingInformation();
-        blinding_information.blinding_factor = new util.BigInteger(test.args.blinding_factor, 10);
-        blinding_information.modulus = new util.BigInteger(test.args.modulus, 10);
-        blinding_information.public_exponent = new util.BigInteger(test.args.public_exponent, 10);
-        blinding_information.hashed_token = new util.BigInteger("3", 10);
+        let context = new RSABlindingContext();
+        context.blinding_factor = new util.BigInteger(test.args.blinding_factor, 10);
+        context.modulus = new util.BigInteger(test.args.modulus, 10);
+        context.public_exponent = new util.BigInteger(test.args.public_exponent, 10);
+        context.hashed_token = new util.BigInteger("3", 10);
 
         const message = new util.BigInteger(test.args.message, 10);
-        assert.equal(test.expected, blinding.blind_message(message, blinding_information).toString());
+        assert.equal(test.expected, blinding.blind_message(message, context).toString());
       });
     });
   });
@@ -84,21 +84,21 @@ describe("blinding", function() {
 
     tests.forEach((test) => {
       it ("should return 'null' if message is " + test.arg + " (" + typeof test.arg + ")", () => {
-        assert.isNull(blinding.unblind_message(test.arg, new BlindingInformation()));
+        assert.isNull(blinding.unblind_message(test.arg, new RSABlindingContext()));
       });
     });
 
     it ("should return 'null' if not all blinding information are available", () => {
-      assert.isNull(blinding.unblind_message(util.BigInteger.ONE, new BlindingInformation()));
+      assert.isNull(blinding.unblind_message(util.BigInteger.ONE, new RSABlindingContext()));
     });
 
     it ("should return an unblinded 'BigInteger' with correct input", async (done) => {
       const key = await client.getPublicKey();
-      let blinding_information = BlindingInformation.fromKey(key);
-      blinding_information.blinding_factor = new util.BigInteger("3", 10);
-      blinding_information.hashed_token = new util.BigInteger("3", 10);
+      let context = RSABlindingContext.fromKey(key);
+      context.blinding_factor = new util.BigInteger("3", 10);
+      context.hashed_token = new util.BigInteger("3", 10);
 
-      const unblinded_message = blinding.unblind_message(util.BigInteger.ZERO, blinding_information);
+      const unblinded_message = blinding.unblind_message(util.BigInteger.ZERO, context);
       assert.isTrue(util.isBigInteger(unblinded_message));
 
       done();
@@ -116,14 +116,14 @@ describe("blinding", function() {
     tests.forEach((test) => {
       it ("should return '" + test.expected + "' for sepcified input", () => {
 
-        let blinding_information = new BlindingInformation();
-        blinding_information.blinding_factor = new util.BigInteger(test.args.blinding_factor, 10);
-        blinding_information.modulus = new util.BigInteger(test.args.modulus, 10);
-        blinding_information.public_exponent = new util.BigInteger("3", 10);
-        blinding_information.hashed_token = new util.BigInteger("3", 10);
+        let context = new RSABlindingContext();
+        context.blinding_factor = new util.BigInteger(test.args.blinding_factor, 10);
+        context.modulus = new util.BigInteger(test.args.modulus, 10);
+        context.public_exponent = new util.BigInteger("3", 10);
+        context.hashed_token = new util.BigInteger("3", 10);
 
         const message = new util.BigInteger(test.args.blinded_message, 10);
-        const unblinded_message = blinding.unblind_message(message, blinding_information);
+        const unblinded_message = blinding.unblind_message(message, context);
         assert.equal(test.expected, unblinded_message.toString(10));
       });
     });

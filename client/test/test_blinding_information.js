@@ -4,7 +4,7 @@ import { assert } from "chai"
 
 import * as client from "../src/client"
 import * as util from "../src/util"
-import BlindingInformation from "../src/types/blinding_information"
+import RSABlindingContext from "../src/types/rsa_blinding_context"
 
 import { controls } from "./helper/client_control"
 
@@ -14,14 +14,14 @@ describe("blinding_information", function() {
   // suite functions
   //
 
-  let blinding_information = null;
+  let context = null;
 
   beforeEach( () => {
-    blinding_information = new BlindingInformation(null);
+    context = new RSABlindingContext(null);
   });
 
   afterEach( () => {
-    blinding_information = null;
+    context = null;
   });
 
   //
@@ -31,53 +31,53 @@ describe("blinding_information", function() {
   describe("#containsPublicBlindingInformation", () => {
 
     it ("should return false after initialization", () => {
-      assert.isFalse(blinding_information.containsPublicBlindingInformation());
+      assert.isFalse(context.containsPublicBlindingInformation());
     });
 
     it ("should return false if public exponent is missing", () => {
-      blinding_information.modulus = new util.BigInteger("1", 10);
-      assert.isFalse(blinding_information.containsPublicBlindingInformation());
+      context.modulus = new util.BigInteger("1", 10);
+      assert.isFalse(context.containsPublicBlindingInformation());
     });
 
     it ("should return false if modulus is missing", () => {
-      blinding_information.public_exponent = new util.BigInteger("2", 10);
-      assert.isFalse(blinding_information.containsPublicBlindingInformation());
+      context.public_exponent = new util.BigInteger("2", 10);
+      assert.isFalse(context.containsPublicBlindingInformation());
     });
 
     it ("should return true if all necessary information are present", () => {
-      blinding_information.modulus = new util.BigInteger("1", 10);
-      blinding_information.public_exponent = new util.BigInteger("2", 10);
+      context.modulus = new util.BigInteger("1", 10);
+      context.public_exponent = new util.BigInteger("2", 10);
 
-      assert.isTrue(blinding_information.containsPublicBlindingInformation());
+      assert.isTrue(context.containsPublicBlindingInformation());
     });
   });
 
   describe("#containsAllBlindingInformation", () => {
 
     it ("should return false after initialization", () => {
-      assert.isFalse(blinding_information.containsAllBlindingInformation());
+      assert.isFalse(context.containsAllBlindingInformation());
     });
 
     it ("should return false if blinding factor is missing", () => {
-      blinding_information.modulus = new util.BigInteger("1", 10);
-      blinding_information.public_exponent = new util.BigInteger("2", 10);
-      blinding_information.hashed_token = new util.BigInteger("3", 10);
-      assert.isFalse(blinding_information.containsAllBlindingInformation());
+      context.modulus = new util.BigInteger("1", 10);
+      context.public_exponent = new util.BigInteger("2", 10);
+      context.hashed_token = new util.BigInteger("3", 10);
+      assert.isFalse(context.containsAllBlindingInformation());
     });
 
     it ("should return false if hashed token is missing", () => {
-      blinding_information.modulus = new util.BigInteger("1", 10);
-      blinding_information.public_exponent = new util.BigInteger("2", 10);
-      blinding_information.blinding_factor = new util.BigInteger("3", 10);
-      assert.isFalse(blinding_information.containsAllBlindingInformation());
+      context.modulus = new util.BigInteger("1", 10);
+      context.public_exponent = new util.BigInteger("2", 10);
+      context.blinding_factor = new util.BigInteger("3", 10);
+      assert.isFalse(context.containsAllBlindingInformation());
     });
 
     it ("should return true if all necessary information are present", () => {
-      blinding_information.modulus = new util.BigInteger("1", 10);
-      blinding_information.public_exponent = new util.BigInteger("2", 10);
-      blinding_information.blinding_factor = new util.BigInteger("3", 10);
-      blinding_information.hashed_token = new util.BigInteger("4", 10);
-      assert.isTrue(blinding_information.containsAllBlindingInformation());
+      context.modulus = new util.BigInteger("1", 10);
+      context.public_exponent = new util.BigInteger("2", 10);
+      context.blinding_factor = new util.BigInteger("3", 10);
+      context.hashed_token = new util.BigInteger("4", 10);
+      assert.isTrue(context.containsAllBlindingInformation());
     });
   });
 
@@ -89,7 +89,7 @@ describe("blinding_information", function() {
 
     tests.forEach((test) => {
       it ("should return null if input is a " + typeof test.arg, () => {
-        assert.isNull(BlindingInformation.fromKey(test.arg));
+        assert.isNull(RSABlindingContext.fromKey(test.arg));
       });
     });
 
@@ -97,9 +97,9 @@ describe("blinding_information", function() {
       controls.loadFixture("test/fixture/keys_2048bit.html");
 
       const key = await client.getServerPublicKey();
-      let blinding_information = BlindingInformation.fromKey(key);
-      assert.isNotNull(blinding_information);
-      assert.isTrue(blinding_information.containsPublicBlindingInformation());
+      let context = RSABlindingContext.fromKey(key);
+      assert.isNotNull(context);
+      assert.isTrue(context.containsPublicBlindingInformation());
 
       done();
     });
@@ -118,34 +118,34 @@ describe("blinding_information", function() {
 
     tests.forEach((test) => {
       it ("should return '" + test.expected + "' if input is a " + typeof test.arg, () => {
-        assert.equal(test.expected, BlindingInformation.isValidFullBlindingInformation(test.arg));
+        assert.equal(test.expected, RSABlindingContext.isValidFullBlindingInformation(test.arg));
       });
     });
 
     it ("should return false after initialization", () => {
-      assert.isFalse(BlindingInformation.isValidFullBlindingInformation(blinding_information));
+      assert.isFalse(RSABlindingContext.isValidFullBlindingInformation(context));
     });
 
     it ("should return false if blinding factor is missing", () => {
-      blinding_information.modulus = new util.BigInteger("1", 10);
-      blinding_information.public_exponent = new util.BigInteger("2", 10);
-      blinding_information.hashed_token = new util.BigInteger("3", 10);
-      assert.isFalse(BlindingInformation.isValidFullBlindingInformation(blinding_information));
+      context.modulus = new util.BigInteger("1", 10);
+      context.public_exponent = new util.BigInteger("2", 10);
+      context.hashed_token = new util.BigInteger("3", 10);
+      assert.isFalse(RSABlindingContext.isValidFullBlindingInformation(context));
     });
 
     it ("should return false if hashed token is missing", () => {
-      blinding_information.modulus = new util.BigInteger("1", 10);
-      blinding_information.public_exponent = new util.BigInteger("2", 10);
-      blinding_information.blinding_factor = new util.BigInteger("3", 10);
-      assert.isFalse(BlindingInformation.isValidFullBlindingInformation(blinding_information));
+      context.modulus = new util.BigInteger("1", 10);
+      context.public_exponent = new util.BigInteger("2", 10);
+      context.blinding_factor = new util.BigInteger("3", 10);
+      assert.isFalse(RSABlindingContext.isValidFullBlindingInformation(context));
     });
 
     it ("should return true if all necessary information are present", () => {
-      blinding_information.modulus = new util.BigInteger("1", 10);
-      blinding_information.public_exponent = new util.BigInteger("2", 10);
-      blinding_information.blinding_factor = new util.BigInteger("3", 10);
-      blinding_information.hashed_token = new util.BigInteger("4", 10);
-      assert.isTrue(BlindingInformation.isValidFullBlindingInformation(blinding_information));
+      context.modulus = new util.BigInteger("1", 10);
+      context.public_exponent = new util.BigInteger("2", 10);
+      context.blinding_factor = new util.BigInteger("3", 10);
+      context.hashed_token = new util.BigInteger("4", 10);
+      assert.isTrue(RSABlindingContext.isValidFullBlindingInformation(context));
     });
   });
 
@@ -162,29 +162,29 @@ describe("blinding_information", function() {
 
     tests.forEach((test) => {
       it ("should return '" + test.expected + "' if input is a " + typeof test.arg, () => {
-        assert.equal(test.expected, BlindingInformation.isValidPublicBlindingInformation(test.arg));
+        assert.equal(test.expected, RSABlindingContext.isValidPublicBlindingInformation(test.arg));
       });
     });
 
     it ("should return false after initialization", () => {
-      assert.isFalse(BlindingInformation.isValidPublicBlindingInformation(blinding_information));
+      assert.isFalse(RSABlindingContext.isValidPublicBlindingInformation(context));
     });
 
     it ("should return false if public exponent is missing", () => {
-      blinding_information.modulus = new util.BigInteger("1", 10);
-      assert.isFalse(BlindingInformation.isValidPublicBlindingInformation(blinding_information));
+      context.modulus = new util.BigInteger("1", 10);
+      assert.isFalse(RSABlindingContext.isValidPublicBlindingInformation(context));
     });
 
     it ("should return false if modulus is missing", () => {
-      blinding_information.public_exponent = new util.BigInteger("2", 10);
-      assert.isFalse(BlindingInformation.isValidPublicBlindingInformation(blinding_information));
+      context.public_exponent = new util.BigInteger("2", 10);
+      assert.isFalse(RSABlindingContext.isValidPublicBlindingInformation(context));
     });
 
     it ("should return true if all necessary information are present", () => {
-      blinding_information.modulus = new util.BigInteger("1", 10);
-      blinding_information.public_exponent = new util.BigInteger("2", 10);
+      context.modulus = new util.BigInteger("1", 10);
+      context.public_exponent = new util.BigInteger("2", 10);
 
-      assert.isTrue(BlindingInformation.isValidPublicBlindingInformation(blinding_information));
+      assert.isTrue(RSABlindingContext.isValidPublicBlindingInformation(context));
     });
   });
 });
