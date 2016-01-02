@@ -7,14 +7,12 @@ import * as sinon from "sinon"
 import * as client from "../src/client"
 import * as util from "../src/util"
 import RSABlindingContext from "../src/types/rsa_blinding_context"
+import ECCBlindingContext from "../src/types/ecc_blinding_context"
 
 import { controls } from "./helper/client_control"
+import sample_keys from "./helper/keys"
 
 describe("client", function() {
-
-  //
-  // suite functions
-  //
 
   beforeEach(() => {
     controls.loadFixture("test/fixture/keys_2048bit.html");
@@ -27,9 +25,9 @@ describe("client", function() {
     this.server.restore();
   });
 
-  //
-  // test cases
-  //
+  ///---------------------------------
+  /// #getPublicKey()
+  ///---------------------------------
 
   describe("#getPublicKey()", () => {
 
@@ -52,9 +50,13 @@ describe("client", function() {
     });
   });
 
+  ///---------------------------------
+  /// #getPublicKeyString()
+  ///---------------------------------
+
   describe("#getPublicKeyString()", () => {
 
-    it ("should return null if id is missing from html",() => {
+    it ("should return null if id is missing from html", () => {
       controls.loadFixture("test/fixture/missing_id.html");
       assert.isNull(client.getPublicKeyString(), Error);
     });
@@ -68,40 +70,48 @@ describe("client", function() {
       {arg: "\n",      expected: ""}
     ];
 
-    tests.forEach((test) => {
-      it ("should read '" + test.arg.replace(/\n/g, "\\n") + "' and trim to '" + test.expected + "'", () => {
+    for (const test of tests) {
+      it ("should trim the input string", () => {
         controls.userPublicKeyString = test.arg;
         assert.equal(test.expected, client.getPublicKeyString());
       });
-    });
+    }
   });
+
+  ///---------------------------------
+  /// #getToken()
+  ///---------------------------------
 
   describe("#getToken()", () => {
 
-    it ("should return Token as BigInteger",() => {
+    it ("should return Token as BigInteger", () => {
       const token = client.getToken();
       assert.isTrue(util.isBigInteger(token));
     });
 
-    it ("result must pass prime test",() => {
+    it ("result must pass prime test", () => {
       const token = client.getToken();
       assert.isTrue(token.isProbablePrime());
     });
 
-    it ("must throw if id is missing from html",() => {
+    it ("must throw if id is missing from html", () => {
       controls.loadFixture("test/fixture/missing_id.html");
       assert.throws(() => {client.getToken()}, Error);
     });
 
-    it ("must throw if Token is not prime",() => {
+    it ("must throw if Token is not prime", () => {
       controls.userTokenString = "A";
       assert.throws(() => {client.getToken()}, Error);
     });
   });
 
+  ///---------------------------------
+  /// #getTokenString()
+  ///---------------------------------
+
   describe("#getTokenString()", () => {
 
-    it ("should return null if id is missing from html",() => {
+    it ("should return null if id is missing from html", () => {
       controls.loadFixture("test/fixture/missing_id.html");
       assert.isNull(client.getTokenString(), Error);
     });
@@ -115,13 +125,17 @@ describe("client", function() {
       {arg: "\n",      expected: ""}
     ];
 
-    tests.forEach((test) => {
-      it ("should read '" + test.arg.replace(/\n/g, "\\n") + "' and trim to '" + test.expected + "'", () => {
+    for (const test of tests) {
+      it ("should trim the input string", () => {
         controls.userTokenString = test.arg;
         assert.equal(test.expected, client.getTokenString());
       });
-    });
+    }
   });
+
+  ///---------------------------------
+  /// #getServerPublicKey()
+  ///---------------------------------
 
   describe("#getServerPublicKey()", () => {
 
@@ -143,6 +157,10 @@ describe("client", function() {
     });
   });
 
+  ///---------------------------------
+  /// #getServerPublicKeyString()
+  ///---------------------------------
+
   describe("#getServerPublicKeyString()", () => {
 
     it ("should return null if id is missing from html",() => {
@@ -159,13 +177,17 @@ describe("client", function() {
       {arg: "\n",      expected: ""}
     ];
 
-    tests.forEach((test) => {
-      it ("should read '" + test.arg.replace(/\n/g, "\\n") + "' and trim to '" + test.expected + "'", () => {
+    for (const test of tests) {
+      it ("should trim the input string", () => {
         controls.serverPublicKey = test.arg;
         assert.equal(test.expected, client.getServerPublicKeyString());
       });
-    });
+    }
   });
+
+  ///---------------------------------
+  /// #getTextAreaContent()
+  ///---------------------------------
 
   describe("#getTextAreaContent", () => {
 
@@ -191,7 +213,11 @@ describe("client", function() {
     });
   });
 
-  describe("#generateRSABlindingContext()", () => {
+  ///---------------------------------
+  /// #generateBlindingContext()
+  ///---------------------------------
+
+  describe("#generateBlindingContext()", () => {
 
     const token = new util.BigInteger("3", 16);
 
@@ -224,6 +250,10 @@ describe("client", function() {
     });
   });
 
+  ///---------------------------------
+  /// #sendBlindingRequest()
+  ///---------------------------------
+
   describe("#sendBlindingRequest()", () => {
 
     it("should return a promise", () => {
@@ -248,13 +278,13 @@ describe("client", function() {
         .catch(() => done());
     });
 
-    it("should reject when a network error occures", (done) => {
+    it("should reject when a network error occurred", (done) => {
 
       const context = new RSABlindingContext();
       context.hashed_token = new util.BigInteger("0");
 
       const request_promise = client.sendBlindingRequest("1234", context)
-        .then((answer) => { done("Should not happend: " + answer); })
+        .then((answer) => { done(answer); })
         .catch((error) => {
           assert.instanceOf(error, Error);
           done();
