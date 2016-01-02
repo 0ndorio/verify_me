@@ -92,6 +92,12 @@ module.exports = {
   },
 
   /// TODO
+  isCurve: function(curve)
+  {
+    return this.isObject(curve) && (curve instanceof kbpgp.ecc.curves.Curve);
+  },
+
+  /// TODO
   isInteger: function(integer)
   {
     return (typeof integer === "number") && (integer % 1 === 0);
@@ -111,6 +117,12 @@ module.exports = {
   isKeyManager: function(key)
   {
     return (key instanceof kbpgp.KeyManager);
+  },
+
+  /// TODO
+  isPoint: function(point)
+  {
+    return this.isObject(point) && (point instanceof Point);
   },
 
   /// Validates if the input parameter is a string.
