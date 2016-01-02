@@ -16,23 +16,25 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       'node_modules/babel-polyfill/dist/polyfill.js',
-      'src/*.js',
-      'test/*.js',
+      'src/**/*.js',
+      'test/**/*.js',
       'test/fixture/*.html'
     ],
 
 
     // list of files to exclude
     exclude: [
-      'src/main.js'
+      'src/main.js',
+      'test/helper/*.js',
+      'test/sample_keys/*'
     ],
 
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      'src/*.js': ['browserify'],
-      'test/*.js': ['browserify'],
+      'src/**/*.js': ['browserify'],
+      'test/**/*.js': ['browserify'],
       'test/fixture/*.html': ['html2js']
     },
 

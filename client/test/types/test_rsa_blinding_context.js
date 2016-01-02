@@ -1,14 +1,13 @@
 "use strict";
 
 import { assert } from "chai"
+import * as client from "../../src/client"
+import * as util from "../../src/util"
+import RSABlindingContext from "../../src/types/rsa_blinding_context"
 
-import * as client from "../src/client"
-import * as util from "../src/util"
-import RSABlindingContext from "../src/types/rsa_blinding_context"
+import { controls } from "./../helper/client_control"
 
-import { controls } from "./helper/client_control"
-
-describe("blinding_information", function() {
+describe("rsa_blinding_context", function() {
 
   //
   // suite functions
