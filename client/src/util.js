@@ -1,11 +1,13 @@
 "use strict";
 
 import { BigInteger, nbi, nbs } from "../node_modules/kbpgp/lib/bn"
+import { Point } from "keybase-ecurve"
 import * as kbpgp from "kbpgp"
 
 module.exports = {
 
   BigInteger: BigInteger,
+  Point: Point,
 
   /// Converts a given armored key string into a kbpgp {KeyManager} object.
   generateKeyFromString: function(key_as_string)
