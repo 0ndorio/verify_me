@@ -1,8 +1,11 @@
 "use strict";
 
+import ECCBlindingContext from "./types/ecc_blinding_context"
 import RSABlindingContext from "./types/rsa_blinding_context"
 import BlindSignaturePacket from "./types/blind_signature_packet"
 import * as util from "./util"
+
+import * as kbpgp from "kbpgp"
 
 module.exports = {
 
@@ -117,13 +120,40 @@ module.exports = {
     return content;
   },
 
-  /// TODO
-  generateRSABlindingContext: async function()
+  /**
+   * Generates a {BlindingContext} for the given {KeyManager}.
+   *
+   * @param {KeyManager} public_key
+   *    The {KeyManager} containing the public_key we want to use to create a signature.
+   * @return
+   *    A {BlindingContext} related to the public key algorithm used to create the input key.
+   */
+  generateBlindingContext: function(public_key, token)
   {
-    const server_public_key = await this.getServerPublicKey();
-    let context = RSABlindingContext.fromKey(server_public_key);
+    if (!util.isKeyManager(public_key)) {
+      throw new Error("Input parameter is no {KeyManager} object.");
+    }
 
-    const token = this.getToken();
+    const tags = kbpgp.const.openpgp.public_key_algorithms;
+    const public_key_algorithm = public_key.get_primary_keypair().get_type();
+
+    let context = null;
+    switch (public_key_algorithm) {
+      case tags.RSA:
+      case tags.RSA_SIGN_ONLY: {
+        context = RSABlindingContext.fromKey(public_key);
+        break;
+      }
+      case tags.ECDSA: {
+        context = ECCBlindingContext.fromKey(public_key);
+        break;
+      }
+      case tags.RSA_ENCRYPT_ONLY:
+        throw new Error("Requested public key algorithm is for encryption only.");
+      default:
+        throw new Error("Unsupported public key algorithm id: " + public_key_algorithm);
+    }
+
     context.hashed_token = util.hashMessage(token.toRadix());
 
     return context;
@@ -178,12 +208,11 @@ module.exports = {
   {
     const public_key = await this.getPublicKey();
     const server_public_key = await this.getServerPublicKey();
-    const context = await this.generateRSABlindingContext();
+    const token = this.getToken();
 
-    return {
-      context: context,
-      packet: new BlindSignaturePacket(public_key, server_public_key),
-      token: this.getToken()
-    };
+    const context = this.generateBlindingContext(server_public_key, token);
+    const packet = new BlindSignaturePacket(public_key, server_public_key);
+    
+    return { context, packet, token };
   }
 };

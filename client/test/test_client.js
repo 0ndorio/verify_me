@@ -193,17 +193,34 @@ describe("client", function() {
 
   describe("#generateRSABlindingContext()", () => {
 
-    it ("should return an RSABlindingContext object", () => {
-      return client.generateRSABlindingContext()
-        .then(blinding_context => assert.instanceOf(blinding_context, RSABlindingContext));
+    const token = new util.BigInteger("3", 16);
+
+    it ("should throw if input is no {KeyManager} object", () => {
+      assert.throws(() => client.generateBlindingContext(123, token), Error);
     });
 
-    it ("should return an object with modulus and public exponent",() => {
-      return client.generateRSABlindingContext()
-        .then(blinding_context => {
-          const isValid = RSABlindingContext.isValidPublicBlindingInformation(blinding_context);
-          assert.isTrue(isValid);
-        });
+    it ("should throw if key algorithm is encryption only key", async () => {
+      const key = await util.generateKeyFromString(sample_keys.rsa[1024].pub);
+      key.primary.key.type = kbpgp.const.openpgp.public_key_algorithms.RSA_ENCRYPT_ONLY;
+
+      assert.throws(() => client.generateBlindingContext(key, token), Error);
+    });
+
+    it ("should throw if key algorithm is unknown", async () => {
+      const key = await util.generateKeyFromString(sample_keys.rsa[1024].pub);
+      key.primary.key.type = -1;
+
+      assert.throws(() => client.generateBlindingContext(key, token), Error);
+    });
+
+    it ("should return an RSABlindingContext if input is a rsa key", async () => {
+      const key = await util.generateKeyFromString(sample_keys.rsa[1024].pub);
+      assert.instanceOf(client.generateBlindingContext(key, token), RSABlindingContext);
+    });
+
+    it ("should return an ECCBlindingContext if input is a ecc key", async () => {
+      const key = await util.generateKeyFromString(sample_keys.ecc.nist[256].pub);
+      assert.instanceOf(client.generateBlindingContext(key, token), ECCBlindingContext);
     });
   });
 
