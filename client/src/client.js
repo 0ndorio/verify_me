@@ -161,8 +161,8 @@ module.exports = {
 
   sendBlindingRequest: function(blinded_message, blinding_context)
   {
-    if (!util.isString(blinded_message)) {
-      return Promise.reject(new Error("blinded_message is not type of string but '" + typeof blinded_message + "'"));
+    if (!util.isBigInteger(blinded_message)) {
+      return Promise.reject(new Error("blinded_message is no BigInteger"));
     }
 
     if(!(util.isObject(blinding_context) && blinding_context.hasOwnProperty("hashed_token"))) {
@@ -170,12 +170,15 @@ module.exports = {
     }
 
     const message = JSON.stringify({
-      message: blinded_message,
-      token_hash: blinding_context.hashed_token.toString(16),
-      is_rsa: (blinding_context instanceof RSABlindingContext)
+      message:    blinded_message.toRadix(16),
+      token_hash: blinding_context.hashed_token.toRadix(16),
+      is_rsa:     (blinding_context instanceof RSABlindingContext)
     });
 
-    return this.generateBlindingRequestPromise(message);
+    return this.generateBlindingRequestPromise(message)
+      .then(request_result => {
+        return new util.BigInteger(request_result, 16);
+      });
   },
 
   generateBlindingRequestPromise: function (message) {

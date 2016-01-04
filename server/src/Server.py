@@ -57,7 +57,7 @@ class MainHandler(tornado.web.RequestHandler):
 
       data = tornado.escape.json_decode(self.request.body)
 
-      blinded_message = int(data["message"], 10)
+      blinded_message = int(data["message"], 16)
       token_hash = data["token_hash"]
       is_rsa_request = data["is_rsa"]
 
@@ -66,8 +66,10 @@ class MainHandler(tornado.web.RequestHandler):
       else:
          signed_blinded_message = handle_ecdsa_request(blinded_message)
 
+      output = hex(signed_blinded_message).lstrip("0x").rstrip("L")
+
       self.set_header("Content-Type", "text/plain")
-      self.write(str(signed_blinded_message))
+      self.write(output)
 
 # --- Server Setup ---
 

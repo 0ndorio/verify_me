@@ -12,18 +12,17 @@ async function requestPseudonym()
 {
   // prepare
   const {context, packet, token} = await client.prepareBlindSignatureRequest();
-
-  // blind
   const blinding_factor = await util.generateBlindingFactor(context.modulus.bitLength());
   context.blinding_factor = token.multiply(blinding_factor);
-  const blinded_message = blinding.blind_message(packet.raw_signature, context).toRadix();
+
+  // blind
+  const blinded_message = blinding.blind_message(packet.raw_signature, context);
 
   // sign
   const signed_blinded_message = await client.sendBlindingRequest(blinded_message, context);
 
   // unblind
-  const message = new util.BigInteger(signed_blinded_message, 10);
-  const unblinded_message = blinding.unblind_message(message, context);
+  const unblinded_message = blinding.unblind_message(signed_blinded_message, context);
   packet.sig = unblinded_message.to_mpi_buffer();
 
   // finish
