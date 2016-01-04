@@ -128,7 +128,7 @@ module.exports = {
    * @return
    *    A {BlindingContext} related to the public key algorithm used to create the input key.
    */
-  generateBlindingContext: function(public_key, token)
+  generateBlindingContext: async function(public_key, token)
   {
     if (!util.isKeyManager(public_key)) {
       throw new Error("Input parameter is no {KeyManager} object.");
@@ -142,6 +142,10 @@ module.exports = {
       case tags.RSA:
       case tags.RSA_SIGN_ONLY: {
         context = RSABlindingContext.fromKey(public_key);
+
+        const blinding_factor = await util.generateBlindingFactor(context.modulus.bitLength());
+        context.blinding_factor = token.multiply(blinding_factor);
+
         break;
       }
       case tags.ECDSA: {
@@ -214,7 +218,7 @@ module.exports = {
     const server_public_key = await this.getServerPublicKey();
     const token = this.getToken();
 
-    const context = this.generateBlindingContext(server_public_key, token);
+    const context = await this.generateBlindingContext(server_public_key, token);
     const packet = new BlindSignaturePacket(public_key, server_public_key);
     
     return { context, packet, token };

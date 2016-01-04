@@ -11,9 +11,7 @@ import * as util from "./util"
 async function requestPseudonym()
 {
   // prepare
-  const {context, packet, token} = await client.prepareBlindSignatureRequest();
-  const blinding_factor = await util.generateBlindingFactor(context.modulus.bitLength());
-  context.blinding_factor = token.multiply(blinding_factor);
+  const { context, packet } = await client.prepareBlindSignatureRequest();
 
   // blind
   const blinded_message = blinding.blind_message(packet.raw_signature, context);
