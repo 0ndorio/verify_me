@@ -41,17 +41,17 @@ echo "Cloning repository"
 git clone --recursive https://github.com/0ndorio/verify_me.git ${application_name}
 
 echo "Installing Python & pip"
-apt-get install -y python-dev > /dev/null
-apt-get install -y python-pip > /dev/null
+apt-get install -y libgmp-dev build-essential python-dev python-pip
 
 echo "Configure Python: virtualenv"
 pip install virtualenv
 virtualenv ${application_name}/virtual_env
 source ${application_name}/virtual_env/bin/activate
 
-echo "Cofigure Python: install modules"
+echo "Cofigure Python: install modules & dependencies"
 pip install tornado > /dev/null
 pip install PyCrypto > /dev/null
+pip install seccure > /dev/null
 
 echo "Copy Dummy Keys"
 mkdir -p ${application_name}/keys

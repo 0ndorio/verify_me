@@ -165,13 +165,14 @@ module.exports = {
       return Promise.reject(new Error("blinded_message is not type of string but '" + typeof blinded_message + "'"));
     }
 
-    if(!(blinding_context instanceof RSABlindingContext && util.isBigInteger(blinding_context.hashed_token))) {
+    if(!(util.isObject(blinding_context) && blinding_context.hasOwnProperty("hashed_token"))) {
       return Promise.reject(new Error("no hashed token stored in blinding_context"));
     }
 
     const message = JSON.stringify({
       message: blinded_message,
-      token_hash: blinding_context.hashed_token.toString(16)
+      token_hash: blinding_context.hashed_token.toString(16),
+      is_rsa: (blinding_context instanceof RSABlindingContext)
     });
 
     return this.generateBlindingRequestPromise(message);

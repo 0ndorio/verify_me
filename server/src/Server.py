@@ -6,10 +6,35 @@ import os
 import tornado.ioloop
 import tornado.web
 
+# RSA
 from ..lib.OpenPGPPseudonyms import crypto
 from ..lib.OpenPGPPseudonyms.OpenPGP import messages, packets
 
-# --- Settings ---
+# ECC
+import seccure
+
+# --- Utility --------
+
+def enter_password():
+   print 'Passphrase needed for secret key'
+   return raw_input('password: ')
+
+def handle_rsa_request(blinded_message):
+   print ("Handling RSA request for: ", blinded_message)
+
+   SEC_TAG = packets.SecretKeyPacket.TAG
+   package = secret_key.packets[SEC_TAG]
+
+   d = package.d.value
+   n = package.n.value
+
+   return crypto.rsaSign(blinded_message, d, n)
+
+def handle_ecdsa_request(blinded_message):
+   print ("Handling ECDSA request for: ", blinded_message)
+   return None
+
+# --- Key Settings ---
 
 root = os.path.dirname(os.path.abspath(__file__))
 
@@ -17,15 +42,11 @@ public_key_path = '../../keys/server.key'
 public_key_string = open(root + "/" + public_key_path, "r").read()
 public_key = messages.fromRadix64(public_key_string)
 
-def enter_password():
-    print 'Passphrase needed for secret key'
-    return raw_input('password: ')
-
 secret_key_path = '../../keys/server_secret.key'
 secret_key_string = open(root + "/" + secret_key_path, "r").read()
 secret_key = messages.fromRadix64(secret_key_string, enter_password)
 
-# ----------------
+# --- Request Handling ---
 
 class MainHandler(tornado.web.RequestHandler):
    def get(self):
@@ -38,15 +59,17 @@ class MainHandler(tornado.web.RequestHandler):
 
       blinded_message = int(data["message"], 10)
       token_hash = data["token_hash"]
+      is_rsa_request = data["is_rsa"]
 
-      TAG_SECKEY = packets.SecretKeyPacket.TAG
-
-      d = secret_key.packets[TAG_SECKEY].d.value
-      n = secret_key.packets[TAG_SECKEY].n.value
-      signed_blinded_message = crypto.rsaSign(blinded_message, d, n)
+      if is_rsa_request:
+         signed_blinded_message = handle_rsa_request(blinded_message)
+      else:
+         signed_blinded_message = handle_ecdsa_request(blinded_message)
 
       self.set_header("Content-Type", "text/plain")
       self.write(str(signed_blinded_message))
+
+# --- Server Setup ---
 
 settings = {
    "static_path": os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, "client"),
