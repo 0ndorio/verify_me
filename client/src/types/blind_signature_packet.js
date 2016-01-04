@@ -53,11 +53,15 @@ export default class BlindSignaturePacket extends sig.Signature
     const lifespan = target_key.primary.lifespan;
     let key_expire = lifespan.expire_in;
 
-    // if no expire date is available use maximum possible day in the future
+    // if no expire date is available use maximum possible date in the future (8640000000000000)
     //    - 100,000,000 days measured relative to midnight at the beginning of 01 January, 1970 UTC.
     //      http://es5.github.io/#x15.9.1.1
+
+    // pgp defines Time files as four-octet fields containing the number of seconds elapsed since 1/1/1970
+    // so we have to use a smaller number (2^32 - 1)
+    //    - https://tools.ietf.org/html/rfc4880#section-3.5
     if (null === key_expire || 0 >= key_expire) {
-      key_expire = 8640000000000000;
+      key_expire = Math.pow(2, 32) - 1;
     }
 
     return Math.floor(lifespan.generated + Math.random() * (key_expire - lifespan.generated));
