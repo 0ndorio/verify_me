@@ -9,6 +9,13 @@ module.exports = {
   BigInteger: BigInteger,
   Point: Point,
 
+  assert: function (condition, message)
+  {
+    if (!condition) {
+      throw new Error(message || "Assertion failed");
+    }
+  },
+
   /// Converts a given armored key string into a kbpgp {KeyManager} object.
   generateKeyFromString: function(key_as_string)
   {

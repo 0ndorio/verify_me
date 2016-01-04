@@ -16,7 +16,7 @@ async function requestPseudonym()
   // blind
   const blinded_message = blinding.blind_message(packet.raw_signature, context);
 
-  // sign
+  // request sign from server
   const signed_blinded_message = await client.sendBlindingRequest(blinded_message, context);
 
   // unblind
