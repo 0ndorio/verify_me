@@ -40,33 +40,3 @@ apt-get install -y git
 echo "Cloning repository"
 git clone --recursive https://github.com/0ndorio/verify_me.git ${application_name}
 
-echo "Installing Python & pip"
-apt-get install -y libgmp-dev build-essential python-dev python-pip
-
-echo "Configure Python: virtualenv"
-pip install virtualenv
-virtualenv ${application_name}/virtual_env
-source ${application_name}/virtual_env/bin/activate
-
-echo "Cofigure Python: install modules & dependencies"
-pip install tornado > /dev/null
-pip install PyCrypto > /dev/null
-pip install seccure > /dev/null
-
-echo "Copy Dummy Keys"
-mkdir -p ${application_name}/keys
-
-cp ${application_name}/client/test/sample_keys/rsa_2048_pub.asc \
-   ${application_name}/keys/rsa_server.asc
-
-cp ${application_name}/client/test/sample_keys/rsa_2048_priv.asc \
-   ${application_name}/keys/rsa_server_secret.asc
-
-cp ${application_name}/client/test/sample_keys/ecc_nist_p_256_pub.asc \
-   ${application_name}/keys/ecc_server.asc
-
-cp ${application_name}/client/test/sample_keys/ecc_nist_p_256_priv.asc \
-   ${application_name}/keys/ecc_server_secret.asc
-
-#echo "Run application"
-#/bin/bash ${application_name}/src/util_scripts/run_server.sh &
