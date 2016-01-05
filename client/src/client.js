@@ -4,6 +4,7 @@ import ECCBlindingContext from "./types/ecc_blinding_context"
 import RSABlindingContext from "./types/rsa_blinding_context"
 import BlindSignaturePacket from "./types/blind_signature_packet"
 import * as util from "./util"
+const assert = util.assert;
 
 import * as kbpgp from "kbpgp"
 
@@ -130,9 +131,8 @@ module.exports = {
    */
   generateBlindingContext: async function(public_key, token)
   {
-    if (!util.isKeyManager(public_key)) {
-      throw new Error("Input parameter is no {KeyManager} object.");
-    }
+    assert(util.isKeyManager(public_key));
+    assert(util.isBigInteger(token));
 
     const tags = kbpgp.const.openpgp.public_key_algorithms;
     const public_key_algorithm = public_key.get_primary_keypair().get_type();
@@ -163,15 +163,10 @@ module.exports = {
     return context;
   },
 
-  sendBlindingRequest: function(blinded_message, blinding_context)
+  sendBlindingRequest: async function(blinded_message, blinding_context)
   {
-    if (!util.isBigInteger(blinded_message)) {
-      return Promise.reject(new Error("blinded_message is no BigInteger"));
-    }
-
-    if(!(util.isObject(blinding_context) && blinding_context.hasOwnProperty("hashed_token"))) {
-      return Promise.reject(new Error("no hashed token stored in blinding_context"));
-    }
+    assert(util.isBigInteger(blinded_message));
+    assert(util.isObject(blinding_context) && blinding_context.hasOwnProperty("hashed_token"));
 
     const message = JSON.stringify({
       message:    blinded_message.toRadix(16),

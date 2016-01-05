@@ -221,32 +221,37 @@ describe("client", function() {
 
     const token = new util.BigInteger("3", 16);
 
-    it ("should throw if input is no {KeyManager} object", () => {
-      assert.throws(() => client.generateBlindingContext(123, token), Error);
+    it ("should return a rejected promise if input is no {KeyManager} object", () => {
+      return client.generateBlindingContext(123, token)
+        .catch(error => assert.instanceOf(error, Error));
     });
 
-    it ("should throw if key algorithm is encryption only key", async () => {
+    it ("should return a rejected promise if key algorithm is encryption only key", async () => {
       const key = await util.generateKeyFromString(sample_keys.rsa[1024].pub);
       key.primary.key.type = kbpgp.const.openpgp.public_key_algorithms.RSA_ENCRYPT_ONLY;
 
-      assert.throws(() => client.generateBlindingContext(key, token), Error);
+      return client.generateBlindingContext(key, token)
+        .catch(error => assert.instanceOf(error, Error));
     });
 
-    it ("should throw if key algorithm is unknown", async () => {
+    it ("should return a rejected promise if key algorithm is unknown", async () => {
       const key = await util.generateKeyFromString(sample_keys.rsa[1024].pub);
       key.primary.key.type = -1;
 
-      assert.throws(() => client.generateBlindingContext(key, token), Error);
+      return client.generateBlindingContext(key, token)
+        .catch(error => assert.instanceOf(error, Error));
     });
 
     it ("should return an RSABlindingContext if input is a rsa key", async () => {
       const key = await util.generateKeyFromString(sample_keys.rsa[1024].pub);
-      assert.instanceOf(client.generateBlindingContext(key, token), RSABlindingContext);
+      return client.generateBlindingContext(key, token)
+        .then(context => assert.instanceOf(context, RSABlindingContext));
     });
 
     it ("should return an ECCBlindingContext if input is a ecc key", async () => {
       const key = await util.generateKeyFromString(sample_keys.ecc.nist[256].pub);
-      assert.instanceOf(client.generateBlindingContext(key, token), ECCBlindingContext);
+      return client.generateBlindingContext(key, token)
+        .then(context => assert.instanceOf(context, ECCBlindingContext));
     });
   });
 
@@ -257,14 +262,13 @@ describe("client", function() {
   describe("#sendBlindingRequest()", () => {
 
     it("should return a promise", () => {
-      let task = client.sendBlindingRequest().catch(() => {});
+      const task = client.sendBlindingRequest().catch(() => {});
       assert.instanceOf(task, Promise);
     });
 
     it("should reject with wrong typed input for blinded_message", (done) => {
 
       return client.sendBlindingRequest(123)
-        .then((answer) => done(answer))
         .catch(() => done());
     });
 
@@ -274,21 +278,16 @@ describe("client", function() {
       context.hashed_token = 123;
 
       return client.sendBlindingRequest("1234", context)
-        .then((answer) => { done(answer); })
         .catch(() => done());
     });
 
-    it("should reject when a network error occurred", (done) => {
+    it("should reject when a network error occurred", async () => {
 
       const context = new RSABlindingContext();
-      context.hashed_token = new util.BigInteger("0");
+      context.hashed_token = util.BigInteger.ZERO;
 
-      const request_promise = client.sendBlindingRequest("1234", context)
-        .then((answer) => { done(answer); })
-        .catch((error) => {
-          assert.instanceOf(error, Error);
-          done();
-        });
+      const request_promise = client.sendBlindingRequest(util.BigInteger.ZERO, context)
+        .catch(error => assert.instanceOf(error, Error));
 
       assert.equal(1, this.server.requests.length);
       this.server.requests[0].onload = null;
@@ -303,28 +302,22 @@ describe("client", function() {
       this.server.respondWith([expected.code, { "Content-Type": "text/plain" }, ""]);
 
       let context = new RSABlindingContext();
-      context.hashed_token = new util.BigInteger("0");
+      context.hashed_token = util.BigInteger.ZERO;
 
-      return client.sendBlindingRequest("" , context)
-        .then((answer) => { done(answer); })
-        .catch((error) => {
-          assert.instanceOf(error, Error);
-          done();
-        });
+      return client.sendBlindingRequest(util.BigInteger.ZERO , context)
+        .catch(() => done());
     });
 
     it("should resolve and return server response if status is 200", () => {
 
-      const expected = "My expected response";
+      const expected = "deadbeef";
       this.server.respondWith([200, { "Content-Type": "text/plain" }, expected]);
 
       let context = new RSABlindingContext();
-      context.hashed_token = new util.BigInteger("0");
+      context.hashed_token = util.BigInteger.ZERO;
 
-      return client.sendBlindingRequest("" , context)
-        .then((answer) => {
-          assert.equal(expected, answer);
-        });
+      return client.sendBlindingRequest(util.BigInteger.ZERO , context)
+        .then(answer => assert.equal(expected, answer.toRadix(16)));
     });
   });
 });
