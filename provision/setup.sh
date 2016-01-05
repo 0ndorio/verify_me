@@ -55,8 +55,18 @@ pip install seccure > /dev/null
 
 echo "Copy Dummy Keys"
 mkdir -p ${application_name}/keys
-cp /vagrant/provision/config/dummy_server.key ${application_name}/keys/server.key
-cp /vagrant/provision/config/dummy_server_secret.key ${application_name}/keys/server_secret.key
+
+cp ${application_name}/client/test/sample_keys/rsa_2048_pub.asc \
+   ${application_name}/keys/rsa_server.asc
+
+cp ${application_name}/client/test/sample_keys/rsa_2048_priv.asc \
+   ${application_name}/keys/rsa_server_secret.asc
+
+cp ${application_name}/client/test/sample_keys/ecc_nist_p_256_pub.asc \
+   ${application_name}/keys/ecc_server.asc
+
+cp ${application_name}/client/test/sample_keys/ecc_nist_p_256_priv.asc \
+   ${application_name}/keys/ecc_server_secret.asc
 
 #echo "Run application"
 #/bin/bash ${application_name}/src/util_scripts/run_server.sh &
