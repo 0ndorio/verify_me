@@ -11,13 +11,13 @@ echo "Provisioning virtual machine ..."
 echo "Updating repositories"
 apt-get update > /dev/null
 apt-get upgrade -y > /dev/null
-locale-gen UTF-8
+locale-gen UTF-8 > /dev/null
 
 echo "Installing Nginx"
 apt-get install -y nginx > /dev/null
 
 echo "Configuring Nginx: certificate creation"
-mkdir -p /etc/nginx/ssl
+mkdir -p /etc/nginx/ssl > /dev/null
 openssl req -x509 -nodes -days 365 -newkey rsa:4096 \
             -subj "/C=${openssl_country}/ST=./L=./O=./CN=${openssl_cn}" \
             -keyout /etc/nginx/ssl/nginx.key \
@@ -26,17 +26,34 @@ openssl dhparam -out /etc/nginx/ssl/dhparam.pem 1024 2> /dev/null
 
 echo "Configuring Nginx: config"
 cp /vagrant/provision/config/nginx_vhost /etc/nginx/sites-available/nginx_vhost > /dev/null
-ln -s /etc/nginx/sites-available/nginx_vhost /etc/nginx/sites-enabled/
+ln -s /etc/nginx/sites-available/nginx_vhost /etc/nginx/sites-enabled/ > /dev/null
 
-rm -rf /etc/nginx/sites-available/default
-rm -rf /etc/nginx/sites-enabled/default
+rm -rf /etc/nginx/sites-available/default > /dev/null
+rm -rf /etc/nginx/sites-enabled/default > /dev/null
 
 echo "Configuring Nginx: restart service"
 service nginx restart > /dev/null
 
 echo "Installing Git"
-apt-get install -y git
+apt-get install -y git > /dev/null
 
 echo "Cloning repository"
-git clone --recursive https://github.com/0ndorio/verify_me.git ${application_name}
+git clone --recursive https://github.com/0ndorio/verify_me.git ${application_name} > /dev/null
 
+echo "Installing node.js & npm"
+curl -sL https://deb.nodesource.com/setup_5.x | sudo -E bash - > /dev/null
+apt-get install -y build-essential nodejs > /dev/nul
+npm install -g npm > /dev/null
+
+echo "Configure & build client"
+cd ${application_name}/client
+npm install --no-optional > /devnull
+npm ddp > /dev/null
+make build > /dev/null
+cd ../../
+
+echo "Configure & run server"
+cd ${application_name}/server
+npm install --no-optional > /dev/null
+npm ddp > /dev/null
+cd ../../
