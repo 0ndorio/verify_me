@@ -2,7 +2,6 @@
 
 import fs from "fs"
 import { KeyManager } from "kbpgp"
-import { assert } from "mocha"
 
 import config from "./config"
 const rsa = config.keys.rsa;
