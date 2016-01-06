@@ -1,11 +1,17 @@
-import { rsa_key, ecc_key} from "./server_keys"
+"use strict";
+
+import { rsa_promise, ecc_promise } from "./keys"
 
 export function sign_blinded_rsa_message()
 {
-  console.log(rsa_key);
+  return rsa_promise.then((key_manager) => {
+    return key_manager.armored_pgp_private;
+  });
 }
 
-export function sign_blinded_ecc_mesage()
+export function sign_blinded_ecdsa_mesage()
 {
-  console.log(ecc_key);
+  return ecc_promise.then((key_manager) => {
+    return key_manager.armored_pgp_private;
+  });
 }
