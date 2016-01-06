@@ -46,14 +46,10 @@ apt-get install -y build-essential nodejs > /dev/nul
 npm install -g npm > /dev/null
 
 echo "Configure & build client"
-cd ${application_name}/client
-npm install --no-optional > /devnull
-npm ddp > /dev/null
-make build > /dev/null
-cd ../../
+cd /vagrant/client/dist/* ${application_name}/client/dist/
 
 echo "Configure & run server"
 cd ${application_name}/server
-npm install --no-optional > /dev/null
+npm install --no-optional --silent > /dev/null
 npm ddp > /dev/null
 cd ../../
