@@ -1,57 +1,58 @@
 "use strict";
 
+import * as kbpgp from "kbpgp"
 import * as pad from "../../node_modules/kbpgp/lib/pad"
+
+import BlindingContext from "./blinding_context"
 import * as util from "../util"
+const assert = util.assert;
 
 /**
- * A rsa blinding context.
+ * A rsa based blinding context.
  */
-export default class RSABlindingContext
+export default class RSABlindingContext extends BlindingContext
 {
   constructor()
   {
+    super();
+    
     /** @type {BigInteger|null} */
     this.blinding_factor = null;
-    /** @type {BigInteger|null} */
-    this.hashed_token = null;
     /** @type {BigInteger|null} */
     this.modulus = null;
     /** @type {BigInteger|null} */
     this.public_exponent = null;
   }
 
-  /// TODO
-  containsPublicBlindingInformation()
+  /**
+   * Checks if a given {object} is a RSABlindingContext which fulfills all requirements
+   * to start the rsa blind signature creation.
+   *
+   * @param {*} object
+   *
+   * @returns {boolean}
+   *    {true} if the object can be used to start the rsa blind signature creation
+   *    else {false}
+   */
+  static isValidBlindingContext(object)
   {
-    return util.isBigInteger(this.modulus)
-        && util.isBigInteger(this.public_exponent);
+    return (object instanceof RSABlindingContext) && object.containsAllBlindingInformation();
   }
 
-  /// TODO
-  containsAllBlindingInformation()
+  /**
+   * Generates a blinding context based on the public information
+   * extracted from the RSA based input {KeyManager} object.
+   *
+   * @param {KeyManager} key_manager
+   *    The ECC based public key_manager that belongs to the blind signature issuer.
+   * @return {ECCBlindingContext}
+   *    The generated blinding context.
+   */
+  static fromKey(key_manager)
   {
-    return this.containsPublicBlindingInformation()
-        && util.isBigInteger(this.blinding_factor)
-        && util.isBigInteger(this.hashed_token);
-  }
+    util.assert(util.isKeyManagerForRsaSign(key_manager));
 
-  /// TODO
-  encode_signature_data(data, hasher)
-  {
-    const hashed_data = hasher(data);
-    const target_length = this.modulus.mpi_byte_length();
-
-    return pad.emsa_pkcs1_encode(hashed_data, target_length, { hasher: hasher });
-  }
-
-  /// TODO
-  static fromKey(key)
-  {
-    if (!util.isKeyManager(key)) {
-      return null;
-    }
-
-    const public_key_package = key.get_primary_keypair().pub;
+    const public_key_package = key_manager.get_primary_keypair().pub;
 
     let blinding_context = new RSABlindingContext();
     blinding_context.modulus = public_key_package.n;
@@ -60,17 +61,48 @@ export default class RSABlindingContext
     return blinding_context;
   }
 
-  /// TODO
-  static isValidFullBlindingInformation(blinding_context)
+  /**
+   * Checks if all information are present that are necessary
+   * to start the RSA based blind signature creation.
+   *
+   * For our RSA based blind signatures we need:
+   *
+   *  - {BigInteger} signers modulus
+   *  - {BigInteger} signers public exponent
+   *  - {BigInteger} the secret blinded factor
+   *  - {BigInteger} hash of the given token to authenticate our request
+   *
+   * @returns {boolean}
+   *    {true} if all necessary information are stored
+   *    else {false}
+   */
+  containsAllBlindingInformation()
   {
-    return (blinding_context instanceof RSABlindingContext)
-        && blinding_context.containsAllBlindingInformation();
+    return util.isBigInteger(this.modulus)
+        && util.isBigInteger(this.public_exponent)
+        && util.isBigInteger(this.blinding_factor)
+        && util.isBigInteger(this.hashed_token);
   }
 
-  /// TODO
-  static isValidPublicBlindingInformation(blinding_context)
+  /**
+   * To encode RSA signature data the data is first hashed
+   * and then encoded with the EMSA-PKCS1-v1_5 method.
+   *
+   * @param {Buffer} data
+   *    a {Buffer} containing the prepared signature data
+   * @param {function} hasher
+   *    the algorithm used to hash the data
+   * @returns {BigInteger}
+   *    the encoded and padded rsa signature data
+   */
+  encode_signature_data(data, hasher)
   {
-    return (blinding_context instanceof RSABlindingContext)
-        && blinding_context.containsPublicBlindingInformation();
+    assert(util.isBuffer(data));
+    assert(util.isFunction(hasher));
+
+    const hashed_data = hasher(data);
+    const target_length = this.modulus.mpi_byte_length();
+
+    return pad.emsa_pkcs1_encode(hashed_data, target_length, { hasher: hasher });
   }
 }

@@ -1,11 +1,11 @@
 "use strict";
 
 import { assert } from "chai"
-import * as client from "../../src/client"
+
 import * as util from "../../src/util"
 import RSABlindingContext from "../../src/types/rsa_blinding_context"
 
-import { controls } from "./../helper/client_control"
+import sample_keys from "./../helper/keys"
 
 describe("rsa_blinding_context", function() {
 
@@ -23,33 +23,9 @@ describe("rsa_blinding_context", function() {
     context = null;
   });
 
-  //
-  // test cases
-  //
-
-  describe("#containsPublicBlindingInformation", () => {
-
-    it ("should return false after initialization", () => {
-      assert.isFalse(context.containsPublicBlindingInformation());
-    });
-
-    it ("should return false if public exponent is missing", () => {
-      context.modulus = new util.BigInteger("1", 10);
-      assert.isFalse(context.containsPublicBlindingInformation());
-    });
-
-    it ("should return false if modulus is missing", () => {
-      context.public_exponent = new util.BigInteger("2", 10);
-      assert.isFalse(context.containsPublicBlindingInformation());
-    });
-
-    it ("should return true if all necessary information are present", () => {
-      context.modulus = new util.BigInteger("1", 10);
-      context.public_exponent = new util.BigInteger("2", 10);
-
-      assert.isTrue(context.containsPublicBlindingInformation());
-    });
-  });
+  ///-----------------------------------
+  /// #containsAllBlindingInformation()
+  ///-----------------------------------
 
   describe("#containsAllBlindingInformation", () => {
 
@@ -80,63 +56,52 @@ describe("rsa_blinding_context", function() {
     });
   });
 
+  ///-----------------------------------
+  /// #fromKey()
+  ///-----------------------------------
+
   describe("#fromKey", () => {
 
-    const tests = [
-      {arg: null}, {arg: undefined}, {arg: true}, {arg: "string"}, {arg: 123}, {arg: {}}
-    ];
-
-    tests.forEach((test) => {
-      it ("should return null if input is a " + typeof test.arg, () => {
-        assert.isNull(RSABlindingContext.fromKey(test.arg));
-      });
+    it ("should throw if input is no {KeyManager}", () => {
+      assert.throws(() => RSABlindingContext.fromKey(123), Error);
     });
 
-    it ("should return 'true' if input is a kbpgp {KeyManager}", async (done) => {
-      controls.loadFixture("test/fixture/keys_2048bit.html");
-
-      const key = await client.getServerPublicKey();
+    it ("should return {RSABlindingContext} if input is a rsa containing {KeyManager}", async () => {
+      const key = await util.generateKeyFromString(sample_keys.rsa[1024].pub);
       let context = RSABlindingContext.fromKey(key);
-      assert.isNotNull(context);
-      assert.isTrue(context.containsPublicBlindingInformation());
 
-      done();
+      assert.isNotNull(context);
+      assert.isNotNull(context.modulus);
+      assert.isNotNull(context.public_exponent);
     });
   });
 
-  describe("#isValidFullBlindingInformation", () => {
+  ///-----------------------------------
+  /// #isValidBlindingContext()
+  ///-----------------------------------
 
-    const tests = [
-      {arg: null,      expected: false},
-      {arg: undefined, expected: false},
-      {arg: true,      expected: false},
-      {arg: "string",  expected: false},
-      {arg: 123, expected: false},
-      {arg: {},  expected: false}
-    ];
+  describe("#isValidBlindingContext", () => {
 
-    tests.forEach((test) => {
-      it ("should return '" + test.expected + "' if input is a " + typeof test.arg, () => {
-        assert.equal(test.expected, RSABlindingContext.isValidFullBlindingInformation(test.arg));
-      });
+    it ("should return false if input is no {BlindingContext}", () => {
+      assert.isFalse(RSABlindingContext.isValidBlindingContext(123));
     });
 
     it ("should return false after initialization", () => {
-      assert.isFalse(RSABlindingContext.isValidFullBlindingInformation(context));
+      assert.isFalse(RSABlindingContext.isValidBlindingContext(context));
     });
 
     it ("should return false if blinding factor is missing", () => {
       context.modulus = new util.BigInteger("1", 10);
       context.public_exponent = new util.BigInteger("2", 10);
       context.hashed_token = new util.BigInteger("3", 10);
-      assert.isFalse(RSABlindingContext.isValidFullBlindingInformation(context));
+      assert.isFalse(RSABlindingContext.isValidBlindingContext(context));
     });
 
     it ("should return false if hashed token is missing", () => {
       context.modulus = new util.BigInteger("1", 10);
       context.public_exponent = new util.BigInteger("2", 10);
       context.blinding_factor = new util.BigInteger("3", 10);
-      assert.isFalse(RSABlindingContext.isValidFullBlindingInformation(context));
+      assert.isFalse(RSABlindingContext.isValidBlindingContext(context));
     });
 
     it ("should return true if all necessary information are present", () => {
@@ -144,46 +109,7 @@ describe("rsa_blinding_context", function() {
       context.public_exponent = new util.BigInteger("2", 10);
       context.blinding_factor = new util.BigInteger("3", 10);
       context.hashed_token = new util.BigInteger("4", 10);
-      assert.isTrue(RSABlindingContext.isValidFullBlindingInformation(context));
-    });
-  });
-
-  describe("#isValidPublicBlindingInformation", () => {
-
-    const tests = [
-      {arg: null,      expected: false},
-      {arg: undefined, expected: false},
-      {arg: true,      expected: false},
-      {arg: "string",  expected: false},
-      {arg: 123, expected: false},
-      {arg: {},  expected: false}
-    ];
-
-    tests.forEach((test) => {
-      it ("should return '" + test.expected + "' if input is a " + typeof test.arg, () => {
-        assert.equal(test.expected, RSABlindingContext.isValidPublicBlindingInformation(test.arg));
-      });
-    });
-
-    it ("should return false after initialization", () => {
-      assert.isFalse(RSABlindingContext.isValidPublicBlindingInformation(context));
-    });
-
-    it ("should return false if public exponent is missing", () => {
-      context.modulus = new util.BigInteger("1", 10);
-      assert.isFalse(RSABlindingContext.isValidPublicBlindingInformation(context));
-    });
-
-    it ("should return false if modulus is missing", () => {
-      context.public_exponent = new util.BigInteger("2", 10);
-      assert.isFalse(RSABlindingContext.isValidPublicBlindingInformation(context));
-    });
-
-    it ("should return true if all necessary information are present", () => {
-      context.modulus = new util.BigInteger("1", 10);
-      context.public_exponent = new util.BigInteger("2", 10);
-
-      assert.isTrue(RSABlindingContext.isValidPublicBlindingInformation(context));
+      assert.isTrue(RSABlindingContext.isValidBlindingContext(context));
     });
   });
 });

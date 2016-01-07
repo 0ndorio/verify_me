@@ -11,9 +11,9 @@ module.exports = {
   {
     let blinding_function = null;
 
-    if (RSABlindingContext.isValidFullBlindingInformation(blinding_context)) {
+    if (RSABlindingContext.isValidBlindingContext(blinding_context)) {
       blinding_function = this.blind_rsa_message;
-    } else if (ECCBlindingContext.isValidFullBlindingInformation(blinding_context)) {
+    } else if (ECCBlindingContext.isValidBlindingContext(blinding_context)) {
       blinding_function = this.blind_ecc_message;
     }
 
@@ -26,7 +26,7 @@ module.exports = {
   blind_rsa_message: function(message, blinding_context)
   {
     assert(util.isBigInteger(message));
-    assert(RSABlindingContext.isValidFullBlindingInformation(blinding_context));
+    assert(RSABlindingContext.isValidBlindingContext(blinding_context));
 
     const r = blinding_context.blinding_factor;
     const e = blinding_context.public_exponent;
@@ -39,7 +39,7 @@ module.exports = {
   blind_ecc_message: function(message, blinding_context)
   {
     assert(util.isBigInteger(message));
-    assert(ECCBlindingContext.isValidFullBlindingInformation(blinding_context));
+    assert(ECCBlindingContext.isValidBlindingContext(blinding_context));
 
     return null;
   },
@@ -49,9 +49,9 @@ module.exports = {
   {
     let blinding_function = null;
 
-    if (RSABlindingContext.isValidFullBlindingInformation(blinding_context)) {
+    if (RSABlindingContext.isValidBlindingContext(blinding_context)) {
       blinding_function = this.unblind_rsa_message;
-    } else if (ECCBlindingContext.isValidFullBlindingInformation(blinding_context)) {
+    } else if (ECCBlindingContext.isValidBlindingContext(blinding_context)) {
       blinding_function = this.unblind_ecc_message;
     }
 
@@ -64,7 +64,7 @@ module.exports = {
   unblind_rsa_message: function(message, blinding_context)
   {
     assert(util.isBigInteger(message));
-    assert(RSABlindingContext.isValidFullBlindingInformation(blinding_context));
+    assert(RSABlindingContext.isValidBlindingContext(blinding_context));
 
     const N = blinding_context.modulus;
     const r = blinding_context.blinding_factor;
@@ -77,7 +77,7 @@ module.exports = {
   unblind_ecc_message: function(message, blinding_context)
   {
     assert(util.isBigInteger(message));
-    assert(ECCBlindingContext.isValidFullBlindingInformation(blinding_context));
+    assert(ECCBlindingContext.isValidBlindingContext(blinding_context));
 
     return null;
   }

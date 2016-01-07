@@ -1,16 +1,18 @@
 "use strict";
 
+import BlindingContext from "./blinding_context"
 import * as util from "../util"
+const assert = util.assert;
 
 /**
  * A ecc blinding context.
  */
-export default class ECCBlindingContext
+export default class ECCBlindingContext extends BlindingContext
 {
   constructor()
   {
-    /** @type {Point|null} */
-    this.blinding_factor = null;
+    super();
+
     /** @type {Curve|null} */
     this.curve = null;
     /** @type {Point|null} */
@@ -19,35 +21,35 @@ export default class ECCBlindingContext
     this.hashed_token = null;
   }
 
-  /// TODO
-  containsPublicBlindingInformation()
+  /**
+   * Checks if a given {object} is a ECCBlindingContext which fulfills all requirements
+   * to start the ecdsa blind signature creation.
+   *
+   * @param {*} object
+   *
+   * @returns {boolean}
+   *    {true} if the object can be used to start the ecdsa blind signature creation
+   *    else {false}
+   */
+  static isValidBlindingContext(object)
   {
-    return util.isPoint(this.public_point)
-        && util.isCurve(this.curve);
+    return (object instanceof ECCBlindingContext) && object.containsAllBlindingInformation();
   }
 
-  /// TODO
-  containsAllBlindingInformation()
+  /**
+   * Generates a blinding context based on the public information
+   * extracted from the ECC based input {KeyManager} object.
+   *
+   * @param {KeyManager} key_manager
+   *    The ECC based public key_manager that belongs to the blind signature issuer.
+   * @return {ECCBlindingContext}
+   *    The generated blinding context.
+   */
+  static fromKey(key_manager)
   {
-    return this.containsPublicBlindingInformation()
-        && util.isBigInteger(this.blinding_factor)
-        && utl.isBigInteger(this.hashed_token);
-  }
+    assert(util.isKeyManagerForEcdsaSign(key_manager));
 
-  /// TODO
-  encode_signature_data(signData, hasher)
-  {
-    return util.BigInteger.fromByteArrayUnsigned(signData);
-  }
-
-  /// TODO
-  static fromKey(key)
-  {
-    if (!util.isKeyManager(key)) {
-      return null;
-    }
-
-    const public_key_package = key.get_primary_keypair().pub;
+    const public_key_package = key_manager.get_primary_keypair().pub;
 
     let context = new ECCBlindingContext();
     context.curve = public_key_package.curve;
@@ -56,17 +58,40 @@ export default class ECCBlindingContext
     return context;
   }
 
-  /// TODO
-  static isValidFullBlindingInformation(blinding_context)
+  /**
+   * Checks if all information are present that are necessary
+   * to start the ECDSA based blind signature creation.
+   *
+   * For our RSA based blind signatures we need:
+   *
+   *  - {Curve} signers curve
+   *  - {Point} signers public point
+   *  - {BigInteger} hash of the given token to authenticate our request
+   *
+   * @returns {boolean}
+   *    {true} if all necessary information are stored
+   *    else {false}
+   */
+  containsAllBlindingInformation()
   {
-    return (blinding_context instanceof ECCBlindingContext)
-        && blinding_context.containsAllBlindingInformation();
+    return util.isPoint(this.public_point)
+        && util.isCurve(this.curve)
+        && util.isBigInteger(this.hashed_token);
   }
 
-  /// TODO
-  static isValidPublicBlindingInformation(blinding_context)
+  /**
+   * ECDSA signature do not need any further encoding.
+   *
+   * @param {Buffer} data
+   *    a {Buffer} containing the prepared signature data
+   * @param {function} hasher
+   *    unused
+   * @returns {BigInteger}
+   *    the incoming signature data stored as {BigInteger}
+   */
+  encode_signature_data(data, hasher)
   {
-    return (blinding_context instanceof ECCBlindingContext)
-        && blinding_context.containsPublicBlindingInformation();
+    assert(util.isBuffer(data));
+    return util.BigInteger.fromByteArrayUnsigned(data);
   }
 }
