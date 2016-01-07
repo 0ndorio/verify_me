@@ -134,7 +134,7 @@ module.exports = {
     assert(util.isKeyManager(public_key));
     assert(util.isBigInteger(token));
 
-    const tags = kbpgp.const.openpgp.public_key_algorithms;
+    const tags = util.public_key_algorithms_tags;
     const public_key_algorithm = public_key.get_primary_keypair().get_type();
 
     let context = null;

@@ -6,12 +6,12 @@ default: build
 all: build
 
 build: src/main.js
-	$(BROWSERIFY) src/main.js -d -v \
+	$(BROWSERIFY) src/main.js -v \
                               -o dist/verifyme.js \
                               -t [ babelify --presets [ stage-3 es2015 ] ]
 
 watch: src/main.js
-	$(WATCHIFY) src/main.js -d -v \
+	$(WATCHIFY) src/main.js -v \
                             -o dist/verifyme.js \
                             -t [ babelify --presets [ stage-3 es2015 ] ]
 

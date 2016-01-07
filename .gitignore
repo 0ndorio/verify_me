@@ -16,4 +16,5 @@ coverage/
 coverages/
 dist/
 node_modules/
+temp-gnupg-dir/
 virtual_env/

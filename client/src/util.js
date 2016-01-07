@@ -8,6 +8,7 @@ module.exports = {
 
   BigInteger: BigInteger,
   Point: Point,
+  public_key_algorithms_tags: kbpgp.const.openpgp.public_key_algorithms,
 
   assert: function (condition, message)
   {
@@ -92,49 +93,170 @@ module.exports = {
     return BigInteger.fromBuffer(hash_buffer);
   },
 
-  /// TODO
-  isBigInteger: function(bigInteger)
+  /**
+   * Checks if the given object is a {BigInteger}.
+   *
+   * @param {*} object
+   *
+   * @returns {boolean}
+   *    {true} if the given element is a {BigInteger}
+   *    else {false}
+   */
+  isBigInteger: function(object)
   {
-    return this.isObject(bigInteger) && (bigInteger.constructor.name === BigInteger.name);
-  },
-
-  /// TODO
-  isCurve: function(curve)
-  {
-    return this.isObject(curve) && (curve instanceof kbpgp.ecc.curves.Curve);
-  },
-
-  /// TODO
-  isInteger: function(integer)
-  {
-    return (typeof integer === "number") && (integer % 1 === 0);
+    return this.isObject(object) && (object.constructor.name === BigInteger.name);
   },
 
   /**
-   * Checks if the input parameter is an object.
-   * @param {Object} object
+   * Checks if the given object is a {Buffer}.
+   *
+   * @param {*} object
+   *
    * @returns {boolean}
+   *    {true} if the given element is a {Buffer}
+   *    else {false}
+   */
+  isBuffer: function (object)
+  {
+    return this.isObject(object) && (object instanceof kbpgp.Buffer);
+  },
+
+  /**
+   * Checks if the given element is an ecc {Curve}.
+   *
+   * @param {*} object
+   *
+   * @returns {boolean}
+   *    {true} if the given element is a {Curve}
+   *    else {false}
+   */
+  isCurve: function(object)
+  {
+    return this.isObject(object) && (object instanceof kbpgp.ecc.curves.Curve);
+  },
+
+  /**
+   * Checks if the given element is a {function}.
+   *
+   * @param {*} object
+   *
+   * @returns {boolean}
+   *    {true} if the given element is a {function}
+   *    else {false}
+   */
+  isFunction: function(object)
+  {
+    return (typeof object === "function");
+  },
+
+  /**
+   * Checks if the given element is an integer {number}.
+   *
+   * @param {*} object
+   *
+   * @returns {boolean}
+   *    {true} if the given element is an integer
+   *    else {false}
+   */
+  isInteger: function(object)
+  {
+    return (typeof object === "number") && (object % 1 === 0);
+  },
+
+  /**
+   * Checks if the given element is an {object}.
+   *
+   * @param {*} object
+   *
+   * @returns {boolean}
+   *    {true} if the given element is an {object}
+   *    else {false}
    */
   isObject: function(object)
   {
     return object === Object(object);
   },
 
-  // TODO
-  isKeyManager: function(key)
+  /**
+   * Checks if the given object is a valid {KeyManager}.
+   *
+   * @param {*} key_manager
+   *
+   * @returns {boolean}
+   *    {true} if the given object is a {KeyManager}
+   *    else {false}.
+   */
+  isKeyManager: function(key_manager)
   {
-    return (key instanceof kbpgp.KeyManager);
+    return (key_manager instanceof kbpgp.KeyManager)
+        && (key_manager.get_primary_keypair() !== null);
   },
 
-  /// TODO
-  isPoint: function(point)
+  /**
+   * Checks if the given object is a valid {KeyManager} which
+   * contains a ECDSA based key_manager.
+   *
+   * @param {KeyManager} key_manager
+   *    The object that is checked for the used algorithm.
+   * @returns {boolean}
+   *    {true} if the given object is a {KeyManager} that can be
+   *    used to sign based on the ECDSA algorithm else {false}.
+   */
+  isKeyManagerForEcdsaSign(key_manager)
   {
-    return this.isObject(point) && (point instanceof Point);
+    if (!this.isKeyManager(key_manager)) { return false; }
+
+    const tags = this.public_key_algorithms_tags;
+    const key_algorithm = key_manager.get_primary_keypair().get_type();
+
+    return (key_algorithm === tags.ECDSA);
   },
 
-  /// Validates if the input parameter is a string.
-  isString: function(string)
+  /**
+   * Checks if the given object is a valid {KeyManager} which
+   * contains a RSA or RSA_SIGN_ONLY based key_manager.
+   *
+   * @param {KeyManager} key_manager
+   *    The object that is checked for the used algorithm.
+   * @returns {boolean}
+   *    {true} if the given object is a {KeyManager} that can be used
+   *    to sign based on the RSA algorithm else {false}.
+   */
+  isKeyManagerForRsaSign(key_manager)
   {
-    return (typeof string === "string");
+    if (!this.isKeyManager(key_manager)) { return false; }
+
+    const key_algorithm = key_manager.get_primary_keypair().get_type();
+    const tags = this.public_key_algorithms_tags;
+
+    return (key_algorithm === tags.RSA) || (key_algorithm === tags.RSA_SIGN_ONLY);
+  },
+
+  /**
+   * Checks if the given element is a {Point}.
+   *
+   * @param {*} object
+   *
+   * @returns {boolean}
+   *    {true} if the given element is a {Point}
+   *    else {false}
+   */
+  isPoint: function(object)
+  {
+    return this.isObject(object) && (object instanceof Point);
+  },
+
+  /**
+   * Checks if the given element is a {string}.
+   *
+   * @param {*} object
+   *
+   * @returns {boolean}
+   *    {true} if the given element is a {Point}
+   *    else {false}
+   */
+  isString: function(object)
+  {
+    return (typeof object === "string");
   }
 };
