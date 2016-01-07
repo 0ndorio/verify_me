@@ -35,6 +35,12 @@ export default class ECCBlindingContext
   }
 
   /// TODO
+  encode_signature_data(signData, hasher)
+  {
+    return util.BigInteger.fromByteArrayUnsigned(signData);
+  }
+
+  /// TODO
   static fromKey(key)
   {
     if (!util.isKeyManager(key)) {

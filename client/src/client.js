@@ -214,7 +214,7 @@ module.exports = {
     const token = this.getToken();
 
     const context = await this.generateBlindingContext(server_public_key, token);
-    const packet = new BlindSignaturePacket(public_key, server_public_key);
+    const packet = new BlindSignaturePacket(public_key, server_public_key, context);
     
     return { context, packet, token };
   }

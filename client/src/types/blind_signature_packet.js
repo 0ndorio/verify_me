@@ -4,7 +4,9 @@ import * as kbpgp from "kbpgp"
 const Constants = kbpgp.const;
 
 import * as sig from "../../node_modules/kbpgp/lib/openpgp/packet/signature"
-import * as pad from "../../node_modules/kbpgp/lib/pad"
+
+import ECCBlindingContext from "./ecc_blinding_context"
+import RSABlindingContext from "./rsa_blinding_context"
 
 import * as util from "../util"
 
@@ -13,11 +15,10 @@ import * as util from "../util"
 /// @parameter {KeyManager} sig_key
 export default class BlindSignaturePacket extends sig.Signature
 {
-  constructor(target_key, sig_key)
+  constructor(target_key, sig_key, context)
   {
     const hashed_subpackets = [
-      new sig.CreationTime(BlindSignaturePacket.calculateRandomCreationDate(target_key)),
-      new sig.PreferredHashAlgorithms([Constants.openpgp.hash_algorithms.SHA512])
+      new sig.CreationTime(BlindSignaturePacket.calculateRandomCreationDate(target_key))
     ];
 
     const unhashed_subpackets = [
@@ -39,7 +40,7 @@ export default class BlindSignaturePacket extends sig.Signature
     this.target_key = target_key;
     this.primary = target_key.pgp.key(target_key.pgp.primary);
 
-    this.prepare_raw_sig();
+    this.prepare_raw_sig(context);
   }
 
   /// Create random creation time between key creation und expire date
@@ -68,18 +69,11 @@ export default class BlindSignaturePacket extends sig.Signature
   }
 
   /// TODO
-  prepare_raw_sig()
+  prepare_raw_sig(context)
   {
-    // TODO: Input Checks
-
     const signData = this.generate_sig_payload();
-    const hashed_signData = this.hasher(signData);
-    const target_length = this.key.pub.n.mpi_byte_length();
 
-    this.raw_signature = pad.emsa_pkcs1_encode(
-      hashed_signData, target_length, { hasher: this.hasher }
-    );
-
+    this.raw_signature = context.encode_signature_data(signData, this.hasher);
     this.signed_hash_value_hash = this.raw_signature.toBuffer().slice(0, 2);
   }
 
@@ -122,7 +116,8 @@ export default class BlindSignaturePacket extends sig.Signature
   generate_sig_prefix()
   {
     const hashedSubpkts = this.hashed_subpackets
-      .reduce((lhs, rhs) => kbpgp.Buffer.concat([lhs.to_buffer(), rhs.to_buffer()]));
+      .map(subpacket => subpacket.to_buffer())
+      .reduce((lhs, rhs) => kbpgp.Buffer.concat([lhs, rhs]));
 
     return kbpgp.Buffer.concat([
       new Buffer([

@@ -1,5 +1,6 @@
 "use strict";
 
+import * as pad from "../../node_modules/kbpgp/lib/pad"
 import * as util from "../util"
 
 /**
@@ -32,6 +33,15 @@ export default class RSABlindingContext
     return this.containsPublicBlindingInformation()
         && util.isBigInteger(this.blinding_factor)
         && util.isBigInteger(this.hashed_token);
+  }
+
+  /// TODO
+  encode_signature_data(data, hasher)
+  {
+    const hashed_data = hasher(data);
+    const target_length = this.modulus.mpi_byte_length();
+
+    return pad.emsa_pkcs1_encode(hashed_data, target_length, { hasher: hasher });
   }
 
   /// TODO
