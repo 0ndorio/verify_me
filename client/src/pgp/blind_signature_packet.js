@@ -5,8 +5,8 @@ const Constants = kbpgp.const;
 
 import * as sig from "../../node_modules/kbpgp/lib/openpgp/packet/signature"
 
-import ECCBlindingContext from "./ecc_blinding_context"
-import RSABlindingContext from "./rsa_blinding_context"
+import ECCBlindingContext from "./../blinding/blinding_context_ecdsa"
+import RSABlindingContext from "./../blinding/blinding_context_rsa"
 
 import * as util from "../util"
 

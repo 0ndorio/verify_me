@@ -10,7 +10,7 @@ const assert = util.assert;
 /**
  * A rsa based blinding context.
  */
-export default class RSABlindingContext extends BlindingContext
+export default class RsaBlindingContext extends BlindingContext
 {
   constructor()
   {
@@ -25,7 +25,7 @@ export default class RSABlindingContext extends BlindingContext
   }
 
   /**
-   * Checks if a given {object} is a RSABlindingContext which fulfills all requirements
+   * Checks if a given {object} is a RsaBlindingContext which fulfills all requirements
    * to start the rsa blind signature creation.
    *
    * @param {*} object
@@ -36,7 +36,7 @@ export default class RSABlindingContext extends BlindingContext
    */
   static isValidBlindingContext(object)
   {
-    return (object instanceof RSABlindingContext) && object.containsAllBlindingInformation();
+    return (object instanceof RsaBlindingContext) && object.containsAllBlindingInformation();
   }
 
   /**
@@ -45,7 +45,7 @@ export default class RSABlindingContext extends BlindingContext
    *
    * @param {KeyManager} key_manager
    *    The ECC based public key_manager that belongs to the blind signature issuer.
-   * @return {ECCBlindingContext}
+   * @return {EcdsaBlindingContext}
    *    The generated blinding context.
    */
   static fromKey(key_manager)
@@ -54,7 +54,7 @@ export default class RSABlindingContext extends BlindingContext
 
     const public_key_package = key_manager.get_primary_keypair().pub;
 
-    let blinding_context = new RSABlindingContext();
+    let blinding_context = new RsaBlindingContext();
     blinding_context.modulus = public_key_package.n;
     blinding_context.public_exponent = public_key_package.e;
 

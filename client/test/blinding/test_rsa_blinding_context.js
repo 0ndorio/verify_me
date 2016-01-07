@@ -3,7 +3,7 @@
 import { assert } from "chai"
 
 import * as util from "../../src/util"
-import RSABlindingContext from "../../src/types/rsa_blinding_context"
+import RSABlindingContext from "../../src/blinding/blinding_context_rsa"
 
 import sample_keys from "./../helper/keys"
 
@@ -66,7 +66,7 @@ describe("rsa_blinding_context", function() {
       assert.throws(() => RSABlindingContext.fromKey(123), Error);
     });
 
-    it ("should return {RSABlindingContext} if input is a rsa containing {KeyManager}", async () => {
+    it ("should return {RsaBlindingContext} if input is a rsa containing {KeyManager}", async () => {
       const key = await util.generateKeyFromString(sample_keys.rsa[1024].pub);
       let context = RSABlindingContext.fromKey(key);
 

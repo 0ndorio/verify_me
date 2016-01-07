@@ -3,11 +3,11 @@
 import { assert } from "chai"
 import * as kbpgp from "kbpgp"
 
-import ECClindingContext from "../src/types/ecc_blinding_context"
-import RSABlindingContext from "../src/types/rsa_blinding_context"
+import ECClindingContext from "../../src/blinding/blinding_context_ecdsa"
+import RSABlindingContext from "../../src/blinding/blinding_context_rsa"
 
-import * as blinding from "../src/blinding"
-import * as util from "../src/util"
+import * as blinding from "../../src/blinding/blinding"
+import * as util from "../../src/util"
 
 describe("blinding", function() {
 

@@ -3,7 +3,7 @@
 import { assert } from "chai"
 
 import * as util from "../../src/util"
-import ECCBlindingContext from "../../src/types/ecc_blinding_context"
+import ECCBlindingContext from "../../src/blinding/blinding_context_ecdsa"
 
 import sample_keys from "./../helper/keys"
 

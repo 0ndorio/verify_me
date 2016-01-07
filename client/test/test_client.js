@@ -6,8 +6,8 @@ import * as sinon from "sinon"
 
 import * as client from "../src/client"
 import * as util from "../src/util"
-import RSABlindingContext from "../src/types/rsa_blinding_context"
-import ECCBlindingContext from "../src/types/ecc_blinding_context"
+import RSABlindingContext from "../src/blinding/blinding_context_rsa"
+import ECCBlindingContext from "../src/blinding/blinding_context_ecdsa"
 
 import { controls } from "./helper/client_control"
 import sample_keys from "./helper/keys"
@@ -242,13 +242,13 @@ describe("client", function() {
         .catch(error => assert.instanceOf(error, Error));
     });
 
-    it ("should return an RSABlindingContext if input is a rsa key", async () => {
+    it ("should return an RsaBlindingContext if input is a rsa key", async () => {
       const key = await util.generateKeyFromString(sample_keys.rsa[1024].pub);
       return client.generateBlindingContext(key, token)
         .then(context => assert.instanceOf(context, RSABlindingContext));
     });
 
-    it ("should return an ECCBlindingContext if input is a ecc key", async () => {
+    it ("should return an EcdsaBlindingContext if input is a ecc key", async () => {
       const key = await util.generateKeyFromString(sample_keys.ecc.nist[256].pub);
       return client.generateBlindingContext(key, token)
         .then(context => assert.instanceOf(context, ECCBlindingContext));

@@ -1,8 +1,8 @@
 "use strict";
 
-import ECCBlindingContext from "./types/ecc_blinding_context"
-import RSABlindingContext from "./types/rsa_blinding_context"
-import BlindSignaturePacket from "./types/blind_signature_packet"
+import ECCBlindingContext from "./blinding/blinding_context_ecdsa"
+import RSABlindingContext from "./blinding/blinding_context_rsa"
+import BlindSignaturePacket from "./pgp/blind_signature_packet"
 import * as util from "./util"
 const assert = util.assert;
 

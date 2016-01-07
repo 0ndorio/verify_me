@@ -1,7 +1,7 @@
 "use strict";
-import ECCBlindingContext from "./types/ecc_blinding_context"
-import RSABlindingContext from "./types/rsa_blinding_context"
-import * as util from "./util"
+import ECCBlindingContext from "./blinding_context_ecdsa"
+import RSABlindingContext from "./blinding_context_rsa"
+import * as util from "./../util"
 const assert = util.assert;
 
 module.exports = {

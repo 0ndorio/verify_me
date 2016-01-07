@@ -7,7 +7,7 @@ const assert = util.assert;
 /**
  * A ecc blinding context.
  */
-export default class ECCBlindingContext extends BlindingContext
+export default class EcdsaBlindingContext extends BlindingContext
 {
   constructor()
   {
@@ -22,7 +22,7 @@ export default class ECCBlindingContext extends BlindingContext
   }
 
   /**
-   * Checks if a given {object} is a ECCBlindingContext which fulfills all requirements
+   * Checks if a given {object} is a EcdsaBlindingContext which fulfills all requirements
    * to start the ecdsa blind signature creation.
    *
    * @param {*} object
@@ -33,7 +33,7 @@ export default class ECCBlindingContext extends BlindingContext
    */
   static isValidBlindingContext(object)
   {
-    return (object instanceof ECCBlindingContext) && object.containsAllBlindingInformation();
+    return (object instanceof EcdsaBlindingContext) && object.containsAllBlindingInformation();
   }
 
   /**
@@ -42,7 +42,7 @@ export default class ECCBlindingContext extends BlindingContext
    *
    * @param {KeyManager} key_manager
    *    The ECC based public key_manager that belongs to the blind signature issuer.
-   * @return {ECCBlindingContext}
+   * @return {EcdsaBlindingContext}
    *    The generated blinding context.
    */
   static fromKey(key_manager)
@@ -51,7 +51,7 @@ export default class ECCBlindingContext extends BlindingContext
 
     const public_key_package = key_manager.get_primary_keypair().pub;
 
-    let context = new ECCBlindingContext();
+    let context = new EcdsaBlindingContext();
     context.curve = public_key_package.curve;
     context.public_point = public_key_package.R;
 

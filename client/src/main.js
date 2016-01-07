@@ -2,9 +2,9 @@
 
 import "babel-polyfill"
 
-import * as blinding from "./blinding"
+import * as blinding from "./blinding/blinding"
 import * as client from "./client"
-import * as pgp from "./pgp"
+import * as pgp from "./pgp/pgp"
 import * as util from "./util"
 
 /// TODO: think about function extraction
