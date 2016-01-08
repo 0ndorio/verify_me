@@ -1,6 +1,6 @@
 "use strict";
-import ECCBlindingContext from "./blinding_context_ecdsa"
-import RSABlindingContext from "./blinding_context_rsa"
+import EcdsaBlindingContext from "./blinding_context_ecdsa"
+import RsaBlindingContext from "./blinding_context_rsa"
 import * as util from "./../util"
 const assert = util.assert;
 
@@ -11,10 +11,10 @@ module.exports = {
   {
     let blinding_function = null;
 
-    if (RSABlindingContext.isValidBlindingContext(blinding_context)) {
-      blinding_function = this.blind_rsa_message;
-    } else if (ECCBlindingContext.isValidBlindingContext(blinding_context)) {
-      blinding_function = this.blind_ecc_message;
+    if (RsaBlindingContext.isValidBlindingContext(blinding_context)) {
+      blinding_function = this.blind_message_rsa;
+    } else if (EcdsaBlindingContext.isValidBlindingContext(blinding_context)) {
+      blinding_function = this.blind_message_ecdsa;
     }
 
     assert(util.isBigInteger(message));
@@ -23,10 +23,10 @@ module.exports = {
   },
 
   /// TODO
-  blind_rsa_message: function(message, blinding_context)
+  blind_message_rsa: function(message, blinding_context)
   {
     assert(util.isBigInteger(message));
-    assert(RSABlindingContext.isValidBlindingContext(blinding_context));
+    assert(RsaBlindingContext.isValidBlindingContext(blinding_context));
 
     const r = blinding_context.blinding_factor;
     const e = blinding_context.public_exponent;
@@ -36,10 +36,10 @@ module.exports = {
   },
 
   /// TODO
-  blind_ecc_message: function(message, blinding_context)
+  blind_message_ecdsa: function(message, blinding_context)
   {
     assert(util.isBigInteger(message));
-    assert(ECCBlindingContext.isValidBlindingContext(blinding_context));
+    assert(EcdsaBlindingContext.isValidBlindingContext(blinding_context));
 
     return null;
   },
@@ -49,10 +49,10 @@ module.exports = {
   {
     let blinding_function = null;
 
-    if (RSABlindingContext.isValidBlindingContext(blinding_context)) {
-      blinding_function = this.unblind_rsa_message;
-    } else if (ECCBlindingContext.isValidBlindingContext(blinding_context)) {
-      blinding_function = this.unblind_ecc_message;
+    if (RsaBlindingContext.isValidBlindingContext(blinding_context)) {
+      blinding_function = this.unblind_message_rsa;
+    } else if (EcdsaBlindingContext.isValidBlindingContext(blinding_context)) {
+      blinding_function = this.unblind_message_ecdsa;
     }
 
     assert(util.isBigInteger(message));
@@ -61,10 +61,10 @@ module.exports = {
   },
 
   /// TODO
-  unblind_rsa_message: function(message, blinding_context)
+  unblind_message_rsa: function(message, blinding_context)
   {
     assert(util.isBigInteger(message));
-    assert(RSABlindingContext.isValidBlindingContext(blinding_context));
+    assert(RsaBlindingContext.isValidBlindingContext(blinding_context));
 
     const N = blinding_context.modulus;
     const r = blinding_context.blinding_factor;
@@ -74,10 +74,10 @@ module.exports = {
   },
 
   /// TODO
-  unblind_ecc_message: function(message, blinding_context)
+  unblind_message_ecdsa: function(message, blinding_context)
   {
     assert(util.isBigInteger(message));
-    assert(ECCBlindingContext.isValidBlindingContext(blinding_context));
+    assert(EcdsaBlindingContext.isValidBlindingContext(blinding_context));
 
     return null;
   }

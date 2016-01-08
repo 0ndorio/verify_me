@@ -49,7 +49,7 @@ describe("blinding", function() {
 
   });
 
-  describe("#blind_ecc_message()", () => {
+  describe("#blind_message_ecdsa()", () => {
 
     it ("should throw an assertion if message is no {BigInteger}");
 
@@ -59,7 +59,7 @@ describe("blinding", function() {
 
   });
 
-  describe("#blind_rsa_message()", () => {
+  describe("#blind_message_rsa()", () => {
 
     it ("should throw an assertion if message is no {BigInteger}", () => {
       assert.throws(() => blinding.blind_message({}, new RSABlindingContext()));
@@ -124,7 +124,7 @@ describe("blinding", function() {
 
   });
 
-  describe("#unblind_ecc_message()", () => {
+  describe("#unblind_message_ecdsa()", () => {
 
     it ("should throw an assertion if message is no {BigInteger}");
 
@@ -134,7 +134,7 @@ describe("blinding", function() {
 
   });
 
-  describe("#unblind_rsa_message()", () => {
+  describe("#unblind_message_rsa()", () => {
 
     it ("should throw an assertion if message is no {BigInteger}", () => {
       assert.throws(() => blinding.unblind_message({}, new RSABlindingContext()));

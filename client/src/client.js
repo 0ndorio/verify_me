@@ -1,7 +1,7 @@
 "use strict";
 
-import ECCBlindingContext from "./blinding/blinding_context_ecdsa"
-import RSABlindingContext from "./blinding/blinding_context_rsa"
+import EcdsaBlindingContext from "./blinding/blinding_context_ecdsa"
+import RsaBlindingContext from "./blinding/blinding_context_rsa"
 import BlindSignaturePacket from "./pgp/blind_signature_packet"
 import * as util from "./util"
 const assert = util.assert;
@@ -141,7 +141,7 @@ module.exports = {
     switch (public_key_algorithm) {
       case tags.RSA:
       case tags.RSA_SIGN_ONLY: {
-        context = RSABlindingContext.fromKey(public_key);
+        context = RsaBlindingContext.fromKey(public_key);
 
         const blinding_factor = await util.generateBlindingFactor(context.modulus.bitLength());
         context.blinding_factor = token.multiply(blinding_factor);
@@ -149,7 +149,7 @@ module.exports = {
         break;
       }
       case tags.ECDSA: {
-        context = ECCBlindingContext.fromKey(public_key);
+        context = EcdsaBlindingContext.fromKey(public_key);
         break;
       }
       case tags.RSA_ENCRYPT_ONLY:
@@ -170,8 +170,7 @@ module.exports = {
 
     const message = JSON.stringify({
       message:    blinded_message.toRadix(16),
-      token_hash: blinding_context.hashed_token.toRadix(16),
-      is_rsa:     (blinding_context instanceof RSABlindingContext)
+      token_hash: blinding_context.hashed_token.toRadix(16)
     });
 
     return this.generateBlindingRequestPromise(message)

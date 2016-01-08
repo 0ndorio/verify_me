@@ -1,20 +1,16 @@
 "use strict";
 
 import * as kbpgp from "kbpgp"
+import * as sig from "../../node_modules/kbpgp/lib/openpgp/packet/signature"
 const Constants = kbpgp.const;
 
-import * as sig from "../../node_modules/kbpgp/lib/openpgp/packet/signature"
-
-import ECCBlindingContext from "./../blinding/blinding_context_ecdsa"
-import RSABlindingContext from "./../blinding/blinding_context_rsa"
-
+import BlindingContext from "./../blinding/blinding_context"
 import * as util from "../util"
 
 /// TODO
-/// @parameter {KeyManager} target_key
-/// @parameter {KeyManager} sig_key
 export default class BlindSignaturePacket extends sig.Signature
 {
+  /// TODO
   constructor(target_key, sig_key, context)
   {
     const hashed_subpackets = [
