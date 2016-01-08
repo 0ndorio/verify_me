@@ -121,48 +121,6 @@ module.exports = {
     return content;
   },
 
-  /**
-   * Generates a {BlindingContext} for the given {KeyManager}.
-   *
-   * @param {KeyManager} public_key
-   *    The {KeyManager} containing the public_key we want to use to create a signature.
-   * @return
-   *    A {BlindingContext} related to the public key algorithm used to create the input key.
-   */
-  generateBlindingContext: async function(public_key, token)
-  {
-    assert(util.isKeyManager(public_key));
-    assert(util.isBigInteger(token));
-
-    const tags = util.public_key_algorithms_tags;
-    const public_key_algorithm = public_key.get_primary_keypair().get_type();
-
-    let context = null;
-    switch (public_key_algorithm) {
-      case tags.RSA:
-      case tags.RSA_SIGN_ONLY: {
-        context = RsaBlindingContext.fromKey(public_key);
-
-        const blinding_factor = await util.generateBlindingFactor(context.modulus.bitLength());
-        context.blinding_factor = token.multiply(blinding_factor);
-
-        break;
-      }
-      case tags.ECDSA: {
-        context = EcdsaBlindingContext.fromKey(public_key);
-        break;
-      }
-      case tags.RSA_ENCRYPT_ONLY:
-        throw new Error("Requested public key algorithm is for encryption only.");
-      default:
-        throw new Error("Unsupported public key algorithm id: " + public_key_algorithm);
-    }
-
-    context.hashed_token = util.hashMessage(token.toRadix());
-
-    return context;
-  },
-
   prepareBlinding: async function ()
   {
     const public_key = await this.getPublicKey();

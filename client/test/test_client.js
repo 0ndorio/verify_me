@@ -212,46 +212,4 @@ describe("client", function() {
       assert.equal(string, result);
     });
   });
-
-  ///---------------------------------
-  /// #generateBlindingContext()
-  ///---------------------------------
-
-  describe("#generateBlindingContext()", () => {
-
-    const token = new util.BigInteger("3", 16);
-
-    it ("should return a rejected promise if input is no {KeyManager} object", () => {
-      return client.generateBlindingContext(123, token)
-        .catch(error => assert.instanceOf(error, Error));
-    });
-
-    it ("should return a rejected promise if key algorithm is encryption only key", async () => {
-      const key = await util.generateKeyFromString(sample_keys.rsa[1024].pub);
-      key.primary.key.type = kbpgp.const.openpgp.public_key_algorithms.RSA_ENCRYPT_ONLY;
-
-      return client.generateBlindingContext(key, token)
-        .catch(error => assert.instanceOf(error, Error));
-    });
-
-    it ("should return a rejected promise if key algorithm is unknown", async () => {
-      const key = await util.generateKeyFromString(sample_keys.rsa[1024].pub);
-      key.primary.key.type = -1;
-
-      return client.generateBlindingContext(key, token)
-        .catch(error => assert.instanceOf(error, Error));
-    });
-
-    it ("should return an RsaBlindingContext if input is a rsa key", async () => {
-      const key = await util.generateKeyFromString(sample_keys.rsa[1024].pub);
-      return client.generateBlindingContext(key, token)
-        .then(context => assert.instanceOf(context, RsaBlindingContext));
-    });
-
-    it ("should return an EcdsaBlindingContext if input is a ecc key", async () => {
-      const key = await util.generateKeyFromString(sample_keys.ecc.nist[256].pub);
-      return client.generateBlindingContext(key, token)
-        .then(context => assert.instanceOf(context, EcdsaBlindingContext));
-    });
-  });
 });

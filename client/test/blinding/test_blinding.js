@@ -3,13 +3,14 @@
 import { assert } from "chai"
 import * as kbpgp from "kbpgp"
 
-import ECClindingContext from "../../src/blinding/blinding_context_ecdsa"
-import RSABlindingContext from "../../src/blinding/blinding_context_rsa"
-
-import * as blinding from "../../src/blinding/blinding"
+import Blinding from "../../src/blinding/blinding"
+import EcdsaBlindingContext from "../../src/blinding/blinding_context_ecdsa"
+import RsaBlindingContext from "../../src/blinding/blinding_context_rsa"
 import * as util from "../../src/util"
 
-describe("blinding", function() {
+import sample_keys from "../helper/keys"
+
+describe("Blinding", function() {
 
   //
   // suite functions
@@ -18,27 +19,28 @@ describe("blinding", function() {
   beforeEach(() => {});
   afterEach(() => {});
 
-  //
-  // test cases
-  //
+  ///---------------------------------
+  /// #blind_message()
+  ///---------------------------------
+
   describe("#blind_message()", () => {
     it ("should throw an assertion if message is no {BigInteger}", () => {
-      assert.throws(() => blinding.blind_message({}, new RSABlindingContext()));
+      assert.throws(() => Blinding.blind_message({}, new RsaBlindingContext()));
     });
 
     it ("should throw an assertion if the blinding context is unknown", () => {
-      assert.throws(() => blinding.blind_message({}, null));
+      assert.throws(() => Blinding.blind_message({}, null));
     });
 
     it ("should return a correct blinded {BigInteger} with valid RSA input", async (done) => {
 
-      let context = new RSABlindingContext();
+      let context = new RsaBlindingContext();
       context.blinding_factor = new util.BigInteger("5", 10);
       context.modulus = new util.BigInteger("7", 10);
       context.public_exponent = new util.BigInteger("3", 10);
       context.hashed_token = new util.BigInteger("3", 10);
 
-      const blinded_message = blinding.blind_message(util.BigInteger.ONE, context);
+      const blinded_message = Blinding.blind_message(util.BigInteger.ONE, context);
       assert.isTrue(util.isBigInteger(blinded_message));
       assert.equal("6", blinded_message.toRadix(10));
 
@@ -48,6 +50,10 @@ describe("blinding", function() {
     it ("should return a correct blinded {BigInteger} with valid ECDSA input");
 
   });
+
+  ///---------------------------------
+  /// #blind_message_ecdsa()
+  ///---------------------------------
 
   describe("#blind_message_ecdsa()", () => {
 
@@ -59,14 +65,18 @@ describe("blinding", function() {
 
   });
 
+  ///---------------------------------
+  /// #blind_message_rsa()
+  ///---------------------------------
+
   describe("#blind_message_rsa()", () => {
 
     it ("should throw an assertion if message is no {BigInteger}", () => {
-      assert.throws(() => blinding.blind_message({}, new RSABlindingContext()));
+      assert.throws(() => Blinding.blind_message({}, new RsaBlindingContext()));
     });
 
     it ("should throw an assertion if the blinding context is incomplete", () => {
-      assert.throws(() => blinding.blind_message(util.BigInteger.ZERO, new RSABlindingContext()));
+      assert.throws(() => Blinding.blind_message(util.BigInteger.ZERO, new RsaBlindingContext()));
     });
 
     const tests = [
@@ -81,14 +91,14 @@ describe("blinding", function() {
     tests.forEach((test) => {
       it ("should return '" + test.expected + "' for specified input", () => {
 
-        let context = new RSABlindingContext();
+        let context = new RsaBlindingContext();
         context.blinding_factor = new util.BigInteger(test.args.blinding_factor, 10);
         context.modulus = new util.BigInteger(test.args.modulus, 10);
         context.public_exponent = new util.BigInteger("3", 10);
         context.hashed_token = new util.BigInteger("3", 10);
 
         const message = new util.BigInteger(test.args.message, 10);
-        const blinded_message = blinding.blind_message(message, context);
+        const blinded_message = Blinding.blind_message(message, context);
 
         assert.isTrue(util.isBigInteger(blinded_message));
         assert.equal(test.expected, blinded_message.toRadix(10));
@@ -96,24 +106,70 @@ describe("blinding", function() {
     });
   });
 
+  ///---------------------------------
+  /// #generateBlindingContext()
+  ///---------------------------------
+
+  describe("#generateBlindingContext()", () => {
+
+    const token = new util.BigInteger("3", 16);
+
+    it ("should return a rejected promise if input is no {KeyManager} object", () => {
+      return Blinding.generateBlindingContext(123, token)
+        .catch(error => assert.instanceOf(error, Error));
+    });
+
+    it ("should return a rejected promise if key algorithm is encryption only key", async () => {
+      const key = await util.generateKeyFromString(sample_keys.rsa[1024].pub);
+      key.primary.key.type = kbpgp.const.openpgp.public_key_algorithms.RSA_ENCRYPT_ONLY;
+
+      return Blinding.generateBlindingContext(key, token)
+        .catch(error => assert.instanceOf(error, Error));
+    });
+
+    it ("should return a rejected promise if key algorithm is unknown", async () => {
+      const key = await util.generateKeyFromString(sample_keys.rsa[1024].pub);
+      key.primary.key.type = -1;
+
+      return Blinding.generateBlindingContext(key, token)
+        .catch(error => assert.instanceOf(error, Error));
+    });
+
+    it ("should return an RsaBlindingContext if input is a rsa key", async () => {
+      const key = await util.generateKeyFromString(sample_keys.rsa[1024].pub);
+      return Blinding.generateBlindingContext(key, token)
+        .then(context => assert.instanceOf(context, RsaBlindingContext));
+    });
+
+    it ("should return an EcdsaBlindingContext if input is a ecc key", async () => {
+      const key = await util.generateKeyFromString(sample_keys.ecc.nist[256].pub);
+      return Blinding.generateBlindingContext(key, token)
+        .then(context => assert.instanceOf(context, EcdsaBlindingContext));
+    });
+  });
+
+  ///---------------------------------
+  /// #unblind_message()
+  ///---------------------------------
+
   describe("#unblind_message()", () => {
     it ("should throw an assertion if message is no {BigInteger}", () => {
-      assert.throws(() => blinding.unblind_message({}, new RSABlindingContext()));
+      assert.throws(() => Blinding.unblind_message({}, new RsaBlindingContext()));
     });
 
     it ("should throw an assertion if the blinding context is unknown", () => {
-      assert.throws(() => blinding.unblind_message({}, null));
+      assert.throws(() => Blinding.unblind_message({}, null));
     });
 
     it ("should return a correct unblinded {BigInteger} with valid RSA input", async (done) => {
 
-      let context = new RSABlindingContext();
+      let context = new RsaBlindingContext();
       context.blinding_factor = new util.BigInteger("5", 10);
       context.modulus = new util.BigInteger("7", 10);
       context.public_exponent = new util.BigInteger("3", 10);
       context.hashed_token = new util.BigInteger("3", 10);
 
-      const blinded_message = blinding.unblind_message(util.BigInteger.ONE, context);
+      const blinded_message = Blinding.unblind_message(util.BigInteger.ONE, context);
       assert.isTrue(util.isBigInteger(blinded_message));
       assert.equal("3", blinded_message.toRadix(10));
 
@@ -123,6 +179,10 @@ describe("blinding", function() {
     it ("should return a correct unblinded {BigInteger} with valid ECDSA input");
 
   });
+
+  ///---------------------------------
+  /// #unblind_message_ecdsa()
+  ///---------------------------------
 
   describe("#unblind_message_ecdsa()", () => {
 
@@ -134,14 +194,18 @@ describe("blinding", function() {
 
   });
 
+  ///---------------------------------
+  /// #unblind_message_rsa()
+  ///---------------------------------
+
   describe("#unblind_message_rsa()", () => {
 
     it ("should throw an assertion if message is no {BigInteger}", () => {
-      assert.throws(() => blinding.unblind_message({}, new RSABlindingContext()));
+      assert.throws(() => Blinding.unblind_message({}, new RsaBlindingContext()));
     });
 
     it ("should throw an assertion if the blinding context is incomplete", () => {
-      assert.throws(() => blinding.unblind_message(util.BigInteger.ONE, new RSABlindingContext()));
+      assert.throws(() => Blinding.unblind_message(util.BigInteger.ONE, new RsaBlindingContext()));
     });
 
     const tests = [
@@ -156,14 +220,14 @@ describe("blinding", function() {
     tests.forEach((test) => {
       it ("should return '" + test.expected + "' for sepcified input", () => {
 
-        let context = new RSABlindingContext();
+        let context = new RsaBlindingContext();
         context.blinding_factor = new util.BigInteger(test.args.blinding_factor, 10);
         context.modulus = new util.BigInteger(test.args.modulus, 10);
         context.public_exponent = new util.BigInteger("3", 10);
         context.hashed_token = new util.BigInteger("3", 10);
 
         const message = new util.BigInteger(test.args.blinded_message, 10);
-        const unblinded_message = blinding.unblind_message(message, context);
+        const unblinded_message = Blinding.unblind_message(message, context);
 
         assert.isTrue(util.isBigInteger(unblinded_message));
         assert.equal(test.expected, unblinded_message.toRadix(10));

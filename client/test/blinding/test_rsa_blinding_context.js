@@ -90,7 +90,7 @@ describe("rsa_blinding_context", function() {
       assert.isFalse(RSABlindingContext.isValidBlindingContext(context));
     });
 
-    it ("should return false if blinding factor is missing", () => {
+    it ("should return false if Blinding factor is missing", () => {
       context.modulus = new util.BigInteger("1", 10);
       context.public_exponent = new util.BigInteger("2", 10);
       context.hashed_token = new util.BigInteger("3", 10);
