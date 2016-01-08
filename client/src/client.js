@@ -163,50 +163,7 @@ module.exports = {
     return context;
   },
 
-  sendBlindingRequest: async function(blinded_message, blinding_context)
-  {
-    assert(util.isBigInteger(blinded_message));
-    assert(util.isObject(blinding_context) && blinding_context.hasOwnProperty("hashed_token"));
-
-    const message = JSON.stringify({
-      message:    blinded_message.toRadix(16),
-      token_hash: blinding_context.hashed_token.toRadix(16)
-    });
-
-    return this.generateBlindingRequestPromise(message)
-      .then(request_result => {
-        return new util.BigInteger(request_result, 16);
-      });
-  },
-
-  generateBlindingRequestPromise: function (message) {
-
-    if (!util.isString(message)) {
-      return Promise.reject("Message is not of type string but '" + typeof messsage + "'");
-    }
-
-    return new Promise((resolve, reject) => {
-
-      let xhttp = new XMLHttpRequest();
-      xhttp.open("POST", "/");
-      xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-
-      xhttp.onload = () => {
-
-        if (xhttp.readyState === 4 && xhttp.status === 200) {
-          resolve(xhttp.responseText);
-        } else {
-          reject(new Error(xhttp.statusText));
-        }
-      };
-
-      xhttp.onerror = (error) => { reject(new Error("error handler called with: " + error)) };
-
-      xhttp.send(message);
-    });
-  },
-
-  prepareBlindSignatureRequest: async function ()
+  prepareBlinding: async function ()
   {
     const public_key = await this.getPublicKey();
     const server_public_key = await this.getServerPublicKey();

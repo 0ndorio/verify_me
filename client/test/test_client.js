@@ -6,8 +6,8 @@ import * as sinon from "sinon"
 
 import * as client from "../src/client"
 import * as util from "../src/util"
-import RSABlindingContext from "../src/blinding/blinding_context_rsa"
-import ECCBlindingContext from "../src/blinding/blinding_context_ecdsa"
+import RsaBlindingContext from "../src/blinding/blinding_context_rsa"
+import EcdsaBlindingContext from "../src/blinding/blinding_context_ecdsa"
 
 import { controls } from "./helper/client_control"
 import sample_keys from "./helper/keys"
@@ -245,79 +245,13 @@ describe("client", function() {
     it ("should return an RsaBlindingContext if input is a rsa key", async () => {
       const key = await util.generateKeyFromString(sample_keys.rsa[1024].pub);
       return client.generateBlindingContext(key, token)
-        .then(context => assert.instanceOf(context, RSABlindingContext));
+        .then(context => assert.instanceOf(context, RsaBlindingContext));
     });
 
     it ("should return an EcdsaBlindingContext if input is a ecc key", async () => {
       const key = await util.generateKeyFromString(sample_keys.ecc.nist[256].pub);
       return client.generateBlindingContext(key, token)
-        .then(context => assert.instanceOf(context, ECCBlindingContext));
-    });
-  });
-
-  ///---------------------------------
-  /// #sendBlindingRequest()
-  ///---------------------------------
-
-  describe("#sendBlindingRequest()", () => {
-
-    it("should return a promise", () => {
-      const task = client.sendBlindingRequest().catch(() => {});
-      assert.instanceOf(task, Promise);
-    });
-
-    it("should reject with wrong typed input for blinded_message", (done) => {
-
-      return client.sendBlindingRequest(123)
-        .catch(() => done());
-    });
-
-    it("should reject with wrong typed input for blinding_context", (done) => {
-
-      const context = new RSABlindingContext();
-      context.hashed_token = 123;
-
-      return client.sendBlindingRequest("1234", context)
-        .catch(() => done());
-    });
-
-    it("should reject when a network error occurred", async () => {
-
-      const context = new RSABlindingContext();
-      context.hashed_token = util.BigInteger.ZERO;
-
-      const request_promise = client.sendBlindingRequest(util.BigInteger.ZERO, context)
-        .catch(error => assert.instanceOf(error, Error));
-
-      assert.equal(1, this.server.requests.length);
-      this.server.requests[0].onload = null;
-      this.server.requests[0].abort();
-
-      return request_promise;
-    });
-
-    it("should reject and return status text error if status is not 200", (done) => {
-
-      const expected = { code: 404, status_text: new Error("Not Found") };
-      this.server.respondWith([expected.code, { "Content-Type": "text/plain" }, ""]);
-
-      let context = new RSABlindingContext();
-      context.hashed_token = util.BigInteger.ZERO;
-
-      return client.sendBlindingRequest(util.BigInteger.ZERO , context)
-        .catch(() => done());
-    });
-
-    it("should resolve and return server response if status is 200", () => {
-
-      const expected = "deadbeef";
-      this.server.respondWith([200, { "Content-Type": "text/plain" }, expected]);
-
-      let context = new RSABlindingContext();
-      context.hashed_token = util.BigInteger.ZERO;
-
-      return client.sendBlindingRequest(util.BigInteger.ZERO , context)
-        .then(answer => assert.equal(expected, answer.toRadix(16)));
+        .then(context => assert.instanceOf(context, EcdsaBlindingContext));
     });
   });
 });

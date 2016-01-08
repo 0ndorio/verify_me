@@ -3,6 +3,7 @@
 import "babel-polyfill"
 
 import * as blinding from "./blinding/blinding"
+import { sendBlindingRequest } from "./server"
 import * as client from "./client"
 import * as pgp from "./pgp/pgp"
 import * as util from "./util"
@@ -11,13 +12,13 @@ import * as util from "./util"
 async function requestPseudonym()
 {
   // prepare
-  const { context, packet } = await client.prepareBlindSignatureRequest();
+  const { context, packet } = await client.prepareBlinding();
 
   // blind
   const blinded_message = blinding.blind_message(packet.raw_signature, context);
 
   // request sign from server
-  const signed_blinded_message = await client.sendBlindingRequest(blinded_message, context);
+  const signed_blinded_message = await sendBlindingRequest(blinded_message, context);
 
   // unblind
   const unblinded_message = blinding.unblind_message(signed_blinded_message, context);
