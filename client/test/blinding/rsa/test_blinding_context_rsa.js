@@ -2,12 +2,12 @@
 
 import { assert } from "chai"
 
-import * as util from "../../src/util"
-import RSABlindingContext from "../../src/blinding/blinding_context_rsa"
+import * as util from "../../../src/util"
+import RSABlindingContext from "../../../src/blinding/rsa/blinding_context_rsa"
 
-import sample_keys from "./../helper/keys"
+import sample_keys from "./../../helper/keys"
 
-describe("rsa_blinding_context", function() {
+describe("blinding_context_rsa", function() {
 
   //
   // suite functions

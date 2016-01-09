@@ -1,7 +1,7 @@
 "use strict";
 
-import BlindingContext from "./blinding_context"
-import * as util from "../util"
+import BlindingContext from "../blinding_context"
+import * as util from "../../util"
 const assert = util.assert;
 
 /**

@@ -1,10 +1,6 @@
 "use strict";
 
-import EcdsaBlindingContext from "./blinding/blinding_context_ecdsa"
-import RsaBlindingContext from "./blinding/blinding_context_rsa"
-import BlindSignaturePacket from "./pgp/blind_signature_packet"
 import * as util from "./util"
-const assert = util.assert;
 
 import * as kbpgp from "kbpgp"
 
@@ -119,17 +115,5 @@ module.exports = {
     }
 
     return content;
-  },
-
-  prepareBlinding: async function ()
-  {
-    const public_key = await this.getPublicKey();
-    const server_public_key = await this.getServerPublicKey();
-    const token = this.getToken();
-
-    const context = await this.generateBlindingContext(server_public_key, token);
-    const packet = new BlindSignaturePacket(public_key, server_public_key, context);
-    
-    return { context, packet, token };
   }
 };

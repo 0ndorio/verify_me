@@ -6,8 +6,8 @@ import * as sinon from "sinon"
 
 import * as client from "../src/client"
 import * as util from "../src/util"
-import RsaBlindingContext from "../src/blinding/blinding_context_rsa"
-import EcdsaBlindingContext from "../src/blinding/blinding_context_ecdsa"
+import RsaBlindingContext from "../src/blinding/rsa/blinding_context_rsa"
+import EcdsaBlindingContext from "../src/blinding/ecdsa/blinding_context_ecdsa"
 
 import { controls } from "./helper/client_control"
 import sample_keys from "./helper/keys"

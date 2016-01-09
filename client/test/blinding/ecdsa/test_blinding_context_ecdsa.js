@@ -2,12 +2,12 @@
 
 import { assert } from "chai"
 
-import * as util from "../../src/util"
-import ECCBlindingContext from "../../src/blinding/blinding_context_ecdsa"
+import * as util from "../../../src/util"
+import ECCBlindingContext from "../../../src/blinding/ecdsa/blinding_context_ecdsa"
 
-import sample_keys from "./../helper/keys"
+import sample_keys from "./../../helper/keys"
 
-describe("ecc_blinding_context", function() {
+describe("blinding_context_ecdsa", function() {
 
   //
   // suite functions

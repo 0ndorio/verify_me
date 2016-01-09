@@ -1,10 +1,10 @@
 "use strict";
 
 import * as kbpgp from "kbpgp"
-import * as pad from "../../node_modules/kbpgp/lib/pad"
+import * as pad from "../../../node_modules/kbpgp/lib/pad"
 
-import BlindingContext from "./blinding_context"
-import * as util from "../util"
+import BlindingContext from "../blinding_context"
+import * as util from "../../util"
 const assert = util.assert;
 
 /**
