@@ -2,8 +2,8 @@
 
 import "babel-polyfill"
 
+import Blinder from "./blinding/blinder"
 import blinding_util from "./blinding/blinding_util"
-import { sendBlindingRequest } from "./server"
 import client from"./client"
 import pgp from "./pgp/pgp"
 
@@ -13,15 +13,8 @@ async function requestPseudonym()
   // prepare
   const { blinder, packet } = await blinding_util.prepareBlinding();
 
-  // blind
-  const blinded_message = blinder.blind(packet.raw_signature);
-
-  // request sign from server
-  const signed_blinded_message = await sendBlindingRequest(blinded_message, blinder.context);
-
-  // unblind
-  const unblinded_message = blinder.unblind(signed_blinded_message);
-  packet.sig = unblinded_message.to_mpi_buffer();
+  // forge
+  await blinder.forgeSignature(packet);
 
   // finish
   const key_ascii = await pgp.export_key_with_signature(packet.target_key, packet);
