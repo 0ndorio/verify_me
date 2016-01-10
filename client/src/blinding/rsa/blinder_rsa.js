@@ -2,7 +2,7 @@
 
 import Blinder from "../blinder"
 import RsaBlindingContext from "./blinding_context_rsa"
-import * as util from "../../util"
+import util from "../../util"
 const assert = util.assert;
 
 /// TODO

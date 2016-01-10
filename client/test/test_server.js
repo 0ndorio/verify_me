@@ -5,7 +5,7 @@ import * as sinon from "sinon"
 
 import RsaBlindingContext from "../src/blinding/rsa/blinding_context_rsa"
 import * as server from "../src/server"
-import * as util from "../src/util"
+import util from "../src/util"
 
 describe("server", function() {
 

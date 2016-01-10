@@ -5,7 +5,7 @@ import * as sig from "../../node_modules/kbpgp/lib/openpgp/packet/signature"
 const Constants = kbpgp.const;
 
 import BlindingContext from "./../blinding/blinding_context"
-import * as util from "../util"
+import util from "../util"
 
 /// TODO
 export default class BlindSignaturePacket extends sig.Signature

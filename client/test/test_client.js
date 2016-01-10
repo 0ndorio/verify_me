@@ -2,10 +2,9 @@
 
 import { assert } from "chai"
 import * as kbpgp from "kbpgp"
-import * as sinon from "sinon"
 
-import * as client from "../src/client"
-import * as util from "../src/util"
+import client from"../src/client"
+import util from "../src/util"
 import RsaBlindingContext from "../src/blinding/rsa/blinding_context_rsa"
 import EcdsaBlindingContext from "../src/blinding/ecdsa/blinding_context_ecdsa"
 
@@ -16,14 +15,9 @@ describe("client", function() {
 
   beforeEach(() => {
     controls.loadFixture("test/fixture/keys_2048bit.html");
-
-    this.server = sinon.fakeServer.create();
-    this.server.autoRespond = true;
   });
 
-  afterEach(() => {
-    this.server.restore();
-  });
+  afterEach(() => {});
 
   ///---------------------------------
   /// #getPublicKey()

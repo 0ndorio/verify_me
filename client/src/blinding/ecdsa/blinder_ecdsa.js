@@ -2,7 +2,7 @@
 
 import Blinder from "../blinder"
 import EcdsaBlindingContext from "./blinding_context_ecdsa"
-import * as util from "../../util"
+import util from "../../util"
 const assert = util.assert;
 
 /// TODO

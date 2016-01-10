@@ -5,7 +5,7 @@ import * as kbpgp from "kbpgp"
 
 import EcdsaBlinder from "../../../src/blinding/ecdsa/blinder_ecdsa"
 import EcdsaBlindingContext from "../../../src/blinding/ecdsa/blinding_context_ecdsa"
-import * as util from "../../../src/util"
+import util from "../../../src/util"
 
 import sample_keys from "../../helper/keys"
 

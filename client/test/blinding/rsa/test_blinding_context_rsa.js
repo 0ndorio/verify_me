@@ -2,7 +2,7 @@
 
 import { assert } from "chai"
 
-import * as util from "../../../src/util"
+import util from "../../../src/util"
 import RSABlindingContext from "../../../src/blinding/rsa/blinding_context_rsa"
 
 import sample_keys from "./../../helper/keys"

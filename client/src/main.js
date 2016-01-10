@@ -4,8 +4,8 @@ import "babel-polyfill"
 
 import blinding_util from "./blinding/blinding_util"
 import { sendBlindingRequest } from "./server"
-import * as client from "./client"
-import * as pgp from "./pgp/pgp"
+import client from"./client"
+import pgp from "./pgp/pgp"
 
 /// TODO: think about function extraction
 async function requestPseudonym()

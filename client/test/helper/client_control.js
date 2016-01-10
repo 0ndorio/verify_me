@@ -1,7 +1,7 @@
 "use strict";
 
 import { assert } from "chai"
-import * as client from "../../src/client"
+import client from"../../src/client"
 
 /// Utility API for html interaction.
 module.exports = {

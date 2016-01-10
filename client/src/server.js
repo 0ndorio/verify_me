@@ -2,7 +2,7 @@
 
 import BlindingContext from "./blinding/blinding_context"
 
-import * as util from "./util"
+import util from "./util"
 const assert = util.assert;
 
 export function sendRequest(json_string, path = "/", method = "POST")

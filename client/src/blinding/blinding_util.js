@@ -2,12 +2,12 @@
 
 import { KeyManager } from "kbpgp"
 
-import * as client from "../client"
+import client from"../client"
 import BlindSignaturePacket from "../pgp/blind_signature_packet"
 import EcdsaBlinder from "./ecdsa/blinder_ecdsa"
 import RsaBlinder from "./rsa/blinder_rsa"
 
-import * as util from "../util"
+import util from "../util"
 const assert = util.assert;
 
 /**

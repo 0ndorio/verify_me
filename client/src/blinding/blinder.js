@@ -2,7 +2,7 @@
 
 import { KeyManager } from "kbpgp"
 
-import * as util from "./../util"
+import util from "./../util"
 const assert = util.assert;
 
 /**
