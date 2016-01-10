@@ -1,9 +1,7 @@
 "use strict";
 
 import BlindingContext from "./blinding/blinding_context"
-
-import util from "./util"
-const assert = util.assert;
+import util, { assert }from "./util"
 
 export function sendRequest(json_string, path = "/", method = "POST")
 {
@@ -47,3 +45,10 @@ export async function sendBlindingRequest(blinded_message, blinding_context)
       return new util.BigInteger(request_result, 16);
     });
 }
+
+const server_api = {
+  sendRequest,
+  sendBlindingRequest
+};
+
+export default server_api;

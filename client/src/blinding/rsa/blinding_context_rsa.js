@@ -1,11 +1,9 @@
 "use strict";
 
-import * as kbpgp from "kbpgp"
 import * as pad from "../../../node_modules/kbpgp/lib/pad"
 
 import BlindingContext from "../blinding_context"
-import util from "../../util"
-const assert = util.assert;
+import util, { assert } from "../../util"
 
 /**
  * A rsa based blinding context.

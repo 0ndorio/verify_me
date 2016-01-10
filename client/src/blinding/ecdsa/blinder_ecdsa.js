@@ -2,8 +2,7 @@
 
 import Blinder from "../blinder"
 import EcdsaBlindingContext from "./blinding_context_ecdsa"
-import util from "../../util"
-const assert = util.assert;
+import util, { assert } from "../../util"
 
 /// TODO
 export default class EcdsaBlinder extends Blinder

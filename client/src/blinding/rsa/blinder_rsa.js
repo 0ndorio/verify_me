@@ -2,8 +2,7 @@
 
 import Blinder from "../blinder"
 import RsaBlindingContext from "./blinding_context_rsa"
-import util from "../../util"
-const assert = util.assert;
+import util, { assert } from "../../util"
 
 /// TODO
 export default class RsaBlinder extends Blinder

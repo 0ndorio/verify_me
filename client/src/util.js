@@ -1,6 +1,6 @@
 "use strict";
 
-import { BigInteger, nbi, nbs } from "../node_modules/kbpgp/lib/bn"
+import { BigInteger } from "../node_modules/kbpgp/lib/bn"
 import { Point } from "keybase-ecurve"
 import * as kbpgp from "kbpgp"
 
@@ -277,3 +277,4 @@ const util_api = {
 };
 
 export default util_api;
+export { assert, BigInteger, Point };
