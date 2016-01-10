@@ -13,9 +13,11 @@ export default class EcdsaBlinder extends Blinder
   }
 
   /// TODO
-  async initContext()
+  async initContext(key_manager, token)
   {
-    this.context = EcdsaBlindingContext.fromKey(this.key_manager);
+    this.key_manager = key_manager;
+    this.context = EcdsaBlindingContext.fromKey(key_manager);
+    this.token = token;
   }
 
   /// TODO

@@ -6,17 +6,20 @@ import util from "./../util"
 const assert = util.assert;
 
 /**
- * TODO
+ * Representation of a blinding algorithm.
  */
 export default class Blinder
 {
-  constructor(key_manager)
+  /**
+   * Creates a blinding algorithm representation based
+   * @param key_manager
+   */
+  constructor()
   {
     assert(this.constructor.name !== "Blinder", "Cannot construct Blinding instances directly");
-    assert(util.isKeyManager(key_manager));
 
     /** @type {KeyManager|null} **/
-    this.key_manager = key_manager;
+    this.key_manager = null;
 
     /** @type {BigInteger|null} **/
     this.token = null;
@@ -25,20 +28,53 @@ export default class Blinder
     this.context = null;
   }
 
-  /// TODO
-  async initContext()
+  /**
+   * Blinding context initialization.
+   * Could be possibly async so its not done by the constructor.
+   *
+   * @param {KeyManager} key_manager
+   *    A {KeyManager} containing the signers public key.
+   * @param {BigInteger} token
+   *    This is used to validate the blinded request.
+   */
+  async initContext(key_manager, token)
   {
     throw new Error("Not yet implemented.");
   }
 
-  /// TODO
-  blind()
+  /**
+   * Blinds a given message.
+   *
+   * @param {BigInterger} message
+   *    The message to blind.
+   * @return {BigInteger}
+   *    The blinded message.
+   */
+  blind(message)
   {
     throw new Error("Not yet implemented");
   }
 
-  // TODO
-  unblind()
+  /**
+   * Unblinds a given messsage.
+   *
+   * @param {BigInteger} message
+   *    The blinded message.
+   * @return {BigInteger}
+   *    The unblinded message.
+   */
+  unblind(message)
+  {
+    throw new Error("Not yet implemented");
+  }
+
+  /**
+   * Forges a blind signature.
+   *
+   * @param {BlindSignaturePacket} packet
+   *    The prepared {BlindSignaturePacket} including the raw signature.
+   */
+  async forgeSignature(packet)
   {
     throw new Error("Not yet implemented");
   }

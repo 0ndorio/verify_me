@@ -21,17 +21,18 @@ import util, { assert } from "../util"
 async function createBlinderForKeyManager(key_manager, token)
 {
   assert(util.isKeyManager(key_manager));
+  assert(util.isBigInteger(token));
 
   /** @type {Blinder} **/
   let blinder = null;
 
   if (util.isKeyManagerForRsaSign(key_manager)) {
 
-    blinder = new RsaBlinder(key_manager);
+    blinder = new RsaBlinder();
 
   } else if (util.isKeyManagerForEcdsaSign(key_manager)) {
 
-    blinder = new EcdsaBlinder(key_manager);
+    blinder = new EcdsaBlinder();
 
   } else {
 
@@ -39,8 +40,8 @@ async function createBlinderForKeyManager(key_manager, token)
     throw new Error("Unsupported public key algorithm id: " + public_key_algorithm);
   }
 
-  blinder.token = token;
-  await blinder.initContext();
+  assert(null !== blinder);
+  await blinder.initContext(key_manager, token);
 
   return blinder;
 }
