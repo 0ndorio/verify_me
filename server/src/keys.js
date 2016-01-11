@@ -4,8 +4,6 @@ import fs from "fs"
 import { KeyManager } from "kbpgp"
 
 import config from "./config"
-const rsa = config.keys.rsa;
-const ecc = config.keys.ecc;
 
 /// TODO
 async function loadKey(public_key_path, private_key_path, passphrase = null)
@@ -91,7 +89,20 @@ function unlock_private_key(key_manager, passphrase)
   });
 }
 
-export const rsa_promise = loadKey(rsa.public_key, rsa.private_key, rsa.passphrase);
-export const ecc_promise = loadKey(ecc.public_key, ecc.private_key, ecc.passphrase);
+const rsa = config.keys.rsa
+const rsa_promise = loadKey(rsa.public_key, rsa.private_key, rsa.passphrase);
 
-export default { rsa_promise, ecc_promise }
+const ecc = config.keys.ecc;
+const ecc_promise = loadKey(ecc.public_key, ecc.private_key, ecc.passphrase);
+
+let ecc_key = null;
+let rsa_key = null;
+
+const keys_api = {
+  rsa_key,
+  rsa_promise,
+  ecc_key,
+  ecc_promise
+};
+
+export default keys_api;

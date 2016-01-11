@@ -9,7 +9,7 @@ import http from "http";
 
 import config from "./config"
 import keys from "./keys";
-import * as signing from "./signing";
+import routes from "./routes"
 
 let app = express();
 
@@ -41,26 +41,17 @@ app.engine("html", (file_path, options, callback) => {
 Promise.all([keys.rsa_promise, keys.ecc_promise])
   .then((values) => {
 
-    const rsa_key = values[0];
-    const ecc_key = values[1];
+    keys.rsa_key = values[0];
+    keys.ecc_key = values[1];
 
-    app.get("(/|/rsa)", (request, response) => {
-      response.render("index", {public_key: rsa_key.armored_pgp_public})
-    });
+    app.route("/rsa")
+       .get(routes.rsa.render_key)
+       .post(routes.rsa.sign_blinded_message);
 
-    app.get("/ecdsa", async (request, response) => {
-      response.render("index", {public_key: ecc_key.armored_pgp_public})
-    });
+    app.get("/ecdsa", routes.ecdsa.render_key);
+    app.post("/ecdsa/init", routes.ecdsa.init_blinding);
+    app.post("/ecdsa/sign", routes.ecdsa.sign_blinded_message);
 
-    app.post("(/|/rsa)", (request, response) => {
-      const signed_blinded_message = signing.sign_blinded_rsa_message(request.body.message, rsa_key);
-      response.send(signed_blinded_message);
-    });
-
-    app.post("/ecdsa", (request, response) => {
-      const signed_blinded_message = signing.sign_blinded_ecdsa_message(request.body.message, ecc_key);
-      response.send(signed_blinded_message);
-    });
   })
   .catch((error) => {
     console.log("");
