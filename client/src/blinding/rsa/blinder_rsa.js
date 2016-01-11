@@ -107,7 +107,7 @@ export default class RsaBlinder extends Blinder
 
     const message = packet.raw_signature;
     const blinded_message = this.blind(message);
-    const signed_blinded_message = await server.sendBlindingRequest(blinded_message, this.context);
+    const signed_blinded_message = await server.requestRsaBlinding(blinded_message, this.context);
     const signed_message = this.unblind(signed_blinded_message);
 
     packet.sig = signed_message.to_mpi_buffer();

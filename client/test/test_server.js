@@ -4,7 +4,7 @@ import { assert } from "chai"
 import * as sinon from "sinon"
 
 import RsaBlindingContext from "../src/blinding/rsa/blinding_context_rsa"
-import * as server from "../src/server"
+import server from "../src/server"
 import util from "../src/util"
 
 describe("server", function() {
@@ -19,20 +19,20 @@ describe("server", function() {
   });
 
   ///---------------------------------
-  /// #sendBlindingRequest()
+  /// #requestRsaBlinding()
   ///---------------------------------
 
-  describe("#sendBlindingRequest()", () => {
+  describe("#requestRsaBlinding()", () => {
 
     it("should return a promise", () => {
-      const task = server.sendBlindingRequest().catch(() => {
+      const task = server.requestRsaBlinding().catch(() => {
       });
       assert.instanceOf(task, Promise);
     });
 
     it("should reject with wrong typed input for blinded_message", (done) => {
 
-      return server.sendBlindingRequest(123)
+      return server.requestRsaBlinding(123)
         .catch(() => done());
     });
 
@@ -41,7 +41,7 @@ describe("server", function() {
       const context = new RsaBlindingContext();
       context.hashed_token = 123;
 
-      return server.sendBlindingRequest("1234", context)
+      return server.requestRsaBlinding("1234", context)
         .catch(() => done());
     });
 
@@ -50,7 +50,7 @@ describe("server", function() {
       const context = new RsaBlindingContext();
       context.hashed_token = util.BigInteger.ZERO;
 
-      const request_promise = server.sendBlindingRequest(util.BigInteger.ZERO, context)
+      const request_promise = server.requestRsaBlinding(util.BigInteger.ZERO, context)
         .catch(error => assert.instanceOf(error, Error));
 
       assert.equal(1, this.fake_server.requests.length);
@@ -68,7 +68,7 @@ describe("server", function() {
       let context = new RsaBlindingContext();
       context.hashed_token = util.BigInteger.ZERO;
 
-      return server.sendBlindingRequest(util.BigInteger.ZERO, context)
+      return server.requestRsaBlinding(util.BigInteger.ZERO, context)
         .catch(() => done());
     });
 
@@ -80,7 +80,7 @@ describe("server", function() {
       let context = new RsaBlindingContext();
       context.hashed_token = util.BigInteger.ZERO;
 
-      return server.sendBlindingRequest(util.BigInteger.ZERO, context)
+      return server.requestRsaBlinding(util.BigInteger.ZERO, context)
         .then(answer => assert.equal(expected, answer.toRadix(16)));
     });
   });

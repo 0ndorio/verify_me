@@ -3,7 +3,8 @@
 import BlindingContext from "./blinding/blinding_context"
 import util, { assert }from "./util"
 
-export function sendRequest(json_string, path = "/", method = "POST")
+/// TODO
+function sendRequest(json_string, path = "/", method = "POST")
 {
   assert(util.isString(json_string));
   assert(util.isString(path));
@@ -30,25 +31,51 @@ export function sendRequest(json_string, path = "/", method = "POST")
   });
 }
 
-export async function sendBlindingRequest(blinded_message, blinding_context)
+/// TODO
+async function requestRsaBlinding(blinded_message, blinding_context)
 {
   assert(util.isBigInteger(blinded_message));
   assert((blinding_context instanceof BlindingContext) && blinding_context.hasOwnProperty("hashed_token"));
 
   const message = JSON.stringify({
-    message:    blinded_message.toRadix(16),
-    token_hash: blinding_context.hashed_token.toRadix(16)
+    message:    blinded_message.toRadix(32),
+    hashed_token: blinding_context.hashed_token.toRadix(32)
   });
 
-  return sendRequest(message)
-    .then(request_result => {
-      return new util.BigInteger(request_result, 16);
+  return sendRequest(message, "/rsa")
+    .then(response => {
+      assert(util.isString(response));
+
+      const request_result = JSON.parse(response);
+      return new util.BigInteger(request_result.signed_blinded_message, 32);
+    });
+}
+
+/// TODO
+async function requestEcdsaBlindingInitialization(blinding_context)
+{
+  assert((blinding_context instanceof BlindingContext) && blinding_context.hasOwnProperty("hashed_token"));
+
+  const message= JSON.stringify({
+    hashed_token: blinding_context.hashed_token.toRadix(32)
+  });
+
+  return sendRequest(message, "/ecdsa/init")
+    .then(response => {
+      assert(util.isString(response));
+
+      const request_result = JSON.parse(response);
+      return blinding_context.curve.mkpoint({
+        x: new util.BigInteger(request_result.x, 32),
+        y: new util.BigInteger(request_result.y, 32)
+      });
     });
 }
 
 const server_api = {
   sendRequest,
-  sendBlindingRequest
+  requestEcdsaBlindingInitialization,
+  requestRsaBlinding
 };
 
 export default server_api;

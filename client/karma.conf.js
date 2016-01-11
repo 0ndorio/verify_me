@@ -42,7 +42,7 @@ module.exports = function(config) {
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['mocha', 'coverage'],
+    reporters: ['mocha'],//, 'coverage'],
 
 
     // web server port
@@ -82,9 +82,10 @@ module.exports = function(config) {
     // add additional browserify configuration properties here
     // such as transform and/or debug=true to generate source maps
     browserify: {
+      //debug: true,
       transform: [
-        ['babelify', {presets: ['stage-3', 'es2015']}],
-        'browserify-babel-istanbul']
+        ['babelify', {presets: ['stage-3', 'es2015']}]
+        ]//'browserify-babel-istanbul']
     },
 
 
