@@ -1,7 +1,7 @@
 "use strict";
 
 import keys from "../keys"
-import signing from "./signing_ecdsa"
+import Signer from "./signing_ecdsa"
 
 let secret_scalar = {};
 
@@ -17,11 +17,11 @@ async function init_blinding(request, response)
   let json = {};
   if (request.body.hasOwnProperty("hashed_token")) {
 
-    const { k, R } = await signing.prepare_blinding(keys.ecc_key);
+    const { k, Ŕ } = await Signer.prepare(keys.ecc_key);
     secret_scalar[request.body.hashed_token] = k;
 
-    json.x = R.affineX.toRadix(32);
-    json.y = R.affineY.toRadix(32);
+    json.x = Ŕ.affineX.toRadix(32);
+    json.y = Ŕ.affineY.toRadix(32);
 
   } else {
     json.error = "Missing Token...";
@@ -33,8 +33,19 @@ async function init_blinding(request, response)
 /// TODO
 function sign_blinded_message(request, response)
 {
-  const signed_blinded_message = signing.sign_blinded_ecdsa_message(request.body.message, keys.ecc_key);
-  response.send(signed_blinded_message);
+  let json = {};
+  if (request.body.hasOwnProperty("hashed_token")) {
+
+    const k = secret_scalar[request.body.hashed_token];
+    const ḿ = request.body.message;
+
+    json.signed_blinded_message = Signer.sign(ḿ, k, keys.ecc_key);
+
+  } else {
+    json.error = "Missing Token...";
+  }
+
+  response.send(json);
 }
 
 const routes_ecdsa_api = {

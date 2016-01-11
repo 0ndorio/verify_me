@@ -72,16 +72,17 @@ describe("server", function() {
         .catch(() => done());
     });
 
-    it("should resolve and return server response if status is 200", () => {
+    it("should resolve and return server response if status is 200", () =>{
 
       const expected = "deadbeef";
-      this.fake_server.respondWith([200, {"Content-Type": "text/plain"}, expected]);
+      const answer = JSON.stringify({signed_blinded_message: expected});
+      this.fake_server.respondWith([200, {"Content-Type": "text/plain"}, answer]);
 
       let context = new RsaBlindingContext();
       context.hashed_token = util.BigInteger.ZERO;
 
       return server.requestRsaBlinding(util.BigInteger.ZERO, context)
-        .then(answer => assert.equal(expected, answer.toRadix(16)));
+        .then(answer => assert.equal(expected, answer.toRadix(32)));
     });
   });
 });

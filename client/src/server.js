@@ -35,7 +35,8 @@ function sendRequest(json_string, path = "/", method = "POST")
 async function requestRsaBlinding(blinded_message, blinding_context)
 {
   assert(util.isBigInteger(blinded_message));
-  assert((blinding_context instanceof BlindingContext) && blinding_context.hasOwnProperty("hashed_token"));
+  assert((blinding_context instanceof BlindingContext)
+        && blinding_context.hasOwnProperty("hashed_token"));
 
   const message = JSON.stringify({
     message:    blinded_message.toRadix(32),
@@ -52,11 +53,33 @@ async function requestRsaBlinding(blinded_message, blinding_context)
 }
 
 /// TODO
+async function requestEcdsaBlinding(blinded_message, blinding_context)
+{
+  assert(util.isBigInteger(blinded_message));
+  assert((blinding_context instanceof BlindingContext)
+        && blinding_context.hasOwnProperty("hashed_token"));
+
+  const message = JSON.stringify({
+    message: blinded_message.toRadix(32),
+    hashed_token: blinding_context.hashed_token.toRadix(32)
+  });
+
+  return sendRequest(message, "/ecdsa/sign")
+    .then(response => {
+      assert(util.isString(response));
+
+      const request_result = JSON.parse(response);
+      return new util.BigInteger(request_result.signed_blinded_message, 32)
+    });
+}
+
+/// TODO
 async function requestEcdsaBlindingInitialization(blinding_context)
 {
-  assert((blinding_context instanceof BlindingContext) && blinding_context.hasOwnProperty("hashed_token"));
+  assert((blinding_context instanceof BlindingContext)
+        && blinding_context.hasOwnProperty("hashed_token"));
 
-  const message= JSON.stringify({
+  const message = JSON.stringify({
     hashed_token: blinding_context.hashed_token.toRadix(32)
   });
 
@@ -74,6 +97,7 @@ async function requestEcdsaBlindingInitialization(blinding_context)
 
 const server_api = {
   sendRequest,
+  requestEcdsaBlinding,
   requestEcdsaBlindingInitialization,
   requestRsaBlinding
 };
