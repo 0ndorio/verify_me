@@ -5,7 +5,7 @@ import Blinder from "../blinder"
 import BlindSignaturePacket from "../../pgp/blind_signature_packet"
 import EcdsaBlindingContext from "./blinding_context_ecdsa"
 import server from "../../server"
-import util, { assert, Point, BigInteger } from "../../util"
+import util, { assert } from "../../util"
 
 /**
  * Representation of the ecdsa blinding algorithm presented by Oleg Andreev
@@ -13,9 +13,9 @@ import util, { assert, Point, BigInteger } from "../../util"
  */
 export default class EcdsaBlinder extends Blinder
 {
-  constructor(key_manager)
+  constructor()
   {
-    super(key_manager);
+    super();
   };
 
   /**
@@ -78,7 +78,7 @@ export default class EcdsaBlinder extends Blinder
    * @returns {BigInteger}
    *    The unblinded signed message.
    */
-  unblind(message, secrets)
+  unblind(message)
   {
     assert(util.isBigInteger(message));
     assert(EcdsaBlindingContext.isValidBlindingContext(this.context));
@@ -107,13 +107,20 @@ export default class EcdsaBlinder extends Blinder
     assert(packet instanceof BlindSignaturePacket);
 
     const { T, r }  = await this.requestFirstSignatureParameter();
-    const { s } = await this.requestSecondSignatureParameter(packet);
+    const s = await this.requestSecondSignatureParameter(packet);
 
     packet.sig = Buffer.concat([r.to_mpi_buffer(), s.to_mpi_buffer()]);
     packet.key.pub.R = T;
   }
 
-  /// TODO
+  /**
+   * Calculates the first part of the ECDSA signature.
+   * Based on the public information published by the signer.
+   *
+   * @returns {{T: Point, r: BigInteger}}
+   *    T is the public key necessary to validate the final signature.
+   *    r is the first part of the ECDSA signature.
+   */
   async requestFirstSignatureParameter()
   {
     assert(EcdsaBlindingContext.isValidBlindingContext(this.context));
@@ -146,7 +153,15 @@ export default class EcdsaBlinder extends Blinder
     return { T, r };
   }
 
-  /// TODO
+  /**
+   * Calculates the second part of the ECDSA signature.
+   * Based on the blinded key packet payload send to the signer.
+   *
+   * @param {BlindSignaturePacket} packet
+   *    Key package with prepared raw signature data.
+   * @returns {BigInteger}
+   *    The unblinded signed signature data.
+   */
   async requestSecondSignatureParameter(packet)
   {
     assert(packet instanceof BlindSignaturePacket);
@@ -173,6 +188,8 @@ export default class EcdsaBlinder extends Blinder
    */
   async generate_random_scalar(curve)
   {
+    assert(util.isCurve(curve));
+
     return new Promise((resolve, reject) =>
       curve.random_scalar(
         k => resolve(k))

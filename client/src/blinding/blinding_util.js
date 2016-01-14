@@ -23,7 +23,6 @@ async function createBlinderForKeyManager(key_manager, token)
   assert(util.isKeyManager(key_manager));
   assert(util.isBigInteger(token));
 
-  /** @type {Blinder} **/
   let blinder = null;
 
   if (util.isKeyManagerForRsaSign(key_manager)) {

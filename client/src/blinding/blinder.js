@@ -12,7 +12,6 @@ export default class Blinder
 {
   /**
    * Creates a blinding algorithm representation based
-   * @param key_manager
    */
   constructor()
   {

@@ -80,7 +80,13 @@ function getTokenString()
   return content.trim();
 }
 
-/// TODO
+/**
+ *  Extract servers public key from the related textarea
+ *
+ * @returns {Promise}
+ *    the promise of a the servers public key managed
+ *    in a kbpgp {KeyManager}
+ */
 function getServerPublicKey()
 {
   const public_key_string = getServerPublicKeyString();
@@ -91,7 +97,13 @@ function getServerPublicKey()
   return util.generateKeyFromString(public_key_string);
 }
 
-/// TODO
+/**
+ * Extracts servers public key from the textarea element with id "server_public_key".
+ *
+ * @returns {string|null}
+ *    string value of the dom element with id "server_public_key"
+ *    or {null} if the element is missing.
+ */
 function getServerPublicKeyString()
 {
   const element = document.getElementById(server_public_key_element_id);

@@ -4,6 +4,15 @@ import { BigInteger } from "../node_modules/kbpgp/lib/bn"
 import { Point } from "keybase-ecurve"
 import * as kbpgp from "kbpgp"
 
+/**
+ * Client runtime assert.
+ * Throws if the given condition validates to {false} else nothing happens.
+ *
+ * @param {boolean} condition
+ *    Validated condition.
+ * @param {string|null} message
+ *    Custom assert message.
+ */
 function assert(condition, message)
 {
   if (!condition) {
@@ -11,12 +20,17 @@ function assert(condition, message)
   }
 }
 
-/// Converts a given armored key string into a kbpgp {KeyManager} object.
+/**
+ * Converts a given armored key string into a kbpgp {KeyManager} object.
+ *
+ * @param {string} key_as_string
+ *    An ascii armored key string.
+ * @returns {Promise}
+ *    The promise of a {KeyManager} object.
+ */
 function generateKeyFromString(key_as_string)
 {
-  if (!isString(key_as_string)) {
-    return Promise.reject(new Error("Input parameter is not of type string."));
-  }
+  assert(isString(key_as_string), "Input parameter is not of type string.");
 
   return new Promise((resolve, reject) => {
     kbpgp.KeyManager.import_from_armored_pgp({ armored: key_as_string }, (err, key_manager) => {
@@ -28,15 +42,21 @@ function generateKeyFromString(key_as_string)
   });
 }
 
-/// Generate two prime numbers with n bits using the rsa.generate()
-/// in lack of a real generatePrime() method.
+/**
+ * Generate two prime numbers with n bits using the rsa.generate()
+ * in lack of a real generatePrime() method.
+ *
+ * @param {number} primeBitLength
+ *    The target prime number length in bit.
+ * @returns {Promise}
+ *    The promise of two prime numbers with the requesterd bit length.
+ */
 function generateTwoPrimeNumbers(primeBitLength)
 {
-  if (!isInteger(primeBitLength)) {
-    return Promise.reject("The prime bit length is no integer but a '" + primeBitLength + "'");
-  } else if(!((primeBitLength % 8 === 0) && primeBitLength >= 128 && primeBitLength <= 8192)) {
-    return Promise.reject("The prime bit length must be a multiple of 8 bits and >= 128 and <= 8192");
-  }
+  assert(isInteger(primeBitLength),
+    "The prime bit length is no integer but a '" + primeBitLength + "'");
+  assert((primeBitLength % 8 === 0) && primeBitLength >= 256 && primeBitLength <= 16384,
+    "The prime bit length must be a multiple of 8 bits and >= 128 and <= 8192");
 
   const key_arguments = {
     e: 65537,
@@ -54,14 +74,20 @@ function generateTwoPrimeNumbers(primeBitLength)
   });
 }
 
-/// TODO
-async function generateBlindingFactor(bitLength)
+/**
+ * Generates a blinding factor for the rsa blinding algorithm.
+ *
+ * @param {number} bitLength
+ *    The target blinding factor length in bit.
+ * @returns {BigInteger}
+ *    the requested blinding factor.
+ */
+async function generateRsaBlindingFactor(bitLength)
 {
-  if (!isInteger(bitLength)) {
-    throw new Error("The prime bit length is no integer but a '" + bitLength + "'");
-  } else if(!((bitLength % 8 === 0) && bitLength >= 256 && bitLength <= 16384)) {
-    throw new Error("The prime bit length must be a multiple of 8 bits and >= 256 and <= 16384");
-  }
+  assert(isInteger(bitLength),
+    "The blinding factor bit length is no integer but a '" + bitLength + "'");
+  assert((bitLength % 8 === 0) && bitLength >= 256 && bitLength <= 16384,
+    "The blinding factor bit length must be a multiple of 8 bits and >= 256 and <= 16384");
 
   const sub_prime_length = Math.floor(bitLength / 2);
   let primes = await generateTwoPrimeNumbers(sub_prime_length);
@@ -79,9 +105,7 @@ async function generateBlindingFactor(bitLength)
  */
 function hashMessage(message)
 {
-  if (!isString(message)) {
-    return null;
-  }
+  assert(isString(message));
 
   const hash_buffer = kbpgp.hash.SHA512(new kbpgp.Buffer(message));
   return BigInteger.fromBuffer(hash_buffer);
@@ -257,7 +281,7 @@ function isString(object)
 const util_api = {
   assert,
   BigInteger,
-  generateBlindingFactor,
+  generateRsaBlindingFactor,
   generateKeyFromString,
   generateTwoPrimeNumbers,
   hashMessage,
