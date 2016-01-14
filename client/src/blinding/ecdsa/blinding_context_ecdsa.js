@@ -104,6 +104,6 @@ export default class EcdsaBlindingContext extends BlindingContext
   encode_signature_data(data, hasher)
   {
     assert(util.isBuffer(data));
-    return util.BigInteger.fromByteArrayUnsigned(data);
+    return util.BigInteger.fromBuffer(data);
   }
 }
