@@ -15,18 +15,55 @@ describe("EcdsaBlinder", function() {
   // suite functions
   //
 
+  /** @type{EcdsaBlinder} **/
+  let blinder = null;
+
+  /** @type{KeyManager} **/
+  let key_manager = null;
+
   before(async () => {
-    this.key_manager = await util.generateKeyFromString(sample_keys.ecc.nist[256].pub);
+    key_manager = await util.generateKeyFromString(sample_keys.ecc.nist[256].pub);
   });
 
   beforeEach(async () => {
-    let context = new EcdsaBlindingContext();
+    let context = EcdsaBlindingContext.fromKey(key_manager);
 
-    this.blinder = new EcdsaBlinder(this.key_manager);
-    this.blinder.context = context;
+    blinder = new EcdsaBlinder();
+    blinder.context = context;
   });
 
   afterEach(() => {});
+
+  ///---------------------------------
+  /// #initContext()
+  ///---------------------------------
+
+  describe("#initContext()", () => {
+
+    it ("should return a rejected promise if the input {KeyManager} is missing", () => {
+      return blinder.initContext(null, util.BigInteger.ONE)
+        .catch(error => assert.instanceOf(error, Error));
+    });
+
+    it ("should throw if the input {KeyManager} does not contain an ECDSA key", async () => {
+      const key_manager = await util.generateKeyFromString(sample_keys.rsa[1024].pub);
+      return blinder.initContext(key_manager, util.BigInteger.ONE)
+        .catch(error => assert.instanceOf(error, Error));
+    });
+
+    it ("should throw if the the hashed token is no {BigInteger}", () => {
+      blinder.initContext(key_manager, 123)
+        .catch(error => assert.instanceOf(error, Error));
+    });
+
+    it ("should set the blinder in full prepared state", async () => {
+      await blinder.initContext(key_manager, util.BigInteger.ONE);
+
+      assert.isTrue(EcdsaBlindingContext.isValidBlindingContext(blinder.context));
+      assert.isTrue(util.isBigInteger(blinder.token));
+      assert.isTrue(util.isKeyManagerForEcdsaSign(blinder.key_manager));
+    });
+  });
 
   ///---------------------------------
   /// #blind()
@@ -43,16 +80,6 @@ describe("EcdsaBlinder", function() {
   });
 
   ///---------------------------------
-  /// #initContext()
-  ///---------------------------------
-
-  describe("#initContext()", () => {
-
-    it ("should ...");
-
-  });
-
-  ///---------------------------------
   /// #unblind_message_ecdsa()
   ///---------------------------------
 
@@ -64,5 +91,14 @@ describe("EcdsaBlinder", function() {
 
     it ("should return ... for specified input");
 
+  });
+
+  ///---------------------------------
+  /// #forgeSignature()
+  ///---------------------------------
+
+  describe("#forgeSignature()", () => {
+
+    it ("should ...");
   });
 });

@@ -15,22 +15,57 @@ describe("RsaBlinder", function() {
   // suite functions
   //
 
+  /** @type {RsaBlinder} **/
+  let blinder = null;
+
+  /** @type {KeyManager} **/
+  let key_manager = null;
+
   before(async () => {
-    this.key_manager = await util.generateKeyFromString(sample_keys.rsa[1024].pub);
+    key_manager = await util.generateKeyFromString(sample_keys.rsa[1024].pub);
   });
 
   beforeEach(async () => {
-    let context = new RsaBlindingContext();
-    context.blinding_factor = new util.BigInteger("1", 10);
-    context.modulus = new util.BigInteger("1", 10);
-    context.public_exponent = new util.BigInteger("1", 10);
-    context.hashed_token = new util.BigInteger("1", 10);
+    let context = RsaBlindingContext.fromKey(key_manager);
+    context.hashed_token = util.BigInteger.ONE;
 
-    this.blinder = new RsaBlinder(this.key_manager);
-    this.blinder.context = context;
+    blinder = new RsaBlinder();
+    blinder.context = context;
   });
 
   afterEach(() => {});
+
+
+  ///---------------------------------
+  /// #initContext()
+  ///---------------------------------
+
+  describe("#initContext()", () => {
+
+    it ("should throw if the input {KeyManager} is missing", () => {
+      return blinder.initContext(null, util.BigInteger.ONE)
+        .catch(error => assert.instanceOf(error, Error));
+    });
+
+    it ("should throw if the input {KeyManager} does not contain an RSA key", async () => {
+      const key_manager = await util.generateKeyFromString(sample_keys.ecc.bp[256].pub);
+      return blinder.initContext(key_manager, util.BigInteger.ONE)
+        .catch(error => assert.instanceOf(error, Error));
+    });
+
+    it ("should throw if the the hashed token is no {BigInteger}", () => {
+      return blinder.initContext(key_manager, 123)
+        .catch(error => assert.instanceOf(error, Error));
+    });
+
+    it ("should set the blinder in full prepared state", async () => {
+      await blinder.initContext(key_manager, util.BigInteger.ONE);
+
+      assert.isTrue(RsaBlindingContext.isValidBlindingContext(blinder.context));
+      assert.isTrue(util.isBigInteger(blinder.token));
+      assert.isTrue(util.isKeyManagerForRsaSign(blinder.key_manager));
+    });
+  });
 
   ///---------------------------------
   /// #blind()
@@ -39,12 +74,12 @@ describe("RsaBlinder", function() {
   describe("#blind()", () => {
 
     it ("should throw an assertion if message is no {BigInteger}", () => {
-      assert.throws(() => this.blinder.blind({}));
+      assert.throws(() => blinder.blind({}));
     });
 
     it ("should throw an assertion if the blinding context is incomplete", () => {
-      this.blinder.context = null;
-      assert.throws(() => this.blinder.blind(util.BigInteger.ZERO));
+      blinder.context = null;
+      assert.throws(() => blinder.blind(util.BigInteger.ZERO));
     });
 
     const tests = [
@@ -59,27 +94,17 @@ describe("RsaBlinder", function() {
     for (const test of tests) {
       it("Setting: " + tests.indexOf(test) + " - should return a correct blinded message", () => {
 
-        this.blinder.context.blinding_factor = new util.BigInteger(test.args.blinding_factor, 10);
-        this.blinder.context.modulus = new util.BigInteger(test.args.modulus, 10);
-        this.blinder.context.public_exponent = new util.BigInteger("3", 10);
-        this.blinder.context.hashed_token = new util.BigInteger("3", 10);
+        blinder.context.blinding_factor = new util.BigInteger(test.args.blinding_factor, 10);
+        blinder.context.modulus = new util.BigInteger(test.args.modulus, 10);
+        blinder.context.public_exponent = new util.BigInteger("3", 10);
+        blinder.context.hashed_token = new util.BigInteger("3", 10);
 
         const message = new util.BigInteger(test.args.message, 10);
-        const blinded_message = this.blinder.blind(message);
+        const blinded_message = blinder.blind(message);
 
         assert.equal(test.expected, blinded_message.toRadix(10));
       });
     }
-  });
-
-  ///---------------------------------
-  /// #initContext()
-  ///---------------------------------
-
-  describe("#initContext()", () => {
-
-    it ("should ...");
-
   });
 
   ///---------------------------------
@@ -89,12 +114,12 @@ describe("RsaBlinder", function() {
   describe("#unblind()", () => {
 
     it ("should throw an assertion if message is no {BigInteger}", () => {
-      assert.throws(() => this.blinder.unblind({}));
+      assert.throws(() => blinder.unblind({}));
     });
 
     it ("should throw an assertion if the blinding context is incomplete", () => {
-      this.blinder.context = null;
-      assert.throws(() => this.blinder.unblind(util.BigInteger.ONE));
+      blinder.context = null;
+      assert.throws(() => blinder.unblind(util.BigInteger.ONE));
     });
 
     const tests = [
@@ -109,17 +134,26 @@ describe("RsaBlinder", function() {
     for (const test of tests) {
       it ("Setting: " + tests.indexOf(test) + " - should return a correct unblinded message", () => {
 
-        this.blinder.context.blinding_factor = new util.BigInteger(test.args.blinding_factor, 10);
-        this.blinder.context.modulus = new util.BigInteger(test.args.modulus, 10);
-        this.blinder.context.public_exponent = new util.BigInteger("3", 10);
-        this.blinder.context.hashed_token = new util.BigInteger("3", 10);
+        blinder.context.blinding_factor = new util.BigInteger(test.args.blinding_factor, 10);
+        blinder.context.modulus = new util.BigInteger(test.args.modulus, 10);
+        blinder.context.public_exponent = new util.BigInteger("3", 10);
+        blinder.context.hashed_token = new util.BigInteger("3", 10);
 
         const message = new util.BigInteger(test.args.blinded_message, 10);
-        const unblinded_message = this.blinder.unblind(message);
+        const unblinded_message = blinder.unblind(message);
 
         assert.isTrue(util.isBigInteger(unblinded_message));
         assert.equal(test.expected, unblinded_message.toRadix(10));
       });
     }
+  });
+
+  ///---------------------------------
+  /// #forgeSignature()
+  ///---------------------------------
+
+  describe("#forgeSignature()", () => {
+
+    it ("should ...");
   });
 });
