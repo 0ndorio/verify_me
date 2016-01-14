@@ -2,7 +2,7 @@
 
 import * as kbpgp from "kbpgp"
 
-function export_keys_to_binary_and_inject_signature(keymanager,  signature, opts)
+function export_keys_to_binary_and_inject_signature(keymanager,  signature, opts = {})
 {
   const pgpengine = keymanager.pgp;
   const primary_userid = keymanager.get_userids_mark_primary()[0];
@@ -30,15 +30,15 @@ function export_keys_to_binary_and_inject_signature(keymanager,  signature, opts
 
 function export_key_with_signature(key, signature_packet)
 {
-  const key_binary = this.export_keys_to_binary_and_inject_signature(key, signature_packet, {});
+  const key_binary = this.export_keys_to_binary_and_inject_signature(key, signature_packet);
   const key_ascii = kbpgp.armor.encode(kbpgp.const.openpgp.message_types.public_key, key_binary);
 
-  const target_key_material = [key.get_userids_mark_primary()[0]];
+  const user_id_packet = [key.get_userids_mark_primary()[0]];
 
   return new Promise((resolve, reject) => {
 
     signature_packet.verify(
-      target_key_material,
+      user_id_packet,
       (err) => {
         if (err) {
           reject(new Error("Error during final signature verification. Please restart the process.", err));

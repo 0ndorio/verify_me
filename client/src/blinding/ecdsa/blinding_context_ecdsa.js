@@ -18,6 +18,17 @@ export default class EcdsaBlindingContext extends BlindingContext
     this.public_point = null;
     /** @type {BigInteger|null} */
     this.hashed_token = null;
+
+    this.blinding_factor = {
+      /** @type {BigInteger|null} */
+      a: null,
+      /** @type {BigInteger|null} */
+      b: null,
+      /** @type {BigInteger|null} */
+      c: null,
+      /** @type {BigInteger|null} */
+      d: null
+    };
   }
 
   /**
@@ -52,7 +63,6 @@ export default class EcdsaBlindingContext extends BlindingContext
 
     let context = new EcdsaBlindingContext();
     context.curve = public_key_package.curve;
-    context.public_point = public_key_package.R;
 
     return context;
   }
@@ -64,7 +74,6 @@ export default class EcdsaBlindingContext extends BlindingContext
    * For our RSA based blind signatures we need:
    *
    *  - {Curve} signers curve
-   *  - {Point} signers public point
    *  - {BigInteger} hash of the given token to authenticate our request
    *
    * @returns {boolean}
@@ -73,9 +82,13 @@ export default class EcdsaBlindingContext extends BlindingContext
    */
   containsAllBlindingInformation()
   {
-    return util.isPoint(this.public_point)
-        && util.isCurve(this.curve)
-        && util.isBigInteger(this.hashed_token);
+    return util.isCurve(this.curve)
+        && util.isBigInteger(this.hashed_token)
+        && null != this.blinding_factor
+        && this.blinding_factor.hasOwnProperty("a") && util.isBigInteger(this.blinding_factor.a)
+        && this.blinding_factor.hasOwnProperty("b") && util.isBigInteger(this.blinding_factor.b)
+        && this.blinding_factor.hasOwnProperty("c") && util.isBigInteger(this.blinding_factor.c)
+        && this.blinding_factor.hasOwnProperty("d") && util.isBigInteger(this.blinding_factor.d)
   }
 
   /**

@@ -88,10 +88,17 @@ async function requestEcdsaBlindingInitialization(blinding_context)
       assert(util.isString(response));
 
       const request_result = JSON.parse(response);
-      return blinding_context.curve.mkpoint({
-        x: new util.BigInteger(request_result.x, 32),
-        y: new util.BigInteger(request_result.y, 32)
+      const P = blinding_context.curve.mkpoint({
+        x: new util.BigInteger(request_result.px, 32),
+        y: new util.BigInteger(request_result.py, 32)
       });
+
+      const Q = blinding_context.curve.mkpoint({
+        x: new util.BigInteger(request_result.qx, 32),
+        y: new util.BigInteger(request_result.qy, 32)
+      });
+
+      return {P, Q};
     });
 }
 

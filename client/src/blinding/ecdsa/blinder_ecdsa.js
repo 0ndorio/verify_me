@@ -8,14 +8,13 @@ import server from "../../server"
 import util, { assert, Point, BigInteger } from "../../util"
 
 /// TODO
-/// http://www.eng.usf.edu/~ibutun/ELK-1102-1051_manuscript_1.pdf
-/// https://en.wikipedia.org/wiki/Acute_accent
+/// http://oleganza.com/blind-ecdsa-draft-v2.pdf
 export default class EcdsaBlinder extends Blinder
 {
   constructor(key_manager)
   {
     super(key_manager);
-  }
+  };
 
   /// TODO
   async initContext(key_manager, token)
@@ -24,6 +23,10 @@ export default class EcdsaBlinder extends Blinder
     assert(util.isBigInteger(token));
 
     const context = EcdsaBlindingContext.fromKey(key_manager);
+    context.blinding_factor.a = await this.generate_random_scalar(context.curve);
+    context.blinding_factor.b = await this.generate_random_scalar(context.curve);
+    context.blinding_factor.c = await this.generate_random_scalar(context.curve);
+    context.blinding_factor.d = await this.generate_random_scalar(context.curve);
     context.hashed_token = util.hashMessage(token.toRadix());
 
     this.context = context;
@@ -37,16 +40,24 @@ export default class EcdsaBlinder extends Blinder
     assert(util.isBigInteger(message));
     assert(EcdsaBlindingContext.isValidBlindingContext(this.context));
 
-    return null;
+    const n = this.context.curve.n;
+    const a = this.context.blinding_factor.a;
+    const b = this.context.blinding_factor.b;
+
+    return message.multiply(a).add(b).mod(n);
   }
 
   /// TODO
-  unblind(message)
+  unblind(message, secrets)
   {
     assert(util.isBigInteger(message));
     assert(EcdsaBlindingContext.isValidBlindingContext(this.context));
 
-    return null;
+    const n = this.context.curve.n;
+    const c = this.context.blinding_factor.c;
+    const d = this.context.blinding_factor.d;
+
+    return c.multiply(message).add(d).mod(n);
   }
 
   /// TODO
@@ -56,73 +67,67 @@ export default class EcdsaBlinder extends Blinder
     assert(util.isBigInteger(packet.raw_signature));
     assert(EcdsaBlindingContext.isValidBlindingContext(this.context));
 
-    // prepare algorithm
+    const { T, r }  = await this.generatePublicInformation();
+
+    const message_buffer = hash.SHA512(packet.raw_signature.toBuffer());
+    const message = packet.key.pub.trunc_hash(message_buffer);
+    const blinded_message = this.blind(message);
+    const signed_blinded_message = await server.requestEcdsaBlinding(blinded_message, this.context);
+    const signed_message = this.unblind(signed_blinded_message);
+
+    packet.sig = Buffer.concat([r.to_mpi_buffer(), signed_message.to_mpi_buffer()]);
+    packet.key.pub.R = T;
+  }
+
+  /// TODO
+  async generatePublicInformation()
+  {
+    assert(EcdsaBlindingContext.isValidBlindingContext(this.context));
+
+    const a = this.context.blinding_factor.a;
+    const b = this.context.blinding_factor.b;
+    const c = this.context.blinding_factor.c;
+    const d = this.context.blinding_factor.d;
+
     const curve = this.context.curve;
     const n = curve.n;
 
-    // request initial point based on secret scalar
-    const Ŕ = await server.requestEcdsaBlindingInitialization(this.context);
-    assert(curve.isOnCurve(Ŕ));
+    // request initial points based on secret scalars
+    const { P, Q } = await server.requestEcdsaBlindingInitialization(this.context);
+    assert(curve.isOnCurve(P));
+    assert(curve.isOnCurve(Q));
 
-    // calculate rx
-    const ŕ = Ŕ.affineX.mod(n);
-    assert(0 !== ŕ.compareTo(util.BigInteger.ZERO));
+    const ca_inv = c.multiply(a).modInverse(n);
+    const K = P.multiply(ca_inv);
+    assert(curve.isOnCurve(K));
 
-    // choose random scalars a,b [1, n-1]
-    const A = await generate_random_scalar(curve);
-    const B = await generate_random_scalar(curve);
+    const aKx_inv = a.multiply(K.affineX).modInverse(n);
+    const bG = curve.G.multiply(b);
+    assert(curve.isOnCurve(bG));
 
-    // calculate second point based on random scalars
-    const R = Ŕ.multiplyTwo(A, curve.G, B);
-    assert(curve.isOnCurve(R));
+    const c_inv = c.modInverse(n);
+    const T = (P.multiply(c_inv).multiply(d).add(Q).add(bG)).multiply(aKx_inv);
+    assert(curve.isOnCurve(T));
 
-    const r = R.affineX.mod(n);
-    const r_inv = r.modInverse(n);
-
-    // generate blinded message
-    const message_buffer = hash.SHA1(packet.raw_signature.toBuffer());
-    const hashed_message = BigInteger.fromBuffer(message_buffer);
-    this.signed_hash_value_hash = hashed_message.toBuffer().slice(0, 2);
-
-    const ḿ = A.multiply(hashed_message).multiply(ŕ).multiply(r_inv).mod(n);
-
-    // request signed blinded message
-    let ś = await server.requestEcdsaBlinding(ḿ, this.context);
-    ś = ś.mod(n);
-
-    // verify valid data (ś and ŕ in [1, n-1])
-    assert(0 < ś.compareTo(util.BigInteger.ZERO) && 0 > ś.compareTo(n));
-    assert(0 < ŕ.compareTo(util.BigInteger.ZERO) && 0 > ŕ.compareTo(n));
-
-    // unblinde signed message
-    const ŕ_inv = ŕ.modInverse(n);
-    const s = ś.multiply(r).multiply(ŕ_inv).add(B.multiply(hashed_message)).mod(n);
-
-    //const message = packet.raw_signature;
-    //const blinded_message = this.blind(message);
-    //const signed_blinded_message = null;
-    //const signed_message = null;
-
-    // paper suggest (s, R) but ecdsa says (r, s)
-    packet.sig = Buffer.concat([r.to_mpi_buffer(), s.to_mpi_buffer()]);
+    return { T, r: K.affineX};
   }
-}
 
-/**
- * Generate a random scalar k.
- *
- * k is in range [1, n-1] where n is the prime number defining
- * the order of the givens curves base point.
- *
- * @param {Curve} curve
- *    The curve we use to generate the random scalar value.
- * @returns {Promise}
- *    The promise of a {BigInteger} scalar [1, n-1]
- */
-async function generate_random_scalar(curve)
-{
-  return new Promise((resolve, reject) =>
-    curve.random_scalar(
-      k => resolve(k))
-  );
+  /**
+   * Generate a random scalar k.
+   *
+   * k is in range [1, n-1] where n is the prime number defining
+   * the order of the givens curves base point.
+   *
+   * @param {Curve} curve
+   *    The curve we use to generate the random scalar value.
+   * @returns {Promise}
+   *    The promise of a {BigInteger} scalar [1, n-1]
+   */
+  async generate_random_scalar(curve)
+  {
+    return new Promise((resolve, reject) =>
+      curve.random_scalar(
+        k => resolve(k))
+    );
+  }
 }

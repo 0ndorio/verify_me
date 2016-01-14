@@ -17,11 +17,14 @@ async function init_blinding(request, response)
   let json = {};
   if (request.body.hasOwnProperty("hashed_token")) {
 
-    const { k, Ŕ } = await Signer.prepare(keys.ecc_key);
-    secret_scalar[request.body.hashed_token] = k;
+    const { p, P, q, Q } = await Signer.prepare(keys.ecc_key);
 
-    json.x = Ŕ.affineX.toRadix(32);
-    json.y = Ŕ.affineY.toRadix(32);
+    secret_scalar[request.body.hashed_token] = {p, q};
+
+    json.px = P.affineX.toRadix(32);
+    json.py = P.affineY.toRadix(32);
+    json.qx = Q.affineX.toRadix(32);
+    json.qy = Q.affineY.toRadix(32);
 
   } else {
     json.error = "Missing Token...";
@@ -36,10 +39,10 @@ function sign_blinded_message(request, response)
   let json = {};
   if (request.body.hasOwnProperty("hashed_token")) {
 
-    const k = secret_scalar[request.body.hashed_token];
-    const ḿ = request.body.message;
+    const secret_scalars = secret_scalar[request.body.hashed_token];
+    const blinded_message = request.body.message;
 
-    json.signed_blinded_message = Signer.sign(ḿ, k, keys.ecc_key);
+    json.signed_blinded_message = Signer.sign(blinded_message, secret_scalars, keys.ecc_key);
 
   } else {
     json.error = "Missing Token...";
