@@ -7,8 +7,10 @@ import EcdsaBlindingContext from "./blinding_context_ecdsa"
 import server from "../../server"
 import util, { assert, Point, BigInteger } from "../../util"
 
-/// TODO
-/// http://oleganza.com/blind-ecdsa-draft-v2.pdf
+/**
+ * Representation of the ecdsa blinding algorithm presented by Oleg Andreev
+ * in https://github.com/oleganza/bitcoin-papers/blob/master/BitcoinBlindSignatures.md
+ */
 export default class EcdsaBlinder extends Blinder
 {
   constructor(key_manager)
@@ -16,7 +18,15 @@ export default class EcdsaBlinder extends Blinder
     super(key_manager);
   };
 
-  /// TODO
+  /**
+   * Initializes the internal {EcdsaBlindingContext}.
+   *
+   * @param {KeyManager} key_manager
+   *    A {KeyManager} containing the signers public key which is necessary
+   *    to extract the elliptic curve public parameter.
+   * @param {BigInteger} token
+   *    This is used to validate the blinded request.
+   */
   async initContext(key_manager, token)
   {
     assert(util.isKeyManagerForEcdsaSign(key_manager));
@@ -34,7 +44,17 @@ export default class EcdsaBlinder extends Blinder
     this.token = token;
   }
 
-  /// TODO
+  /**
+   * Blinds the given message.
+   *
+   *    (message * blinding_factor_a) + blinding_factor_b (mod N)
+   *
+   * @param {BigInteger} message
+   *    The original message.
+   *
+   * @returns {BigInteger}
+   *    The blinded message.
+   */
   blind(message)
   {
     assert(util.isBigInteger(message));
@@ -47,7 +67,17 @@ export default class EcdsaBlinder extends Blinder
     return message.multiply(a).add(b).mod(n);
   }
 
-  /// TODO
+  /**
+   * Unblinds the given signed blinded message.
+   *
+   *    (signed_blinded_message * blinding_factor_c) + blinding_factor_d (mod N)
+   *
+   * @param {BigInteger} message
+   *    The signed blinded message.
+   *
+   * @returns {BigInteger}
+   *    The unblinded signed message.
+   */
   unblind(message, secrets)
   {
     assert(util.isBigInteger(message));
@@ -57,42 +87,45 @@ export default class EcdsaBlinder extends Blinder
     const c = this.context.blinding_factor.c;
     const d = this.context.blinding_factor.d;
 
-    return c.multiply(message).add(d).mod(n);
+    return message.multiply(c).add(d).mod(n);
   }
 
-  /// TODO
+  /**
+   * Forges a ecdsa based blind signature.
+   *
+   * To achieve this the prepared raw signature is blinded and send to the server.
+   * The server signs the blinded message and the result is send back.
+   * Afterwards the result is unblinded and inject into the given signature packet.
+   *
+   * Based on: https://github.com/oleganza/bitcoin-papers/blob/master/BitcoinBlindSignatures.md
+   *
+   * @param {BlindSignaturePacket} packet
+   *    The prepared {BlindSignaturePacket} including the raw signature.
+   */
   async forgeSignature(packet)
   {
     assert(packet instanceof BlindSignaturePacket);
-    assert(util.isBigInteger(packet.raw_signature));
-    assert(EcdsaBlindingContext.isValidBlindingContext(this.context));
 
-    const { T, r }  = await this.generatePublicInformation();
+    const { T, r }  = await this.requestFirstSignatureParameter();
+    const { s } = await this.requestSecondSignatureParameter(packet);
 
-    const message_buffer = hash.SHA512(packet.raw_signature.toBuffer());
-    const message = packet.key.pub.trunc_hash(message_buffer);
-    const blinded_message = this.blind(message);
-    const signed_blinded_message = await server.requestEcdsaBlinding(blinded_message, this.context);
-    const signed_message = this.unblind(signed_blinded_message);
-
-    packet.sig = Buffer.concat([r.to_mpi_buffer(), signed_message.to_mpi_buffer()]);
+    packet.sig = Buffer.concat([r.to_mpi_buffer(), s.to_mpi_buffer()]);
     packet.key.pub.R = T;
   }
 
   /// TODO
-  async generatePublicInformation()
+  async requestFirstSignatureParameter()
   {
     assert(EcdsaBlindingContext.isValidBlindingContext(this.context));
+
+    const curve = this.context.curve;
+    const n = curve.n;
 
     const a = this.context.blinding_factor.a;
     const b = this.context.blinding_factor.b;
     const c = this.context.blinding_factor.c;
     const d = this.context.blinding_factor.d;
 
-    const curve = this.context.curve;
-    const n = curve.n;
-
-    // request initial points based on secret scalars
     const { P, Q } = await server.requestEcdsaBlindingInitialization(this.context);
     assert(curve.isOnCurve(P));
     assert(curve.isOnCurve(Q));
@@ -101,15 +134,30 @@ export default class EcdsaBlinder extends Blinder
     const K = P.multiply(ca_inv);
     assert(curve.isOnCurve(K));
 
-    const aKx_inv = a.multiply(K.affineX).modInverse(n);
+    const r = K.affineX;
+    const ar_inv = a.multiply(r).modInverse(n);
     const bG = curve.G.multiply(b);
     assert(curve.isOnCurve(bG));
 
     const c_inv = c.modInverse(n);
-    const T = (P.multiply(c_inv).multiply(d).add(Q).add(bG)).multiply(aKx_inv);
+    const T = (P.multiply(c_inv).multiply(d).add(Q).add(bG)).multiply(ar_inv);
     assert(curve.isOnCurve(T));
 
-    return { T, r: K.affineX};
+    return { T, r };
+  }
+
+  /// TODO
+  async requestSecondSignatureParameter(packet)
+  {
+    assert(packet instanceof BlindSignaturePacket);
+    assert(util.isBigInteger(packet.raw_signature));
+    assert(EcdsaBlindingContext.isValidBlindingContext(this.context));
+
+    const message_buffer = hash.SHA512(packet.raw_signature.toBuffer());
+    const message = packet.key.pub.trunc_hash(message_buffer);
+    const blinded_message = this.blind(message);
+    const signed_blinded_message = await server.requestEcdsaBlinding(blinded_message, this.context);
+    return this.unblind(signed_blinded_message);
   }
 
   /**
