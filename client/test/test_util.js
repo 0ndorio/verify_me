@@ -1,14 +1,39 @@
 "use strict";
 
 import { assert } from "chai"
+import { Buffer, ecc } from "kbpgp"
 
 import client from"../src/client"
 import util from "../src/util"
 
 import { controls } from "./helper/client_control"
-import { public_keys } from "./helper/keys"
+import keys, { public_keys } from "./helper/keys"
 
 describe("util", function() {
+
+  ///---------------------------------
+  /// #assert()
+  ///---------------------------------
+
+  describe("#assert", () => {
+
+    it("nothing should happen when condition validates to true", () => {
+      util.assert(true);
+    });
+
+    it("should throw if condition validates to false", () => {
+      assert.throws(() => util.assert(false));
+    });
+
+    it("should throw with custom message if condition validates to false", () => {
+      const custom_message = "custom message";
+      assert.throws(() => util.assert(false, custom_message), custom_message);
+    });
+  });
+
+  ///---------------------------------
+  /// #generateKeyFromString()
+  ///---------------------------------
 
   describe("#generateKeyFromString", () => {
 
@@ -22,38 +47,45 @@ describe("util", function() {
         .catch(error => assert.instanceOf(error, Error));
     });
 
-    for (const key_string of public_keys) {
-      it("should return a {KeyManager} object if input is a valid ascii armored key", () => {
-        return util.generateKeyFromString(key_string)
+    for (const id in public_keys) {
+      it("Setting: " + id +" - should return the promise of a {KeyManager} object if input is a pgp key", () => {
+        const promise = util.generateKeyFromString(public_keys[id]);
+        assert.instanceOf(promise, Promise);
+
+        return promise
           .then(key => assert.isTrue(util.isKeyManager(key)));
       });
     }
   });
+
+  ///---------------------------------
+  /// #generateTwoPrimeNumbers()
+  ///---------------------------------
 
   describe("#generateTwoPrimeNumbers", () => {
 
     it("should return a rejected Promise if input parameter is no integer", () => {
       return util.generateTwoPrimeNumbers(null)
         .then(() => assert.fail())
-        .catch((error) => assert.include(error, "no integer"));
+        .catch((error) => assert.include(error.message, "no integer"));
     });
 
-    it("should throw an error if input bit size is not multiple of 8", () => {
+    it("should return a rejected Promise if input bit size is not multiple of 8", () => {
       return util.generateTwoPrimeNumbers(15)
         .then((answer) => assert.fail())
-        .catch((error) => assert.include(error, "multiple of 8"));
+        .catch((error) => assert.include(error.message, "multiple of 8"));
     });
 
-    it("should throw an error if input bit size is smaller than 128", () => {
+    it("should return a rejected Promise if input bit size is smaller than 128", () => {
       return util.generateTwoPrimeNumbers(127)
         .then((answer) => assert.fail())
-        .catch((error) => assert.include(error, ">= 128"));
+        .catch((error) => assert.include(error.message, ">= 128"));
     });
 
-    it("should throw an error if input bit size is bigger than 8192", () => {
+    it("should return a rejected Promise if input bit size is bigger than 8192", () => {
       return util.generateTwoPrimeNumbers(8193)
         .then((answer) => assert.fail())
-        .catch((error) => assert.include(error, "<= 8192"));
+        .catch((error) => assert.include(error.message, "<= 8192"));
     });
 
     it("should return two {BigInteger} prime numbers of given bit length", (done) => {
@@ -74,114 +106,236 @@ describe("util", function() {
     });
   });
 
-  describe("#generateBlindingFactor", () => {
-    it("should ...");
+  ///---------------------------------
+  /// #generateRsaBlindingFactor()
+  ///---------------------------------
+
+  describe("#generateRsaBlindingFactor", () => {
+
+    it("should return a rejected Promise if input parameter is no integer", () => {
+      return util.generateRsaBlindingFactor(null)
+        .then(() => assert.fail())
+        .catch((error) => assert.include(error.message, "no integer"));
+    });
+
+    it("should return a rejected Promise if input bit size is not multiple of 8", () => {
+      return util.generateRsaBlindingFactor(15)
+        .then((answer) => assert.fail())
+        .catch((error) => assert.include(error.message, "multiple of 8"));
+    });
+
+    it("should return a rejected Promise if input bit size is smaller than 256", () => {
+      return util.generateRsaBlindingFactor(255)
+        .then((answer) => assert.fail())
+        .catch((error) => assert.include(error.message, ">= 256"));
+    });
+
+    it("should return a rejected Promise if input bit size is bigger than 16384", () => {
+      return util.generateRsaBlindingFactor(16385)
+        .then((answer) => assert.fail())
+        .catch((error) => assert.include(error.message, "<= 16384"));
+    });
+
+    it("should return a {BigInteger} numbers of given bit length", (done) => {
+      const bitLength = 256;
+
+      return util.generateRsaBlindingFactor(bitLength)
+        .then((blinding_factor) => {
+
+          assert.isTrue(util.isBigInteger(blinding_factor));
+          assert.equal(bitLength, blinding_factor.bitLength());
+
+          done();
+        })
+    });
   });
 
-  describe("#hashMessage()", () => {
+  ///---------------------------------
+  /// #hashMessageSha512()
+  ///---------------------------------
 
-    it("should return null if input parameter is no string", () => {
-      assert.isNull(util.hashMessage(123));
+  describe("#hashMessageSha512()", () => {
+
+    it("should throw if input parameter is no string", () => {
+      assert.throws(() => util.hashMessageSha512(123));
     });
 
     it("should return a hash digest with bit length 512", () => {
       const expected_hex = "ddaf35a193617abacc417349ae20413112e6fa4e89a97ea20a9eeee64b55d39a"
                          + "2192992a274fc1a836ba3c23a3feebbd454d4423643ce80e2a9ac94fa54ca49f";
 
-      const result = util.hashMessage("abc");
+      const result = util.hashMessageSha512("abc");
+
+      assert.isTrue(util.isBigInteger(result));
       assert.equal(512, result.bitLength());
       assert.equal(expected_hex, result.toString(16));
     });
   });
 
+  ///---------------------------------
+  /// #isBigInteger()
+  ///---------------------------------
+
   describe("#isBigInteger()", () => {
 
-    const tests = [
-      {arg: "123"}, {arg: 123}, {arg: true}, {arg: {}}, {arg: []}, {arg: undefined}
-    ];
-
-    for (const test of tests) {
-      it("should return false when parameter is a not a BigInteger", () => {
-        assert.isFalse(util.isBigInteger(test.arg));
-      });
-    }
+    it("should return false when parameter is a no {BigInteger}", () => {
+      assert.isFalse(util.isBigInteger(123));
+    });
 
     it ("should return true when input parameter is a valid {BigInteger}", () => {
       assert.isTrue(util.isBigInteger(util.BigInteger.ZERO));
     });
   });
 
+  ///---------------------------------
+  /// #isBuffer()
+  ///---------------------------------
+
+  describe("#isBuffer()", () => {
+
+    it("should return false when parameter is a no {Buffer}", () => {
+      assert.isFalse(util.isBuffer(123));
+    });
+
+    it ("should return true when input parameter is a valid {Buffer}", () => {
+      assert.isTrue(util.isBuffer(new Buffer(123)));
+    });
+  });
+
+  ///---------------------------------
+  /// #isCurve()
+  ///---------------------------------
+
+  describe("#isCurve()", () => {
+
+    it("should return false when parameter is a no {Curve}", () => {
+      assert.isFalse(util.isCurve(123));
+    });
+
+    it ("should return true when input parameter is a valid {Curve}", () => {
+      assert.isTrue(util.isCurve(ecc.curves.brainpool_p512()));
+    });
+  });
+
+  ///---------------------------------
+  /// #isFunction()
+  ///---------------------------------
+
+  describe("#isFunction()", () => {
+
+    it ("should return false when input parameter is not a valid {function}", () => {
+      assert.isFalse(util.isFunction(123));
+    });
+
+    it ("should return true when input parameter is a valid {function}", () => {
+      assert.isTrue(util.isFunction(() => {}));
+    });
+  });
+
+  ///---------------------------------
+  /// #isInteger()
+  ///---------------------------------
+
   describe("#isInteger()", () => {
 
-    const tests = [
-      {arg: "123"}, {arg: 123.45}, {arg: true}, {arg: {}}, {arg: []}, {arg: undefined}
-    ];
+    it ("should return false when input parameter is not a valid integer {number}", () => {
+      assert.isFalse(util.isInteger("123"));
+    });
 
-    for (const test of tests) {
-      it ("should return false when input parameter is not a valid integer", () => {
-        assert.isFalse(util.isInteger(test.arg));
-      });
-    }
-
-    it ("should return true when input parameter is a valid integer", () => {
+    it ("should return true when input parameter is a valid integer {number}", () => {
       assert.isTrue(util.isInteger(123));
     });
   });
 
-  describe("#isObject()", () => {
-
-    const false_tests = [
-      {arg: undefined}, {arg: 123}, {arg: true}, {arg: "123"}
-    ];
-
-    for (const test of false_tests) {
-      it("should return false when parameter is not an object", () => {
-        assert.isFalse(util.isObject(test.arg));
-      });
-    }
-
-    const true_tests = [
-      {arg: {}}, {arg: []}, {arg: () => {}}, {arg: util.BigInteger.ZERO}
-    ];
-
-    for (const test of true_tests) {
-      it("should return true when parameter is an object", () => {
-        assert.isTrue(util.isObject(test.arg));
-      });
-    }
-  });
+  ///---------------------------------
+  /// #isKeyManager()
+  ///---------------------------------
 
   describe("#isKeyManager()", () => {
 
-    const tests = [
-      {arg: undefined}, {arg: 123}, {arg: true}, {arg: "123"}, {arg: {}}, {arg: []}
-    ];
+    it("should return false when parameter is not a {KeyManager}", () => {
+      assert.isFalse(util.isKeyManager({}));
+    });
 
-    for (const test of tests) {
-      it("should return false when parameter is not a {KeyManager}", () => {
-        assert.isFalse(util.isKeyManager(test.arg));
-      });
-    }
-
-    it("should return true when parameter is a {KeyManager}", () => {
-      const key_manager = util.generateKeyFromString(public_keys[0]);
-      assert.isFalse(util.isKeyManager(key_manager));
+    it("should return true when parameter is a {KeyManager}", async () => {
+      const key_manager = await util.generateKeyFromString(public_keys[0]);
+      assert.isTrue(util.isKeyManager(key_manager));
     });
   });
 
+  ///---------------------------------
+  /// #isKeyManagerForEcdsaSign()
+  ///---------------------------------
+
+  describe("#isKeyManagerForEcdsaSign()", () => {
+
+    it("should return false when parameter is not a {KeyManager}", () => {
+      assert.isFalse(util.isKeyManagerForEcdsaSign({}));
+    });
+
+    it("should return true when parameter is a {KeyManager}", async () => {
+      const key_manager = await util.generateKeyFromString(keys.ecc.bp[512].pub);
+      assert.isTrue(util.isKeyManagerForEcdsaSign(key_manager));
+    });
+  });
+
+  ///---------------------------------
+  /// #isKeyManager()
+  ///---------------------------------
+
+  describe("#isKeyManager()", () => {
+
+    it("should return false when parameter is not a {KeyManager}", () => {
+      assert.isFalse(util.isKeyManagerForRsaSign({}));
+    });
+
+    it("should return true when parameter is a {KeyManager}", async () => {
+      const key_manager = await util.generateKeyFromString(keys.rsa[1024].pub);
+      assert.isTrue(util.isKeyManagerForRsaSign(key_manager));
+    });
+  });
+
+  ///---------------------------------
+  /// #isObject()
+  ///---------------------------------
+
+  describe("#isObject()", () => {
+
+    it("should return false when parameter is not an {object}", () => {
+      assert.isFalse(util.isObject(123));
+    });
+
+    it("should return true when parameter is an {object}", () => {
+      assert.isTrue(util.isObject({}));
+    });
+  });
+
+  ///---------------------------------
+  /// #isPoint()
+  ///---------------------------------
+
+  describe("#isPoint()", () => {
+
+    it("should return false when parameter is not a {Point}", () => {
+      assert.isFalse(util.isPoint(123));
+    });
+
+    it("should return true when parameter is a {Point}", () => {
+      assert.isTrue(util.isPoint(ecc.curves.brainpool_p512().G));
+    });
+  });
+
+  ///---------------------------------
+  /// #isString()
+  ///---------------------------------
+
   describe("#isString()", () => {
 
-    const tests = [
-      {arg: undefined}, {arg: 123}, {arg: true}, {arg: {}}, {arg: []}
-    ];
+    it("should return false when parameter is not a {string}", () => {
+      assert.isFalse(util.isString(123));
+    });
 
-    for (const test in tests) {
-      it("should return false when parameter is not a string", () => {
-        assert.isFalse(util.isString(test.arg));
-      });
-    }
-
-    it("should return true when parameter is a string", () => {
+    it("should return true when parameter is a {string}", () => {
       assert.isTrue(util.isString("123"));
     });
   });

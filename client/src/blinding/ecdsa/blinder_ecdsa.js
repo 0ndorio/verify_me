@@ -37,7 +37,7 @@ export default class EcdsaBlinder extends Blinder
     context.blinding_factor.b = await this.generate_random_scalar(context.curve);
     context.blinding_factor.c = await this.generate_random_scalar(context.curve);
     context.blinding_factor.d = await this.generate_random_scalar(context.curve);
-    context.hashed_token = util.hashMessage(token.toRadix());
+    context.hashed_token = util.hashMessageSha512(token.toRadix());
 
     this.context = context;
     this.key_manager = key_manager;

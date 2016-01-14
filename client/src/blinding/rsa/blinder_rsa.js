@@ -33,9 +33,9 @@ export default class RsaBlinder extends Blinder
 
     let context = RsaBlindingContext.fromKey(key_manager);
 
-    const blinding_factor = await util.generateBlindingFactor(context.modulus.bitLength());
+    const blinding_factor = await util.generateRsaBlindingFactor(context.modulus.bitLength());
     context.blinding_factor = token.multiply(blinding_factor);
-    context.hashed_token = util.hashMessage(token.toRadix());
+    context.hashed_token = util.hashMessageSha512(token.toRadix());
 
     this.context = context;
     this.key_manager = key_manager;

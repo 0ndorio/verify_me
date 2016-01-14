@@ -30,9 +30,10 @@ function assert(condition, message)
  */
 function generateKeyFromString(key_as_string)
 {
-  assert(isString(key_as_string), "Input parameter is not of type string.");
-
   return new Promise((resolve, reject) => {
+
+    assert(isString(key_as_string), "Input parameter is not of type string.");
+
     kbpgp.KeyManager.import_from_armored_pgp({ armored: key_as_string }, (err, key_manager) => {
       if (err) { reject(err); }
       else {
@@ -53,17 +54,18 @@ function generateKeyFromString(key_as_string)
  */
 function generateTwoPrimeNumbers(primeBitLength)
 {
-  assert(isInteger(primeBitLength),
-    "The prime bit length is no integer but a '" + primeBitLength + "'");
-  assert((primeBitLength % 8 === 0) && primeBitLength >= 256 && primeBitLength <= 16384,
-    "The prime bit length must be a multiple of 8 bits and >= 128 and <= 8192");
-
-  const key_arguments = {
-    e: 65537,
-    nbits: primeBitLength * 2
-  };
-
   return new Promise((resolve, reject) => {
+
+    assert(isInteger(primeBitLength),
+      "The prime bit length is no integer but a '" + primeBitLength + "'");
+    assert((primeBitLength % 8 === 0) && primeBitLength >= 128 && primeBitLength <= 8192,
+      "The prime bit length must be a multiple of 8 bits and >= 128 and <= 8192");
+
+    const key_arguments = {
+      e: 65537,
+      nbits: primeBitLength * 2
+    };
+
     kbpgp.asym.RSA.generate(key_arguments, (err, key) => {
       if (err) {
         reject(err);
@@ -103,7 +105,7 @@ async function generateRsaBlindingFactor(bitLength)
  * @returns {BigInteger}
  *    Hash digest as {string} or {null} if input message is no string object.
  */
-function hashMessage(message)
+function hashMessageSha512(message)
 {
   assert(isString(message));
 
@@ -284,7 +286,7 @@ const util_api = {
   generateRsaBlindingFactor,
   generateKeyFromString,
   generateTwoPrimeNumbers,
-  hashMessage,
+  hashMessageSha512,
   isBigInteger,
   isBuffer,
   isCurve,
