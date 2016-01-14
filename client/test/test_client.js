@@ -140,13 +140,13 @@ describe("client", function() {
 
     it ("must throw if id is missing from html",() => {
       controls.loadFixture("test/fixture/missing_id.html");
-      return client.getPublicKey()
+      return client.getServerPublicKey()
         .catch(error => assert.instanceOf(error, Error));
     });
 
     it ("must throw if string is no key representation",() => {
       controls.serverPublicKey = "123";
-      return client.getPublicKey()
+      return client.getServerPublicKey()
         .catch(error => assert.instanceOf(error, Error));
     });
   });

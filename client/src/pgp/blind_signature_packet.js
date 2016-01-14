@@ -215,22 +215,6 @@ export default class BlindSignaturePacket extends sig.Signature
   }
 
   /**
-   * Frames the complete signed signature packet.
-   *
-   * # RFC 4880 - 4.2.  Packet Headers
-   *
-   * @returns {Buffer}
-   *    The framed signed signature packet.
-   */
-  write()
-  {
-    const unframed_sig = this.write_unframed();
-    this._framed_output = this.frame_packet(this.tag, unframed_sig);
-
-    return this._framed_output;
-  }
-
-  /**
    * Generates the complete signed signature packet payload.
    *
    * # RFC 4880 - 5.2.4.  Computing Signatures

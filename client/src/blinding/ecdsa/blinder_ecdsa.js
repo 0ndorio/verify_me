@@ -111,6 +111,7 @@ export default class EcdsaBlinder extends Blinder
 
     packet.sig = Buffer.concat([r.to_mpi_buffer(), s.to_mpi_buffer()]);
     packet.key.pub.R = T;
+    packet.raw = packet.write_unframed();
   }
 
   /**

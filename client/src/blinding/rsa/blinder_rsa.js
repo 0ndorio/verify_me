@@ -111,5 +111,6 @@ export default class RsaBlinder extends Blinder
     const signed_message = this.unblind(signed_blinded_message);
 
     packet.sig = signed_message.to_mpi_buffer();
+    packet.raw = packet.write_unframed();
   }
 }

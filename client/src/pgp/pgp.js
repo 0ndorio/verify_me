@@ -3,7 +3,7 @@
 import * as kbpgp from "kbpgp"
 
 import BlindSignaturePacket from "./blind_signature_packet"
-import util from "../util"
+import util, { assert } from "../util"
 
 /**
  * Exports the given public key (stored in a {KeyManager}) as binary data
@@ -26,7 +26,7 @@ import util from "../util"
 function export_keys_to_binary_and_inject_signature(key_manager, signature_packet, opts = {})
 {
   assert(util.isKeyManager(key_manager));
-  assert(signature_packet instanceof BlindSignaturePacket);
+  assert(signature_packet instanceof kbpgp.opkts.Signature);
   assert(util.isObject(opts));
 
   const pgpengine = key_manager.pgp;
@@ -38,7 +38,7 @@ function export_keys_to_binary_and_inject_signature(key_manager, signature_packe
     packets.push(userid.write(), userid.get_framed_signature_output());
 
     if (primary_userid === userid) {
-      packets.push(signature_packet.write());
+      packets.push(signature_packet.replay());
     }
   }, packets);
 
@@ -70,7 +70,7 @@ function export_keys_to_binary_and_inject_signature(key_manager, signature_packe
 function export_key_with_signature(key_manager, signature_packet)
 {
   assert(util.isKeyManager(key_manager));
-  assert(signature_packet instanceof BlindSignaturePacket);
+  assert(signature_packet instanceof kbpgp.opkts.Signature);
 
   const user_id_packet = [key_manager.get_userids_mark_primary()[0]];
 
