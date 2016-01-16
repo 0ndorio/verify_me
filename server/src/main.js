@@ -45,12 +45,12 @@ Promise.all([keys.rsa_promise, keys.ecc_promise])
     keys.ecc_key = values[1];
 
     app.route("/rsa")
-       .get(routes.rsa.render_key)
-       .post(routes.rsa.sign_blinded_message);
+       .get(routes.rsa.renderIndex)
+       .post(routes.rsa.signBlindedMessage);
 
-    app.get("/ecdsa", routes.ecdsa.render_key);
-    app.post("/ecdsa/init", routes.ecdsa.init_blinding);
-    app.post("/ecdsa/sign", routes.ecdsa.sign_blinded_message);
+    app.get("/ecdsa", routes.ecdsa.renderIndex);
+    app.post("/ecdsa/init", routes.ecdsa.initBlindingAlgorithm);
+    app.post("/ecdsa/sign", routes.ecdsa.signBlindedMessage);
 
   })
   .catch((error) => {

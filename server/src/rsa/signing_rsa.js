@@ -4,7 +4,7 @@ import { KeyManager } from "kbpgp"
 import { BigInteger } from "../../node_modules/kbpgp/lib/bn"
 
 /// TODO
-export default function sign_blinded_message(message, key_manager)
+export default function sign(message, key_manager)
 {
   if (typeof message !== "string") {
     throw new Error("message is not of type string");

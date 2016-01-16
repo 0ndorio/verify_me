@@ -6,16 +6,17 @@ import Signer from "./signing_ecdsa"
 let secret_scalar = {};
 
 /// TODO
-function render_key(request, response)
+function renderIndex(request, response)
 {
   response.render("index", {public_key: keys.ecc_key.armored_pgp_public})
 }
 
 /// TODO
-async function init_blinding(request, response)
+async function initBlindingAlgorithm(request, response)
 {
   let json = {};
-  if (request.body.hasOwnProperty("hashed_token")) {
+
+  if (request.hasOwnProperty("body") && request.body.hasOwnProperty("hashed_token")) {
 
     const { p, P, q, Q } = await Signer.prepare(keys.ecc_key);
 
@@ -34,10 +35,10 @@ async function init_blinding(request, response)
 }
 
 /// TODO
-function sign_blinded_message(request, response)
+function signBlindedMessage(request, response)
 {
   let json = {};
-  if (request.body.hasOwnProperty("hashed_token")) {
+  if (request.hasOwnProperty("body") && request.body.hasOwnProperty("hashed_token")) {
 
     const secret_scalars = secret_scalar[request.body.hashed_token];
     const blinded_message = request.body.message;
@@ -52,9 +53,9 @@ function sign_blinded_message(request, response)
 }
 
 const routes_ecdsa_api = {
-  render_key,
-  init_blinding,
-  sign_blinded_message
+  renderIndex,
+  initBlindingAlgorithm,
+  signBlindedMessage
 };
 
 export default routes_ecdsa_api;

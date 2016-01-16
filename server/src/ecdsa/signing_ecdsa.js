@@ -5,15 +5,15 @@ import { KeyManager } from "kbpgp"
 import { Point } from "keybase-ecurve"
 
 /// TODO
-async function prepare_blinding(key_manager)
+async function prepareBlinding(key_manager)
 {
   const public_key_package = key_manager.get_primary_keypair().pub;
   const curve = public_key_package.curve;
   const n = curve.n;
   const G = curve.G;
 
-  const p = await generate_random_scalar(curve);
-  const q = await generate_random_scalar(curve);
+  const p = await generateRandomScalar(curve);
+  const q = await generateRandomScalar(curve);
 
   const p_inv = p.modInverse(n);
 
@@ -43,7 +43,7 @@ async function prepare_blinding(key_manager)
  * @returns {Promise}
  *    The promise of a {BigInteger} scalar [1, n-1]
  */
-async function generate_random_scalar(curve)
+async function generateRandomScalar(curve)
 {
   return new Promise((resolve, reject) =>
     curve.random_scalar(
@@ -52,7 +52,7 @@ async function generate_random_scalar(curve)
 }
 
 /// TODO
-function sign_blinded_message(message, secret_scalars, key_manager)
+function sign(message, secret_scalars, key_manager)
 {
   if (typeof message !== "string") {
     throw new Error("message is not of type string");
@@ -82,8 +82,8 @@ function sign_blinded_message(message, secret_scalars, key_manager)
 }
 
 const signing_ecdsa_api = {
-  prepare: prepare_blinding,
-  sign: sign_blinded_message
+  prepare: prepareBlinding,
+  sign: sign
 };
 
 export default signing_ecdsa_api;

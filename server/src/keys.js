@@ -19,27 +19,27 @@ async function loadKey(public_key_path, private_key_path, passphrase = null)
   const public_key_string = fs.readFileSync(public_key_path, "utf-8");
   const private_key_string = fs.readFileSync(private_key_path, "utf-8");
 
-  const key_manager = await import_public_key(public_key_string);
-  await merge_private_key(key_manager, private_key_string);
+  const key_manager = await generateKeyManagerFromString(public_key_string);
+  await mergePrivateKeyIntoKeyManager(key_manager, private_key_string);
 
   if (passphrase) {
-    await unlock_private_key(key_manager, passphrase);
+    await unlockPrivateKeyInKeyManager(key_manager, passphrase);
   }
 
   return key_manager;
 }
 
 /// TODO
-function import_public_key(public_key_string)
+function generateKeyManagerFromString(key_string)
 {
-  if (typeof public_key_string !== "string") {
-    throw new Error("public_key_string is not of type string");
+  if (typeof key_string !== "string") {
+    throw new Error("key_string is not of type string");
   }
 
   return new Promise((resolve, reject) => {
 
     KeyManager.import_from_armored_pgp({
-      armored: public_key_string
+      armored: key_string
     }, (err, key_manager) => {
       if (err) reject(err);
       else resolve(key_manager);
@@ -48,7 +48,7 @@ function import_public_key(public_key_string)
 }
 
 /// TODO
-function merge_private_key(key_manager, private_key_string)
+function mergePrivateKeyIntoKeyManager(key_manager, private_key_string)
 {
   if (!(key_manager instanceof KeyManager)) {
     throw new Error("key_manager is no intance of KeyManager");
@@ -70,7 +70,7 @@ function merge_private_key(key_manager, private_key_string)
 }
 
 /// TODO
-function unlock_private_key(key_manager, passphrase)
+function unlockPrivateKeyInKeyManager(key_manager, passphrase)
 {
   if (!(key_manager instanceof KeyManager)) {
     throw new Error("key_manager is no intance of KeyManager");
@@ -89,7 +89,7 @@ function unlock_private_key(key_manager, passphrase)
   });
 }
 
-const rsa = config.keys.rsa
+const rsa = config.keys.rsa;
 const rsa_promise = loadKey(rsa.public_key, rsa.private_key, rsa.passphrase);
 
 const ecc = config.keys.ecc;
