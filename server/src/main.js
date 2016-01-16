@@ -4,11 +4,10 @@ import "babel-polyfill"
 
 import bodyParser from 'body-parser';
 import express from "express";
-import fs from "fs";
-import http from "http";
 
 import config from "./config"
 import keys from "./keys";
+import customHtmlEngine from "./engine"
 import routes from "./routes"
 
 let app = express();
@@ -23,35 +22,21 @@ app.use(bodyParser.json());
 // Set custom view engine
 app.set("views", config.client.base_dir + "/views");
 app.set("view engine", "html");
-app.engine("html", (file_path, options, callback) => {
-  fs.readFile(file_path, (err, content) => {
+app.engine("html", customHtmlEngine);
 
-    if (err) {
-      return callback(new Error(err));
-    }
-
-    const rendered = content.toString()
-      .replace("{public_key}", options.public_key);
-
-    return callback(null, rendered);
-  });
-});
-
-// Wait with rout setup until all keys are loaded.
+// Wait with route setup until all keys are loaded.
 Promise.all([keys.rsa_promise, keys.ecc_promise])
   .then((values) => {
 
     keys.rsa_key = values[0];
     keys.ecc_key = values[1];
 
-    app.route("/rsa")
-       .get(routes.rsa.renderIndex)
-       .post(routes.rsa.signBlindedMessage);
+    app.get("/rsa", routes.rsa.renderIndex);
+    app.post("/rsa", routes.rsa.signBlindedMessage);
 
     app.get("/ecdsa", routes.ecdsa.renderIndex);
     app.post("/ecdsa/init", routes.ecdsa.initBlindingAlgorithm);
     app.post("/ecdsa/sign", routes.ecdsa.signBlindedMessage);
-
   })
   .catch((error) => {
     console.log("");

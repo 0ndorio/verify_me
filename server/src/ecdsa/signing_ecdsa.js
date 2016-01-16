@@ -4,7 +4,18 @@ import { BigInteger } from "../../node_modules/kbpgp/lib/bn"
 import { KeyManager } from "kbpgp"
 import { Point } from "keybase-ecurve"
 
-/// TODO
+/**
+ * Prepares the ECDSA blinding algorithm through
+ * the creation of request individual secret scalar
+ * values and the related public points.
+ *
+ * @param {KeyManager} key_manager
+ *    A {KeyManager} containing an ECC based key to
+ *    extract the related curves public information.
+ * @returns {{p: number, P: Point, q: number, Q: Point}}
+ *    The request secret scalars p, q
+ *    and the related public points P, Q.
+ */
 async function prepareBlinding(key_manager)
 {
   const public_key_package = key_manager.get_primary_keypair().pub;
@@ -51,7 +62,19 @@ async function generateRandomScalar(curve)
   );
 }
 
-/// TODO
+/**
+ * Signs the given blinded message.
+ *
+ * @param {string} message
+ *    The message to sign.
+ * @param {object.<number, number>}secret_scalars
+ *    The scalar values created during initialization.
+ * @param {KeyManager} key_manager
+ *    The {KeyManager} containing the ecc based key
+ *    that will be used to sign the message.
+ * @returns {string}
+ *    The signed message.
+ */
 function sign(message, secret_scalars, key_manager)
 {
   if (typeof message !== "string") {

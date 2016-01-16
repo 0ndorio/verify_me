@@ -11,7 +11,6 @@
   "main": "src/main.js",
   
   "dependencies": {
-    "babel-polyfill": "latest",
     "body-parser": "latest",
     "express": "latest",
     "kbpgp": "latest",
@@ -19,6 +18,7 @@
   },
   
   "devDependencies": {
+    "babel-polyfill": "latest",
     "babel-cli": "latest", 
     "babel-preset-es2015": "latest",
     "babel-preset-stage-3": "latest",

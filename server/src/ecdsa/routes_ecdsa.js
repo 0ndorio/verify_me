@@ -5,15 +5,32 @@ import Signer from "./signing_ecdsa"
 
 let secret_scalar = {};
 
-/// TODO
+/**
+ * Render an ECC key into index html.
+ *
+ * @param {IncomingMessage} request
+ *    Received HTTP request to access the handled route & method combination.
+ * @param {ServerResponse} response
+ *    HTTP server response
+ */
 function renderIndex(request, response)
 {
   response.render("index", {public_key: keys.ecc_key.armored_pgp_public})
 }
 
-/// TODO
+/**
+ * Initializes the ECDSA blind signature algorithm.
+ *
+ * @param {IncomingMessage} request
+ *    Received HTTP request to access the handled route & method combination.
+ * @param {ServerResponse} response
+ *    HTTP server response
+ */
 async function initBlindingAlgorithm(request, response)
 {
+  console.log(request.constructor.name);
+  console.log(response.constructor.name);
+
   let json = {};
 
   if (request.hasOwnProperty("body") && request.body.hasOwnProperty("hashed_token")) {
@@ -34,7 +51,14 @@ async function initBlindingAlgorithm(request, response)
   response.send(json)
 }
 
-/// TODO
+/**
+ * Signs a a given ECDSA blinded message.
+ *
+ * @param {IncomingMessage} request
+ *    Received HTTP request to access the handled route & method combination.
+ * @param {ServerResponse} response
+ *    HTTP server response
+ */
 function signBlindedMessage(request, response)
 {
   let json = {};
