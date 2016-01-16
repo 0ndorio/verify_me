@@ -8,8 +8,10 @@ import server from "../../server"
 import util, { assert } from "../../util"
 
 /**
- * Representation of the ecdsa blinding algorithm presented by Oleg Andreev
+ * Representation of the ECDSA blinding algorithm presented by Oleg Andreev
  * in https://github.com/oleganza/bitcoin-papers/blob/master/BitcoinBlindSignatures.md
+ *
+ * The variable naming follows the algorithms notation.
  */
 export default class EcdsaBlinder extends Blinder
 {
@@ -33,10 +35,13 @@ export default class EcdsaBlinder extends Blinder
     assert(util.isBigInteger(token));
 
     const context = EcdsaBlindingContext.fromKey(key_manager);
-    context.blinding_factor.a = await this.generate_random_scalar(context.curve);
-    context.blinding_factor.b = await this.generate_random_scalar(context.curve);
-    context.blinding_factor.c = await this.generate_random_scalar(context.curve);
-    context.blinding_factor.d = await this.generate_random_scalar(context.curve);
+    context.blinding_factor = {
+      a: await this.generateRandomScalar(context.curve),
+      b: await this.generateRandomScalar(context.curve),
+      c: await this.generateRandomScalar(context.curve),
+      d: await this.generateRandomScalar(context.curve)
+    };
+
     context.hashed_token = util.hashMessageSha512(token.toRadix());
 
     this.context = context;
@@ -187,7 +192,7 @@ export default class EcdsaBlinder extends Blinder
    * @returns {Promise}
    *    The promise of a {BigInteger} scalar [1, n-1]
    */
-  async generate_random_scalar(curve)
+  async generateRandomScalar(curve)
   {
     assert(util.isCurve(curve));
 

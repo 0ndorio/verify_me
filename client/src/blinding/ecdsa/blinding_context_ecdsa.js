@@ -101,7 +101,7 @@ export default class EcdsaBlindingContext extends BlindingContext
    * @returns {BigInteger}
    *    the incoming signature data stored as {BigInteger}
    */
-  encode_signature_data(data, hasher)
+  encodeSignaturePayload(data, hasher)
   {
     assert(util.isBuffer(data));
     return util.BigInteger.fromBuffer(data);

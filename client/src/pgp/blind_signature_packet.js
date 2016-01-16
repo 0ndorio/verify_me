@@ -57,7 +57,7 @@ export default class BlindSignaturePacket extends sig.Signature
     this.target_key = target_key;
     this.primary = target_key.pgp.key(target_key.pgp.primary);
 
-    this.prepare_raw_sig(context);
+    this.prepareRawSignature(context);
   }
 
   /**
@@ -101,13 +101,13 @@ export default class BlindSignaturePacket extends sig.Signature
    *    This context should be created from the signers public key and
    *    is used to encode the data in preparation of the signing algorithm.
    */
-  prepare_raw_sig(context)
+  prepareRawSignature(context)
   {
     assert(context instanceof BlindingContext);
 
-    const signData = this.generate_sig_payload();
+    const signData = this.generateSignaturePayload();
 
-    this.raw_signature = context.encode_signature_data(signData, this.hasher);
+    this.raw_signature = context.encodeSignaturePayload(signData, this.hasher);
     this.signed_hash_value_hash = this.raw_signature.toBuffer().slice(0, 2);
   }
 
@@ -120,7 +120,7 @@ export default class BlindSignaturePacket extends sig.Signature
    * @returns {Buffer}
    *    The raw unsinged signature data.
    */
-  generate_sig_payload()
+  generateSignaturePayload()
   {
     const key_material_packet = this.target_key.pgp.key(this.target_key.pgp.primary);
     const pubKeyData = key_material_packet.to_signature_payload();
@@ -129,7 +129,7 @@ export default class BlindSignaturePacket extends sig.Signature
     const userIdData = user_id_packet.to_signature_payload();
 
     return kbpgp.Buffer.concat([
-      pubKeyData, userIdData, this.generate_sig_data()
+      pubKeyData, userIdData, this.generateSignatureData()
     ]);
   }
 
@@ -139,16 +139,16 @@ export default class BlindSignaturePacket extends sig.Signature
    * they become also part of the unhashed part of the final signature
    * packet.
    *
-   *  @see generate_sig_body()
-   *  @see generate_sig_trailer()
+   *  @see generateSignatureBody()
+   *  @see generateSignatureTrailer()
    *
    * @returns {Buffer}
    *    Public signature packet information.
    */
-  generate_sig_data()
+  generateSignatureData()
   {
-    const sigBody = this.generate_sig_body();
-    const sigTrailer = this.generate_sig_trailer(sigBody.length);
+    const sigBody = this.generateSignatureBody();
+    const sigTrailer = this.generateSignatureTrailer(sigBody.length);
 
     return Buffer.concat([sigBody, sigTrailer]);
   }
@@ -167,7 +167,7 @@ export default class BlindSignaturePacket extends sig.Signature
    * @returns {Buffer}
    *    The signature trailer.
    */
-  generate_sig_trailer(hash_data_length)
+  generateSignatureTrailer(hash_data_length)
   {
     assert(util.isInteger(hash_data_length));
 
@@ -196,7 +196,7 @@ export default class BlindSignaturePacket extends sig.Signature
    * @returns {Buffer}
    *    Part of the signature body to hash.
    */
-  generate_sig_body()
+  generateSignatureBody()
   {
     const hashedSubpkts = this.hashed_subpackets
       .map(subpacket => subpacket.to_buffer())
@@ -219,7 +219,7 @@ export default class BlindSignaturePacket extends sig.Signature
    *
    * # RFC 4880 - 5.2.4.  Computing Signatures
    *
-   *  - signature body to hash (@see generate_sig_body())
+   *  - signature body to hash (@see generateSignatureBody())
    *  - length of unhashed subpackets (2 octet)
    *  - unhashed subpackets (zero or more)
    *  - left 16 bits of the signed hash value (2 octet)
@@ -227,6 +227,10 @@ export default class BlindSignaturePacket extends sig.Signature
    *
    * @returns {Buffer}
    *    The signed signature packet payload.
+   *
+   * #
+   * # keep naming to overwrite Signature.write_unframed()
+   * #
    */
   write_unframed()
   {
@@ -236,7 +240,7 @@ export default class BlindSignaturePacket extends sig.Signature
     );
 
     return kbpgp.Buffer.concat([
-      this.generate_sig_body(),
+      this.generateSignatureBody(),
       kbpgp.util.uint_to_buffer(16, unhashed_packet_data.length),
       unhashed_packet_data,
       this.signed_hash_value_hash,

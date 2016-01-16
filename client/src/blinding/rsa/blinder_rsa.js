@@ -8,6 +8,8 @@ import util, { assert, BigInteger } from "../../util"
 
 /**
  * Representation of the rsa blinding algorithm.
+ *
+ * The variable naming follows the algorithms notation.
  */
 export default class RsaBlinder extends Blinder
 {

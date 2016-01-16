@@ -23,18 +23,18 @@ import util, { assert } from "../util"
  *    The public pgp key with additional injected signature
  *    as binary data.
  */
-function export_keys_to_binary_and_inject_signature(key_manager, signature_packet, opts = {})
+function exportKeyToBinaryAndInjectSignature(key_manager, signature_packet, opts = {})
 {
   assert(util.isKeyManager(key_manager));
   assert(signature_packet instanceof kbpgp.opkts.Signature);
   assert(util.isObject(opts));
 
-  const pgpengine = key_manager.pgp;
+  const pgp_engine = key_manager.pgp;
   const primary_userid = key_manager.get_userids_mark_primary()[0];
 
-  let packets = [pgpengine.key(pgpengine.primary).export_framed(opts)];
+  let packets = [pgp_engine.key(pgp_engine.primary).export_framed(opts)];
 
-  pgpengine.userids.reduce((packets, userid) => {
+  pgp_engine.userids.reduce((packets, userid) => {
     packets.push(userid.write(), userid.get_framed_signature_output());
 
     if (primary_userid === userid) {
@@ -44,8 +44,8 @@ function export_keys_to_binary_and_inject_signature(key_manager, signature_packe
 
   opts.subkey = true;
 
-  pgpengine.subkeys.reduce((packets, subkey) => {
-    const material = pgpengine.key(subkey);
+  pgp_engine.subkeys.reduce((packets, subkey) => {
+    const material = pgp_engine.key(subkey);
     packets.push(material.export_framed(opts), material.get_subkey_binding_signature_output());
   }, packets);
 
@@ -67,7 +67,7 @@ function export_keys_to_binary_and_inject_signature(key_manager, signature_packe
  *    Ascii armored version of the input public key including the
  *    injected signature packet.
  */
-function export_key_with_signature(key_manager, signature_packet)
+function exportKeyToAsciiWithSignature(key_manager, signature_packet)
 {
   assert(util.isKeyManager(key_manager));
   assert(signature_packet instanceof kbpgp.opkts.Signature);
@@ -83,7 +83,7 @@ function export_key_with_signature(key_manager, signature_packet)
           reject(new Error("Error during final signature verification. Please restart the process.", err));
         }
 
-        const key_binary = this.export_keys_to_binary_and_inject_signature(key_manager, signature_packet);
+        const key_binary = this.exportKeyToBinaryAndInjectSignature(key_manager, signature_packet);
         const key_ascii = kbpgp.armor.encode(kbpgp.const.openpgp.message_types.public_key, key_binary);
         resolve(key_ascii);
       }
@@ -92,8 +92,8 @@ function export_key_with_signature(key_manager, signature_packet)
 }
 
 const pgp_api = {
-  export_keys_to_binary_and_inject_signature,
-  export_key_with_signature
+  exportKeyToBinaryAndInjectSignature,
+  exportKeyToAsciiWithSignature
 };
 
 export default pgp_api

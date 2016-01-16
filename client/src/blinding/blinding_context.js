@@ -74,7 +74,7 @@ export default class BlindingContext
    * @returns {BigInteger}
    *    the incoming signature data stored as {BigInteger}
    */
-  encode_signature_data(data, hasher)
+  encodeSignaturePayload(data, hasher)
   {
     throw new Error("Not yet implemented.");
   }

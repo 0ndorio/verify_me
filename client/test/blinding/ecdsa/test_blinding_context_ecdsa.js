@@ -150,10 +150,10 @@ describe("blinding_context_ecdsa", function() {
   });
 
   ///-----------------------------------
-  /// #encode_signature_data()
+  /// #encodeSignaturePayload()
   ///-----------------------------------
 
-  describe("#encode_signature_data", () => {
+  describe("#encodeSignaturePayload", () => {
 
     it ("should throw if input data is no {Buffer}", () => {
       assert.throws(() => context(null));
@@ -161,7 +161,7 @@ describe("blinding_context_ecdsa", function() {
 
     it ("should return the given Buffer as {BigInteger}", () => {
       const buffer = new Buffer([1, 2, 3]);
-      const result = context.encode_signature_data(buffer);
+      const result = context.encodeSignaturePayload(buffer);
 
       assert.isTrue(util.isBigInteger(result));
       assert.isTrue(buffer.equals(result.toBuffer()));

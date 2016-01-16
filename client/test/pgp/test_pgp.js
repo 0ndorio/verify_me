@@ -3,7 +3,6 @@
 import { assert } from "chai"
 
 import BlindSignaturePacket from "../../src/pgp/blind_signature_packet"
-import RsaBlindingContext from "../../src/blinding/rsa/blinding_context_rsa"
 import pgp from "../../src/pgp/pgp"
 import util from "../../src/util"
 
@@ -17,7 +16,6 @@ describe("pgp", function() {
 
   beforeEach(async () => {
     const key_manager = this.key_manager;
-    const blinding_context = RsaBlindingContext.fromKey(key_manager);
 
     this.signature_packet = key_manager.primary._pgp.get_psc().all[0].sig;
   });
@@ -25,25 +23,25 @@ describe("pgp", function() {
   afterEach(() => {});
 
   ///-----------------------------------------------
-  /// #export_keys_to_binary_and_inject_signature()
+  /// #exportKeyToBinaryAndInjectSignature()
   ///-----------------------------------------------
 
-  describe("#export_keys_to_binary_and_inject_signature()", () => {
+  describe("#exportKeyToBinaryAndInjectSignature()", () => {
 
     it("should throw if input has no {KeyManager}", () => {
-      assert.throws(() => pgp.export_keys_to_binary_and_inject_signature(null, this.signature_packet));
+      assert.throws(() => pgp.exportKeyToBinaryAndInjectSignature(null, this.signature_packet));
     });
 
     it("should throw if input has no {BlindSignaturePacket}", () => {
-      assert.throws(() => pgp.export_keys_to_binary_and_inject_signature(this.key_manager, null));
+      assert.throws(() => pgp.exportKeyToBinaryAndInjectSignature(this.key_manager, null));
     });
 
     it("should throw if opts are no {object}", () => {
-      assert.throws(() => pgp.export_keys_to_binary_and_inject_signature(this.key_manager, this.signature_packet, 123));
+      assert.throws(() => pgp.exportKeyToBinaryAndInjectSignature(this.key_manager, this.signature_packet, 123));
     });
 
     it("should return a {Buffer} containg the signature if input is valid", () => {
-      const result = pgp.export_keys_to_binary_and_inject_signature(this.key_manager, this.signature_packet);
+      const result = pgp.exportKeyToBinaryAndInjectSignature(this.key_manager, this.signature_packet);
       assert.isTrue(util.isBuffer(result));
 
       const userid = this.key_manager.get_userids_mark_primary()[0];
@@ -63,21 +61,21 @@ describe("pgp", function() {
   });
 
   ///-----------------------------------------------
-  /// #export_key_with_signature()
+  /// #exportKeyToAsciiWithSignature()
   ///-----------------------------------------------
 
-  describe("#export_key_with_signature()", () => {
+  describe("#exportKeyToAsciiWithSignature()", () => {
 
     it("should throw if input has no {KeyManager}", () => {
-      assert.throws(() => pgp.export_key_with_signature(null, this.signature_packet));
+      assert.throws(() => pgp.exportKeyToAsciiWithSignature(null, this.signature_packet));
     });
 
     it("should throw if input has no {BlindSignaturePacket}", () => {
-      assert.throws(() => pgp.export_key_with_signature(this.key_manager, null));
+      assert.throws(() => pgp.exportKeyToAsciiWithSignature(this.key_manager, null));
     });
 
     it("should return the promise of an ascii armored key {string} if input is valid", () => {
-      const result = pgp.export_key_with_signature(this.key_manager, this.signature_packet);
+      const result = pgp.exportKeyToAsciiWithSignature(this.key_manager, this.signature_packet);
       assert.instanceOf(result, Promise);
 
       return result

@@ -93,7 +93,7 @@ export default class RsaBlindingContext extends BlindingContext
    * @returns {BigInteger}
    *    the encoded and padded rsa signature data
    */
-  encode_signature_data(data, hasher)
+  encodeSignaturePayload(data, hasher)
   {
     assert(util.isBuffer(data));
     assert(util.isFunction(hasher));

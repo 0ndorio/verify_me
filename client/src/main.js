@@ -12,7 +12,7 @@ async function requestPseudonym()
   const { blinder, packet } = await blinding_util.prepareBlinding();
   await blinder.forgeSignature(packet);
 
-  const key_ascii = await pgp.export_key_with_signature(packet.target_key, packet);
+  const key_ascii = await pgp.exportKeyToAsciiWithSignature(packet.target_key, packet);
   console.log(key_ascii);
 }
 
