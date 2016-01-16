@@ -4,7 +4,7 @@ import { assert } from "chai"
 import * as sinon from "sinon"
 
 import RsaBlindingContext from "../src/blinding/rsa/blinding_context_rsa"
-import server from "../src/server"
+import server from "../src/server_requests"
 import util from "../src/util"
 
 describe("server", function() {

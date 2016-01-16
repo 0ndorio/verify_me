@@ -4,7 +4,7 @@ import { Buffer, hash } from "kbpgp"
 import Blinder from "../blinder"
 import BlindSignaturePacket from "../../pgp/blind_signature_packet"
 import EcdsaBlindingContext from "./blinding_context_ecdsa"
-import server from "../../server"
+import server from "../../server_requests"
 import util, { assert } from "../../util"
 
 /**

@@ -3,7 +3,7 @@
 import Blinder from "../blinder"
 import BlindSignaturePacket from "../../pgp/blind_signature_packet"
 import RsaBlindingContext from "./blinding_context_rsa"
-import server  from "../../server"
+import server  from "../../server_requests"
 import util, { assert, BigInteger } from "../../util"
 
 /**
