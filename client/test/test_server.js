@@ -25,8 +25,7 @@ describe("server", function() {
   describe("#requestRsaBlinding()", () => {
 
     it("should return a promise", () => {
-      const task = server.requestRsaBlinding().catch(() => {
-      });
+      const task = server.requestRsaBlinding().catch(() => {});
       assert.instanceOf(task, Promise);
     });
 

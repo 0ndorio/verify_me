@@ -743,18 +743,45 @@ ZVZ9mEoBDBoXmlidP3GkIDUBMc2G2SNhZTtnRu8Zkrx+hF7os3g=
 =vLf1
 -----END PGP PRIVATE KEY BLOCK-----`;
 
+export const ecc_curve_25519_pub =
+`-----BEGIN PGP PUBLIC KEY BLOCK-----
+Version: GnuPG v2
+
+mDMEVphDcBYJKwYBBAHaRw8BAQdAMMq8QrVvWqtVmEaOzgm4jo8rmcVFHe9K10wZ
+s5nzVAy0D2VjY19jdXJ2ZV8yNTUxOYh5BBMWCAAhBQJWmENwAhsjBQsJCAcCBhUI
+CQoLAgQWAgMBAh4BAheAAAoJEHnMo0lHHETAMeQA/3n/B7ECNsoPNLwXQuSuBQvK
+l49i2lOiDKcAQVF8Hg7sAP99dzTJ0PR/8CQpXvCTNCIMjT4V1pFb4Ju7/fRq2v1q
+BQ==
+=K89o
+-----END PGP PUBLIC KEY BLOCK-----`;
+
+export const ecc_curve_25519_priv =
+`-----BEGIN PGP PRIVATE KEY BLOCK-----
+Version: GnuPG v2
+
+lIYEVphDcBYJKwYBBAHaRw8BAQdAMMq8QrVvWqtVmEaOzgm4jo8rmcVFHe9K10wZ
+s5nzVAz+BwMCium7vKAPE0DemoWOiVf4hIHC4zhJ7KukZJsXHJsfviJn+vnnlJ/t
+0FTbYYgTdZUu/3CaRc4eyu991mXUfEVMWdhuC6SPaYyf/rOI9zSGpLQPZWNjX2N1
+cnZlXzI1NTE5iHkEExYIACEFAlaYQ3ACGyMFCwkIBwIGFQgJCgsCBBYCAwECHgEC
+F4AACgkQecyjSUccRMAx5AD/ef8HsQI2yg80vBdC5K4FC8qXj2LaU6IMpwBBUXwe
+DuwA/313NMnQ9H/wJCle8JM0IgyNPhXWkVvgm7v99Gra/WoF
+=prtL
+-----END PGP PRIVATE KEY BLOCK-----`;
+
 export const public_keys = [
   rsa_1024_pub, rsa_2048_pub, rsa_2048_expires_5y_pub, rsa_4096_pub,
   dsa_elg_768_1024_pub, dsa_elg_3072_4096_pub,
   ecc_nist_p_256_pub, ecc_nist_p_521_pub,
-  ecc_bp_p_256_pub, ecc_bp_p_512_pub
+  ecc_bp_p_256_pub, ecc_bp_p_512_pub,
+  ecc_curve_25519_pub
 ];
 
 export const private_keys = [
   rsa_1024_priv, rsa_2048_priv, rsa_2048_expires_5y_priv, rsa_4096_priv,
   dsa_elg_768_1024_priv, dsa_elg_3072_4096_priv,
   ecc_nist_p_256_priv, ecc_nist_p_521_priv,
-  ecc_bp_p_256_priv, ecc_bp_p_512_priv
+  ecc_bp_p_256_priv, ecc_bp_p_512_priv,
+  ecc_curve_25519_priv
 ];
 
 export const rsa = {
@@ -806,6 +833,12 @@ export const ecc = {
     512: {
       pub: ecc_bp_p_512_pub,
       priv: ecc_bp_p_512_priv
+    }
+  },
+  djb: {
+    curve_25519: {
+      pub: ecc_curve_25519_pub,
+      priv: ecc_curve_25519_priv
     }
   }
 };
