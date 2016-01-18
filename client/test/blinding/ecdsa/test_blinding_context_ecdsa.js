@@ -3,7 +3,7 @@
 import { assert } from "chai"
 import { Buffer } from "kbpgp"
 
-import util from "verifyme_utility"
+import { check } from "verifyme_utility"
 import EcdsaBlindingContext from "../../../src/blinding/ecdsa/blinding_context_ecdsa"
 
 import sample_keys from "./../../helper/keys"
@@ -20,16 +20,16 @@ describe("blinding_context_ecdsa", function() {
   let key_manager = null;
 
   before(async () => {
-    key_manager = await util.generateKeyFromString(sample_keys.ecc.bp[256].pub);
+    key_manager = await check.generateKeyFromString(sample_keys.ecc.bp[256].pub);
   });
 
   beforeEach( () => {
     context = EcdsaBlindingContext.fromKey(key_manager);
-    context.hashed_token = util.BigInteger.ONE;
-    context.blinding_factor.a = util.BigInteger.ONE;
-    context.blinding_factor.b = util.BigInteger.ONE;
-    context.blinding_factor.c = util.BigInteger.ONE;
-    context.blinding_factor.d = util.BigInteger.ONE;
+    context.hashed_token = check.BigInteger.ONE;
+    context.blinding_factor.a = check.BigInteger.ONE;
+    context.blinding_factor.b = check.BigInteger.ONE;
+    context.blinding_factor.c = check.BigInteger.ONE;
+    context.blinding_factor.d = check.BigInteger.ONE;
   });
 
   afterEach( () => {
@@ -93,7 +93,7 @@ describe("blinding_context_ecdsa", function() {
     });
 
     it ("should throw if input is not a valid ECDSA {KeyManager}", async () => {
-      const key_manager = await util.generateKeyFromString(sample_keys.rsa[1024].pub);
+      const key_manager = await check.generateKeyFromString(sample_keys.rsa[1024].pub);
       assert.throws(() => EcdsaBlindingContext.fromKey(key_manager));
     });
 
@@ -163,7 +163,7 @@ describe("blinding_context_ecdsa", function() {
       const buffer = new Buffer([1, 2, 3]);
       const result = context.encodeSignaturePayload(buffer);
 
-      assert.isTrue(util.isBigInteger(result));
+      assert.isTrue(check.isBigInteger(result));
       assert.isTrue(buffer.equals(result.toBuffer()));
     });
   });

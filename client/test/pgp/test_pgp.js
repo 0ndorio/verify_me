@@ -4,14 +4,14 @@ import { assert } from "chai"
 
 import BlindSignaturePacket from "../../src/pgp/blind_signature_packet"
 import pgp from "../../src/pgp/pgp"
-import util from "verifyme_utility"
+import { check } from "verifyme_utility"
 
 import sample_keys from "../helper/keys"
 
 describe("pgp", function() {
 
   before(async () => {
-    this.key_manager = await util.generateKeyFromString(sample_keys.rsa[1024].pub);
+    this.key_manager = await check.generateKeyFromString(sample_keys.rsa[1024].pub);
   });
 
   beforeEach(async () => {
@@ -42,7 +42,7 @@ describe("pgp", function() {
 
     it("should return a {Buffer} containg the signature if input is valid", () => {
       const result = pgp.exportKeyToBinaryAndInjectSignature(this.key_manager, this.signature_packet);
-      assert.isTrue(util.isBuffer(result));
+      assert.isTrue(check.isBuffer(result));
 
       const userid = this.key_manager.get_userids_mark_primary()[0];
       const userid_buffer = userid.get_framed_signature_output();
@@ -79,8 +79,8 @@ describe("pgp", function() {
       assert.instanceOf(result, Promise);
 
       return result
-        .then(key_ascii => util.generateKeyFromString(key_ascii))
-        .then(key_manager => assert.isTrue(util.isKeyManager(key_manager)));
+        .then(key_ascii => check.generateKeyFromString(key_ascii))
+        .then(key_manager => assert.isTrue(check.isKeyManager(key_manager)));
     });
   });
 });

@@ -1,7 +1,7 @@
 "use strict";
 
 import * as kbpgp from "kbpgp"
-import util from "verifyme_utility"
+import { check } from "verifyme_utility"
 
 /// Constant element ids
 const server_public_key_element_id = "server_public_key";
@@ -22,7 +22,7 @@ function getPublicKey()
     return Promise.reject(new Error("Couldn't read the public key input. Please reload page."));
   }
 
-  return util.generateKeyFromString(public_key_string);
+  return check.generateKeyFromString(public_key_string);
 }
 
 /**
@@ -35,7 +35,7 @@ function getPublicKey()
 function getPublicKeyString()
 {
   const content = getTextAreaContent(user_public_key_element_id);
-  if (!util.isString(content)) {
+  if (!check.isString(content)) {
     return null;
   }
 
@@ -55,7 +55,7 @@ function getToken()
     throw new Error("Couldn't read the token input. Please reload page.");
   }
 
-  const token = new util.BigInteger(token_string, 16);
+  const token = new check.BigInteger(token_string, 16);
   if (!token.isProbablePrime()) {
     throw new Error("Unsecure Token. Please check your input.");
   }
@@ -73,7 +73,7 @@ function getToken()
 function getTokenString()
 {
   const content = getTextAreaContent(user_token_element_id);
-  if (!util.isString(content)) {
+  if (!check.isString(content)) {
     return null;
   }
 
@@ -90,11 +90,11 @@ function getTokenString()
 function getServerPublicKey()
 {
   const public_key_string = getServerPublicKeyString();
-  if (!util.isString(public_key_string)) {
+  if (!check.isString(public_key_string)) {
     return Promise.reject(new Error("Couldn't read servers public key. Please reload page."));
   }
 
-  return util.generateKeyFromString(public_key_string);
+  return check.generateKeyFromString(public_key_string);
 }
 
 /**
@@ -125,7 +125,7 @@ function getServerPublicKeyString()
  */
 function getTextAreaContent(text_area_name)
 {
-  if (!util.isString(text_area_name)) { return null; }
+  if (!check.isString(text_area_name)) { return null; }
 
   const textarea = document.getElementById(text_area_name);
 

@@ -1,7 +1,7 @@
 "use strict";
 
 import BlindingContext from "./blinding/blinding_context"
-import util, { assert }from "verifyme_utility"
+import { assert, check } from "verifyme_utility"
 
 /**
  * Sends a async XMLHttpRequest to the server.
@@ -17,9 +17,9 @@ import util, { assert }from "verifyme_utility"
  */
 function sendRequest(json_string, path = "/", method = "POST")
 {
-  assert(util.isString(json_string));
-  assert(util.isString(path));
-  assert(util.isString(method));
+  assert(check.isString(json_string));
+  assert(check.isString(path));
+  assert(check.isString(method));
 
   return new Promise((resolve, reject) => {
 
@@ -54,7 +54,7 @@ function sendRequest(json_string, path = "/", method = "POST")
  */
 async function requestRsaBlinding(blinded_message, blinding_context)
 {
-  assert(util.isBigInteger(blinded_message));
+  assert(check.isBigInteger(blinded_message));
   assert((blinding_context instanceof BlindingContext)
          && blinding_context.hasOwnProperty("hashed_token"));
 
@@ -65,10 +65,10 @@ async function requestRsaBlinding(blinded_message, blinding_context)
 
   return sendRequest(message, "/rsa")
     .then(response => {
-      assert(util.isString(response));
+      assert(check.isString(response));
 
       const request_result = JSON.parse(response);
-      return new util.BigInteger(request_result.signed_blinded_message, 32);
+      return new check.BigInteger(request_result.signed_blinded_message, 32);
     });
 }
 
@@ -84,7 +84,7 @@ async function requestRsaBlinding(blinded_message, blinding_context)
  */
 async function requestEcdsaBlinding(blinded_message, blinding_context)
 {
-  assert(util.isBigInteger(blinded_message));
+  assert(check.isBigInteger(blinded_message));
   assert((blinding_context instanceof BlindingContext)
         && blinding_context.hasOwnProperty("hashed_token"));
 
@@ -95,10 +95,10 @@ async function requestEcdsaBlinding(blinded_message, blinding_context)
 
   return sendRequest(message, "/ecdsa/sign")
     .then(response => {
-      assert(util.isString(response));
+      assert(check.isString(response));
 
       const request_result = JSON.parse(response);
-      return new util.BigInteger(request_result.signed_blinded_message, 32)
+      return new check.BigInteger(request_result.signed_blinded_message, 32)
     });
 }
 
@@ -122,17 +122,17 @@ async function requestEcdsaBlindingInitialization(blinding_context)
 
   return sendRequest(message, "/ecdsa/init")
     .then(response => {
-      assert(util.isString(response));
+      assert(check.isString(response));
 
       const request_result = JSON.parse(response);
       const P = blinding_context.curve.mkpoint({
-        x: new util.BigInteger(request_result.px, 32),
-        y: new util.BigInteger(request_result.py, 32)
+        x: new check.BigInteger(request_result.px, 32),
+        y: new check.BigInteger(request_result.py, 32)
       });
 
       const Q = blinding_context.curve.mkpoint({
-        x: new util.BigInteger(request_result.qx, 32),
-        y: new util.BigInteger(request_result.qy, 32)
+        x: new check.BigInteger(request_result.qx, 32),
+        y: new check.BigInteger(request_result.qy, 32)
       });
 
       return {P, Q};

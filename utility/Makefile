@@ -6,10 +6,10 @@ MOCHA=node_modules/.bin/_mocha
 default: build
 all: build
 
-build: src/util.js
+build: src/check.js
 	$(BABEL) -d dist/ src/
 
-watch: src/util.js
+watch: src/check.js
 	$(BABEL) -w -d dist/ src/
 
 test: test/**/*.js

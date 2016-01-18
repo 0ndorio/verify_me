@@ -2,7 +2,7 @@
 
 import fs from "fs"
 
-import util, { assert } from "verifyme_utility"
+import { assert, check } from "verifyme_utility"
 import config from "./config"
 const rsa = config.keys.rsa;
 const ecc = config.keys.ecc;
@@ -22,17 +22,17 @@ const ecc = config.keys.ecc;
  */
 async function loadKey(public_key_path, private_key_path, passphrase = null)
 {
-  assert(util.isString(public_key_path));
-  assert(util.isString(private_key_path));
+  assert(check.isString(public_key_path));
+  assert(check.isString(private_key_path));
 
   const public_key_string = fs.readFileSync(public_key_path, "utf-8");
   const private_key_string = fs.readFileSync(private_key_path, "utf-8");
 
-  const key_manager = await util.generateKeyFromString(public_key_string);
+  const key_manager = await check.generateKeyFromString(public_key_string);
   await mergePrivateKeyIntoKeyManager(key_manager, private_key_string);
 
   if (passphrase) {
-    assert(util.isString(passphrase));
+    assert(check.isString(passphrase));
     await unlockPrivateKeyInKeyManager(key_manager, passphrase);
   }
 
@@ -51,8 +51,8 @@ async function loadKey(public_key_path, private_key_path, passphrase = null)
  */
 function mergePrivateKeyIntoKeyManager(key_manager, private_key_string)
 {
-  assert(util.isKeyManager(key_manager));
-  assert(util.isString(private_key_string));
+  assert(check.isKeyManager(key_manager));
+  assert(check.isString(private_key_string));
 
   return new Promise((resolve, reject) => {
 
@@ -77,8 +77,8 @@ function mergePrivateKeyIntoKeyManager(key_manager, private_key_string)
  */
 function unlockPrivateKeyInKeyManager(key_manager, passphrase)
 {
-  assert(util.isKeyManager(key_manager));
-  assert(util.isString(passphrase));
+  assert(check.isKeyManager(key_manager));
+  assert(check.isString(passphrase));
 
   return new Promise((resolve, reject) => {
 

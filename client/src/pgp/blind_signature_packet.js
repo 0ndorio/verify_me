@@ -5,7 +5,7 @@ import * as sig from "../../node_modules/kbpgp/lib/openpgp/packet/signature"
 const Constants = kbpgp.const;
 
 import BlindingContext from "./../blinding/blinding_context"
-import util, { assert } from "verifyme_utility"
+import { assert, check } from "verifyme_utility"
 
 /**
  * A kind of key signature packet where the signer
@@ -30,8 +30,8 @@ export default class BlindSignaturePacket extends sig.Signature
    */
   constructor(target_key, sig_key, context)
   {
-    assert(util.isKeyManager(target_key));
-    assert(util.isKeyManager(sig_key));
+    assert(check.isKeyManager(target_key));
+    assert(check.isKeyManager(sig_key));
     assert(context instanceof BlindingContext);
 
     const hashed_subpackets = [
@@ -71,7 +71,7 @@ export default class BlindSignaturePacket extends sig.Signature
    */
   static calculateRandomCreationDate(target_key)
   {
-    assert(util.isKeyManager(target_key));
+    assert(check.isKeyManager(target_key));
 
     const lifespan = target_key.primary.lifespan;
     let key_expire = lifespan.expire_in;
@@ -169,7 +169,7 @@ export default class BlindSignaturePacket extends sig.Signature
    */
   generateSignatureTrailer(hash_data_length)
   {
-    assert(util.isInteger(hash_data_length));
+    assert(check.isInteger(hash_data_length));
 
     return kbpgp.Buffer.concat([
       new kbpgp.Buffer([

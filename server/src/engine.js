@@ -1,6 +1,7 @@
 "use strict";
 
 import fs from "fs";
+import { assert, check } from "verifyme_utility"
 
 /**
  * Template engine that replaces the a key place holder with a given ascii key string.
@@ -20,9 +21,9 @@ import fs from "fs";
  */
 export default function customHtmlEngine(file_path, options, callback)
 {
-  assert(util.isString(file_path));
-  assert(util.isObject(options));
-  assert(util.isFunction(callback));
+  assert(check.isString(file_path));
+  assert(check.isObject(options));
+  assert(check.isFunction(callback));
 
   fs.readFile(file_path, (err, content) => {
 

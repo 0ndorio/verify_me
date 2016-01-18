@@ -1,9 +1,7 @@
 "use strict";
 
 import { KeyManager } from "kbpgp"
-
-import util from "verifyme_utility"
-const assert = util.assert;
+import { assert, check } from "verifyme_utility"
 
 /**
  * Representation of a blinding algorithm.

@@ -4,7 +4,7 @@ import { assert } from "chai"
 import * as kbpgp from "kbpgp"
 
 import client from"../src/client"
-import util from "verifyme_utility"
+import { check } from "verifyme_utility"
 import RsaBlindingContext from "../src/blinding/rsa/blinding_context_rsa"
 import EcdsaBlindingContext from "../src/blinding/ecdsa/blinding_context_ecdsa"
 
@@ -27,7 +27,7 @@ describe("client", function() {
 
     it ("should return users public key as kbpgp.KeyManager", () => {
       return client.getPublicKey()
-        .then(key => assert.isTrue(util.isKeyManager(key)));
+        .then(key => assert.isTrue(check.isKeyManager(key)));
     });
 
     it ("must return a rejected promise if id is missing from html", () => {
@@ -80,7 +80,7 @@ describe("client", function() {
 
     it ("should return Token as BigInteger", () => {
       const token = client.getToken();
-      assert.isTrue(util.isBigInteger(token));
+      assert.isTrue(check.isBigInteger(token));
     });
 
     it ("result must pass prime test", () => {
@@ -135,7 +135,7 @@ describe("client", function() {
 
     it ("should return server public key as kbpgp.Key", () => {
       return client.getServerPublicKey()
-        .then(key => assert.isTrue(util.isKeyManager(key)));
+        .then(key => assert.isTrue(check.isKeyManager(key)));
     });
 
     it ("must throw if id is missing from html",() => {
@@ -202,7 +202,7 @@ describe("client", function() {
       controls.userPublicKeyString = string;
 
       const result = client.getTextAreaContent(client.user_public_key_element_id);
-      assert.isTrue(util.isString(result));
+      assert.isTrue(check.isString(result));
       assert.equal(string, result);
     });
   });

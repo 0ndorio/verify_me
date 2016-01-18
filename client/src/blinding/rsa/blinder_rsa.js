@@ -4,7 +4,7 @@ import Blinder from "../blinder"
 import BlindSignaturePacket from "../../pgp/blind_signature_packet"
 import RsaBlindingContext from "./blinding_context_rsa"
 import server  from "../../server_requests"
-import util, { assert, BigInteger } from "verifyme_utility"
+import { assert, BigInteger, check } from "verifyme_utility"
 
 /**
  * Representation of the rsa blinding algorithm.
@@ -30,14 +30,14 @@ export default class RsaBlinder extends Blinder
    */
   async initContext(key_manager, token)
   {
-    assert(util.isKeyManagerForRsaSign(key_manager));
-    assert(util.isBigInteger(token));
+    assert(check.isKeyManagerForRsaSign(key_manager));
+    assert(check.isBigInteger(token));
 
     let context = RsaBlindingContext.fromKey(key_manager);
 
-    const blinding_factor = await util.generateRsaBlindingFactor(context.modulus.bitLength());
+    const blinding_factor = await check.generateRsaBlindingFactor(context.modulus.bitLength());
     context.blinding_factor = token.multiply(blinding_factor);
-    context.hashed_token = util.hashMessageSha512(token.toRadix());
+    context.hashed_token = check.hashMessageSha512(token.toRadix());
 
     this.context = context;
     this.key_manager = key_manager;
@@ -58,7 +58,7 @@ export default class RsaBlinder extends Blinder
    */
   blind(message)
   {
-    assert(util.isBigInteger(message));
+    assert(check.isBigInteger(message));
     assert(RsaBlindingContext.isValidBlindingContext(this.context));
 
     const r = this.context.blinding_factor;
@@ -81,7 +81,7 @@ export default class RsaBlinder extends Blinder
    */
   unblind(message)
   {
-    assert(util.isBigInteger(message));
+    assert(check.isBigInteger(message));
     assert(RsaBlindingContext.isValidBlindingContext(this.context));
 
     const N = this.context.modulus;
@@ -104,7 +104,7 @@ export default class RsaBlinder extends Blinder
   async forgeSignature(packet)
   {
     assert(packet instanceof BlindSignaturePacket);
-    assert(util.isBigInteger(packet.raw_signature));
+    assert(check.isBigInteger(packet.raw_signature));
     assert(RsaBlindingContext.isValidBlindingContext(this.context));
 
     const message = packet.raw_signature;

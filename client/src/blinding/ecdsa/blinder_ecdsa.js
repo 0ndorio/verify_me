@@ -5,7 +5,7 @@ import Blinder from "../blinder"
 import BlindSignaturePacket from "../../pgp/blind_signature_packet"
 import EcdsaBlindingContext from "./blinding_context_ecdsa"
 import server from "../../server_requests"
-import util, { assert } from "verifyme_utility"
+import { assert, check } from "verifyme_utility"
 
 /**
  * Representation of the ECDSA blinding algorithm presented by Oleg Andreev
@@ -31,8 +31,8 @@ export default class EcdsaBlinder extends Blinder
    */
   async initContext(key_manager, token)
   {
-    assert(util.isKeyManagerForEcdsaSign(key_manager));
-    assert(util.isBigInteger(token));
+    assert(check.isKeyManagerForEcdsaSign(key_manager));
+    assert(check.isBigInteger(token));
 
     const context = EcdsaBlindingContext.fromKey(key_manager);
     context.blinding_factor = {
@@ -42,7 +42,7 @@ export default class EcdsaBlinder extends Blinder
       d: await this.generateRandomScalar(context.curve)
     };
 
-    context.hashed_token = util.hashMessageSha512(token.toRadix());
+    context.hashed_token = check.hashMessageSha512(token.toRadix());
 
     this.context = context;
     this.key_manager = key_manager;
@@ -62,7 +62,7 @@ export default class EcdsaBlinder extends Blinder
    */
   blind(message)
   {
-    assert(util.isBigInteger(message));
+    assert(check.isBigInteger(message));
     assert(EcdsaBlindingContext.isValidBlindingContext(this.context));
 
     const n = this.context.curve.n;
@@ -85,7 +85,7 @@ export default class EcdsaBlinder extends Blinder
    */
   unblind(message)
   {
-    assert(util.isBigInteger(message));
+    assert(check.isBigInteger(message));
     assert(EcdsaBlindingContext.isValidBlindingContext(this.context));
 
     const n = this.context.curve.n;
@@ -171,7 +171,7 @@ export default class EcdsaBlinder extends Blinder
   async requestSecondSignatureParameter(packet)
   {
     assert(packet instanceof BlindSignaturePacket);
-    assert(util.isBigInteger(packet.raw_signature));
+    assert(check.isBigInteger(packet.raw_signature));
     assert(EcdsaBlindingContext.isValidBlindingContext(this.context));
 
     const message_buffer = hash.SHA512(packet.raw_signature.toBuffer());
@@ -194,7 +194,7 @@ export default class EcdsaBlinder extends Blinder
    */
   async generateRandomScalar(curve)
   {
-    assert(util.isCurve(curve));
+    assert(check.isCurve(curve));
 
     return new Promise((resolve, reject) =>
       curve.random_scalar(

@@ -1,7 +1,7 @@
 "use strict";
 
 import BlindingContext from "../blinding_context"
-import util, { assert } from "verifyme_utility"
+import { assert, check } from "verifyme_utility"
 
 /**
  * A ecc blinding context.
@@ -57,7 +57,7 @@ export default class EcdsaBlindingContext extends BlindingContext
    */
   static fromKey(key_manager)
   {
-    assert(util.isKeyManagerForEcdsaSign(key_manager));
+    assert(check.isKeyManagerForEcdsaSign(key_manager));
 
     const public_key_package = key_manager.get_primary_keypair().pub;
 
@@ -82,13 +82,13 @@ export default class EcdsaBlindingContext extends BlindingContext
    */
   containsAllBlindingInformation()
   {
-    return util.isCurve(this.curve)
-        && util.isBigInteger(this.hashed_token)
+    return check.isCurve(this.curve)
+        && check.isBigInteger(this.hashed_token)
         && null != this.blinding_factor
-        && this.blinding_factor.hasOwnProperty("a") && util.isBigInteger(this.blinding_factor.a)
-        && this.blinding_factor.hasOwnProperty("b") && util.isBigInteger(this.blinding_factor.b)
-        && this.blinding_factor.hasOwnProperty("c") && util.isBigInteger(this.blinding_factor.c)
-        && this.blinding_factor.hasOwnProperty("d") && util.isBigInteger(this.blinding_factor.d)
+        && this.blinding_factor.hasOwnProperty("a") && check.isBigInteger(this.blinding_factor.a)
+        && this.blinding_factor.hasOwnProperty("b") && check.isBigInteger(this.blinding_factor.b)
+        && this.blinding_factor.hasOwnProperty("c") && check.isBigInteger(this.blinding_factor.c)
+        && this.blinding_factor.hasOwnProperty("d") && check.isBigInteger(this.blinding_factor.d)
   }
 
   /**
@@ -103,7 +103,7 @@ export default class EcdsaBlindingContext extends BlindingContext
    */
   encodeSignaturePayload(data, hasher)
   {
-    assert(util.isBuffer(data));
-    return util.BigInteger.fromBuffer(data);
+    assert(check.isBuffer(data));
+    return check.BigInteger.fromBuffer(data);
   }
 }

@@ -3,7 +3,7 @@
 import * as pad from "../../../node_modules/kbpgp/lib/pad"
 
 import BlindingContext from "../blinding_context"
-import util, { assert } from "verifyme_utility"
+import { assert, check } from "verifyme_utility"
 
 /**
  * A rsa based blinding context.
@@ -48,7 +48,7 @@ export default class RsaBlindingContext extends BlindingContext
    */
   static fromKey(key_manager)
   {
-    util.assert(util.isKeyManagerForRsaSign(key_manager));
+    assert(check.isKeyManagerForRsaSign(key_manager));
 
     const public_key_package = key_manager.get_primary_keypair().pub;
 
@@ -76,10 +76,10 @@ export default class RsaBlindingContext extends BlindingContext
    */
   containsAllBlindingInformation()
   {
-    return util.isBigInteger(this.modulus)
-        && util.isBigInteger(this.public_exponent)
-        && util.isBigInteger(this.blinding_factor)
-        && util.isBigInteger(this.hashed_token);
+    return check.isBigInteger(this.modulus)
+        && check.isBigInteger(this.public_exponent)
+        && check.isBigInteger(this.blinding_factor)
+        && check.isBigInteger(this.hashed_token);
   }
 
   /**
@@ -95,8 +95,8 @@ export default class RsaBlindingContext extends BlindingContext
    */
   encodeSignaturePayload(data, hasher)
   {
-    assert(util.isBuffer(data));
-    assert(util.isFunction(hasher));
+    assert(check.isBuffer(data));
+    assert(check.isFunction(hasher));
 
     const hashed_data = hasher(data);
     const target_length = this.modulus.mpi_byte_length();

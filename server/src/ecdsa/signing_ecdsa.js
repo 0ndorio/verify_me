@@ -4,7 +4,7 @@ import { BigInteger } from "../../node_modules/kbpgp/lib/bn"
 import { KeyManager } from "kbpgp"
 import { Point } from "keybase-ecurve"
 
-import util, { assert } from "verifyme_utility"
+import { assert, check } from "verifyme_utility"
 
 /**
  * Prepares the ECDSA blinding algorithm through
@@ -20,7 +20,7 @@ import util, { assert } from "verifyme_utility"
  */
 async function prepareBlinding(key_manager)
 {
-  assert(util.isKeyManager(key_manager));
+  assert(check.isKeyManager(key_manager));
 
   const public_key_package = key_manager.get_primary_keypair().pub;
   const curve = public_key_package.curve;
@@ -54,7 +54,7 @@ async function prepareBlinding(key_manager)
  */
 async function generateRandomScalar(curve)
 {
-  assert(util.isCurve(curve));
+  assert(check.isCurve(curve));
 
   return new Promise((resolve, reject) =>
     curve.random_scalar(
@@ -77,11 +77,11 @@ async function generateRandomScalar(curve)
  */
 function sign(message, secret_scalars, key_manager)
 {
-  assert(util.isString(message));
-  assert(util.isKeyManagerForEcdsaSign(key_manager));
-  assert(util.isObject(secret_scalars));
-  assert(secret_scalars.hasOwnProperty("p") && util.isBigInteger(secret_scalars.p));
-  assert(secret_scalars.hasOwnProperty("q") && util.isBigInteger(secret_scalars.q));
+  assert(check.isString(message));
+  assert(check.isKeyManagerForEcdsaSign(key_manager));
+  assert(check.isObject(secret_scalars));
+  assert(secret_scalars.hasOwnProperty("p") && check.isBigInteger(secret_scalars.p));
+  assert(secret_scalars.hasOwnProperty("q") && check.isBigInteger(secret_scalars.q));
 
 
   const public_key_package = key_manager.get_primary_keypair().pub;

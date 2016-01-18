@@ -20,9 +20,6 @@
     "mocha": "latest"
   },
 
-  "scripts": {
-  },
-
   "homepage": "https://github.com/0ndorio/verify_me",
   
   "repository": {
@@ -34,5 +31,5 @@
     "url": "https://github.com/0ndorio/verify_me/issues"
   },
 
-  "main": "dist/util.js"
+  "main": "dist/main.js"
 }

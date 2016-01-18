@@ -6,7 +6,7 @@ import client from"../client"
 import BlindSignaturePacket from "../pgp/blind_signature_packet"
 import EcdsaBlinder from "./ecdsa/blinder_ecdsa"
 import RsaBlinder from "./rsa/blinder_rsa"
-import util, { assert } from "verifyme_utility"
+import { assert, check } from "verifyme_utility"
 
 /**
  * Creates a public key algorithm specific {Blinder} instance.
@@ -20,16 +20,16 @@ import util, { assert } from "verifyme_utility"
  */
 async function createBlinderForKeyManager(key_manager, token)
 {
-  assert(util.isKeyManager(key_manager));
-  assert(util.isBigInteger(token));
+  assert(check.isKeyManager(key_manager));
+  assert(check.isBigInteger(token));
 
   let blinder = null;
 
-  if (util.isKeyManagerForRsaSign(key_manager)) {
+  if (check.isKeyManagerForRsaSign(key_manager)) {
 
     blinder = new RsaBlinder();
 
-  } else if (util.isKeyManagerForEcdsaSign(key_manager)) {
+  } else if (check.isKeyManagerForEcdsaSign(key_manager)) {
 
     blinder = new EcdsaBlinder();
 

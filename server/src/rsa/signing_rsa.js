@@ -1,6 +1,6 @@
 "use strict";
 
-import util, { assert, BigInteger } from "verifyme_utility"
+import { assert, BigInteger, check } from "verifyme_utility"
 
 /**
  * Signs the given blinded message.
@@ -15,8 +15,8 @@ import util, { assert, BigInteger } from "verifyme_utility"
  */
 export default function sign(message, key_manager)
 {
-  assert(util.isString(message));
-  assert(util.isKeyManagerForRsaSign(key_manager));
+  assert(check.isString(message));
+  assert(check.isKeyManagerForRsaSign(key_manager));
 
   const key_pair = key_manager.get_primary_keypair();
 
