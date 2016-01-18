@@ -3,11 +3,8 @@
 import { assert } from "chai"
 import { Buffer, ecc } from "kbpgp"
 
-import client from"../src/client"
 import util from "../src/util"
-
-import { controls } from "./helper/client_control"
-import keys, { public_keys } from "./helper/keys"
+import keys, { public_keys} from "./helper/keys"
 
 describe("util", function() {
 

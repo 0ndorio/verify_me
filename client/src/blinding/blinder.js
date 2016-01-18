@@ -2,7 +2,7 @@
 
 import { KeyManager } from "kbpgp"
 
-import util from "./../util"
+import util from "verifyme_utility"
 const assert = util.assert;
 
 /**

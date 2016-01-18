@@ -4,7 +4,7 @@ import { assert } from "chai"
 import * as kbpgp from "kbpgp"
 
 import client from"../src/client"
-import util from "../src/util"
+import util from "verifyme_utility"
 import RsaBlindingContext from "../src/blinding/rsa/blinding_context_rsa"
 import EcdsaBlindingContext from "../src/blinding/ecdsa/blinding_context_ecdsa"
 
@@ -25,9 +25,9 @@ describe("client", function() {
 
   describe("#getPublicKey()", () => {
 
-    it ("should return users public key as kbpgp.Key", () => {
+    it ("should return users public key as kbpgp.KeyManager", () => {
       return client.getPublicKey()
-        .then(key => assert.instanceOf(key, kbpgp.KeyManager));
+        .then(key => assert.isTrue(util.isKeyManager(key)));
     });
 
     it ("must return a rejected promise if id is missing from html", () => {
@@ -135,7 +135,7 @@ describe("client", function() {
 
     it ("should return server public key as kbpgp.Key", () => {
       return client.getServerPublicKey()
-        .then(key => assert.instanceOf(key, kbpgp.KeyManager));
+        .then(key => assert.isTrue(util.isKeyManager(key)));
     });
 
     it ("must throw if id is missing from html",() => {

@@ -5,7 +5,7 @@ import * as sig from "../../node_modules/kbpgp/lib/openpgp/packet/signature"
 const Constants = kbpgp.const;
 
 import BlindingContext from "./../blinding/blinding_context"
-import util, { assert } from "../util"
+import util, { assert } from "verifyme_utility"
 
 /**
  * A kind of key signature packet where the signer

@@ -1,7 +1,7 @@
 "use strict";
 
 import BlindingContext from "../blinding_context"
-import util, { assert } from "../../util"
+import util, { assert } from "verifyme_utility"
 
 /**
  * A ecc blinding context.

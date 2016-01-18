@@ -1,7 +1,7 @@
 "use strict";
 
 import BlindingContext from "./blinding/blinding_context"
-import util, { assert }from "./util"
+import util, { assert }from "verifyme_utility"
 
 /**
  * Sends a async XMLHttpRequest to the server.

@@ -28,9 +28,6 @@ function renderIndex(request, response)
  */
 async function initBlindingAlgorithm(request, response)
 {
-  console.log(request.constructor.name);
-  console.log(response.constructor.name);
-
   let json = {};
 
   if (request.hasOwnProperty("body") && request.body.hasOwnProperty("hashed_token")) {

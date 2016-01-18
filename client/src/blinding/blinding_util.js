@@ -6,7 +6,7 @@ import client from"../client"
 import BlindSignaturePacket from "../pgp/blind_signature_packet"
 import EcdsaBlinder from "./ecdsa/blinder_ecdsa"
 import RsaBlinder from "./rsa/blinder_rsa"
-import util, { assert } from "../util"
+import util, { assert } from "verifyme_utility"
 
 /**
  * Creates a public key algorithm specific {Blinder} instance.

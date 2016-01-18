@@ -4,7 +4,7 @@ import { assert } from "chai"
 
 import BlindSignaturePacket from "../../src/pgp/blind_signature_packet"
 import pgp from "../../src/pgp/pgp"
-import util from "../../src/util"
+import util from "verifyme_utility"
 
 import sample_keys from "../helper/keys"
 

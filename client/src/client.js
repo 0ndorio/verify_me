@@ -1,7 +1,7 @@
 "use strict";
 
 import * as kbpgp from "kbpgp"
-import util from "./util"
+import util from "verifyme_utility"
 
 /// Constant element ids
 const server_public_key_element_id = "server_public_key";

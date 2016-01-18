@@ -46,10 +46,19 @@ apt-get install -y build-essential nodejs > /dev/nul
 npm install -g npm > /dev/null
 
 echo "Configure & build client"
-cd /vagrant/client/dist/* ${application_name}/client/dist/
+cp /vagrant/client/dist/* ${application_name}/client/dist/
+
+echo "Link Utility"
+cd ${application_name}/utility
+npm install --no-optional --silent > /dev/null
+npm ddp
+npm run build
+npm link
+cd ../../
 
 echo "Configure & run server"
 cd ${application_name}/server
 npm install --no-optional --silent > /dev/null
+npm link verifyme_utility
 npm ddp > /dev/null
 cd ../../

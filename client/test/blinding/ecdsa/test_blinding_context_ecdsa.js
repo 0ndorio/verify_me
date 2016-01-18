@@ -3,7 +3,7 @@
 import { assert } from "chai"
 import { Buffer } from "kbpgp"
 
-import util from "../../../src/util"
+import util from "verifyme_utility"
 import EcdsaBlindingContext from "../../../src/blinding/ecdsa/blinding_context_ecdsa"
 
 import sample_keys from "./../../helper/keys"

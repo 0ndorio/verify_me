@@ -3,7 +3,7 @@
 import * as pad from "../../../node_modules/kbpgp/lib/pad"
 
 import BlindingContext from "../blinding_context"
-import util, { assert } from "../../util"
+import util, { assert } from "verifyme_utility"
 
 /**
  * A rsa based blinding context.

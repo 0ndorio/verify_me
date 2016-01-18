@@ -1,31 +1,30 @@
 {
-  "name": "verifyme_server", 
-  "version": "0.1.0",
-  "private": true,
-  
   "author": "Bruno Kirschner <bruno.kirschner@online.de>",
-  "homepage": "https://github.com/0ndorio/verify_me", 
-  
   "license": "UNLICENSED",
-
-  "main": "src/main.js",
+  "name": "verifyme_utility",
+  "private": true,
+  "version": "0.1.0",
   
   "dependencies": {
-    "body-parser": "latest",
-    "express": "latest",
     "kbpgp": "latest",
     "keybase-ecurve": "latest"
   },
   
   "devDependencies": {
-    "babel-polyfill": "latest",
-    "babel-cli": "latest", 
+    "babel-cli": "latest",
+    "babel-istanbul": "latest",
     "babel-preset-es2015": "latest",
     "babel-preset-stage-3": "latest",
+    "babel-polyfill": "latest",
     "chai": "latest",
     "mocha": "latest"
   },
 
+  "scripts": {
+  },
+
+  "homepage": "https://github.com/0ndorio/verify_me",
+  
   "repository": {
     "type": "git",
     "url": "https://github.com/0ndorio/verify_me.git"
@@ -33,11 +32,7 @@
 
   "bugs": {
     "url": "https://github.com/0ndorio/verify_me/issues"
-  }, 
-  
-  "scripts": {
-    "build": "babel --presets es2015,stage-3 -d dist/ src/",
-    "build:watch": "babel --presets es2015,stage-3 -w -d dist/ src/",
-    "server": "npm run build && node dist/main.js"
-  }
+  },
+
+  "main": "dist/util.js"
 }

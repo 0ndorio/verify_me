@@ -9,7 +9,7 @@ import EcdsaBlindingContext from "../../src/blinding/ecdsa/blinding_context_ecds
 import RsaBlinder from "../../src/blinding/rsa/blinder_rsa"
 import RsaBlindingContext from "../../src/blinding/rsa/blinding_context_rsa"
 
-import util from "../../src/util"
+import util from "verifyme_utility"
 
 import sample_keys from "../helper/keys"
 
