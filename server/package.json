@@ -33,11 +33,5 @@
 
   "bugs": {
     "url": "https://github.com/0ndorio/verify_me/issues"
-  }, 
-  
-  "scripts": {
-    "build": "babel --presets es2015,stage-3 -d dist/ src/",
-    "build:watch": "babel --presets es2015,stage-3 -w -d dist/ src/",
-    "server": "npm run build && node dist/main.js"
   }
 }
