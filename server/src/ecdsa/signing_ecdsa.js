@@ -4,6 +4,8 @@ import { BigInteger } from "../../node_modules/kbpgp/lib/bn"
 import { KeyManager } from "kbpgp"
 import { Point } from "keybase-ecurve"
 
+import util, { assert } from "verifyme_utility"
+
 /**
  * Prepares the ECDSA blinding algorithm through
  * the creation of request individual secret scalar
@@ -18,6 +20,8 @@ import { Point } from "keybase-ecurve"
  */
 async function prepareBlinding(key_manager)
 {
+  assert(util.isKeyManager(key_manager));
+
   const public_key_package = key_manager.get_primary_keypair().pub;
   const curve = public_key_package.curve;
   const n = curve.n;
@@ -29,16 +33,10 @@ async function prepareBlinding(key_manager)
   const p_inv = p.modInverse(n);
 
   const P = G.multiply(p_inv);
+  assert(curve.isOnCurve(P));
+
   const Q = G.multiply(p_inv).multiply(q);
-
-  if(!curve.isOnCurve(P))
-  {
-   throw new Error("P not on curve");
-  }
-
-  if (!curve.isOnCurve(Q)) {
-    throw new Error("Q not on curve");
-  }
+  assert(curve.isOnCurve(Q));
 
   return {p, P, q, Q};
 }
@@ -56,6 +54,8 @@ async function prepareBlinding(key_manager)
  */
 async function generateRandomScalar(curve)
 {
+  assert(util.isCurve(curve));
+
   return new Promise((resolve, reject) =>
     curve.random_scalar(
       k => resolve(k))
@@ -77,21 +77,12 @@ async function generateRandomScalar(curve)
  */
 function sign(message, secret_scalars, key_manager)
 {
-  if (typeof message !== "string") {
-    throw new Error("message is not of type string");
-  }
+  assert(util.isString(message));
+  assert(util.isKeyManagerForEcdsaSign(key_manager));
+  assert(util.isObject(secret_scalars));
+  assert(secret_scalars.hasOwnProperty("p") && util.isBigInteger(secret_scalars.p));
+  assert(secret_scalars.hasOwnProperty("q") && util.isBigInteger(secret_scalars.q));
 
-  if (secret_scalars.p.constructor.name !== "BigInteger") {
-    throw new Error("secret scalar p is missing");
-  }
-
-  if (secret_scalars.q.constructor.name !== "BigInteger") {
-    throw new Error("secret scalar q is missing");
-  }
-
-  if (!(key_manager instanceof KeyManager)) {
-    throw new Error("key_manager is no intance of KeyManager");
-  }
 
   const public_key_package = key_manager.get_primary_keypair().pub;
   const n = public_key_package.curve.n;

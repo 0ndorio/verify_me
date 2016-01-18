@@ -20,6 +20,10 @@ import fs from "fs";
  */
 export default function customHtmlEngine(file_path, options, callback)
 {
+  assert(util.isString(file_path));
+  assert(util.isObject(options));
+  assert(util.isFunction(callback));
+
   fs.readFile(file_path, (err, content) => {
 
     if (err || !options.hasOwnProperty("public_key")) {

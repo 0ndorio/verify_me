@@ -1,62 +1,58 @@
 "use strict";
 
 import fs from "fs"
-import { KeyManager } from "kbpgp"
 
+import util, { assert } from "verifyme_utility"
 import config from "./config"
+const rsa = config.keys.rsa;
+const ecc = config.keys.ecc;
 
-/// TODO
+/**
+ * Loads and unlocks a key pair.
+ *
+ * @param {string} public_key_path
+ *    Path to the public key.
+ * @param {string} private_key_path
+ *    Path to the private key.
+ * @param {string} passphrase
+ *    Passphrase to unlock the private key.
+ * @returns {Promise.<KeyManager>}
+ *    The promise of a {KeyManager] that contains
+ *    the key objects.
+ */
 async function loadKey(public_key_path, private_key_path, passphrase = null)
 {
-  if (typeof public_key_path !== "string") {
-    throw new Error("public_key_path is not of type string");
-  }
-
-  if (typeof private_key_path !== "string") {
-    throw new Error("private_key_path is not of type string");
-  }
+  assert(util.isString(public_key_path));
+  assert(util.isString(private_key_path));
 
   const public_key_string = fs.readFileSync(public_key_path, "utf-8");
   const private_key_string = fs.readFileSync(private_key_path, "utf-8");
 
-  const key_manager = await generateKeyManagerFromString(public_key_string);
+  const key_manager = await util.generateKeyFromString(public_key_string);
   await mergePrivateKeyIntoKeyManager(key_manager, private_key_string);
 
   if (passphrase) {
+    assert(util.isString(passphrase));
     await unlockPrivateKeyInKeyManager(key_manager, passphrase);
   }
 
   return key_manager;
 }
 
-/// TODO
-function generateKeyManagerFromString(key_string)
-{
-  if (typeof key_string !== "string") {
-    throw new Error("key_string is not of type string");
-  }
-
-  return new Promise((resolve, reject) => {
-
-    KeyManager.import_from_armored_pgp({
-      armored: key_string
-    }, (err, key_manager) => {
-      if (err) reject(err);
-      else resolve(key_manager);
-    });
-  });
-}
-
-/// TODO
+/**
+ * Helper to merge a private key into a given public key containing {KeyManager}.
+ *
+ * @param {KeyManager} key_manager
+ *    A public key containing {KeyManager}.
+ * @param {string} private_key_string
+ *    Path to the private key.
+ * @returns {Promise.<KeyManager>}
+ *    Promise of a {KeyManager} containing both keys.
+ */
 function mergePrivateKeyIntoKeyManager(key_manager, private_key_string)
 {
-  if (!(key_manager instanceof KeyManager)) {
-    throw new Error("key_manager is no intance of KeyManager");
-  }
-
-  if (typeof private_key_string !== "string") {
-    throw new Error("private_key_string is not of type string");
-  }
+  assert(util.isKeyManager(key_manager));
+  assert(util.isString(private_key_string));
 
   return new Promise((resolve, reject) => {
 
@@ -69,16 +65,20 @@ function mergePrivateKeyIntoKeyManager(key_manager, private_key_string)
   });
 }
 
-/// TODO
+/**
+ * Unlocks a a password secured private key.
+ *
+ * @param {KeyManager} key_manager
+ *    The {KeyManager} that contains the locked key.
+ * @param {string} passphrase
+ *    The password to unlock the key.
+ * @returns {Promise.<*>}
+ *    The promise that the key is unlocked.
+ */
 function unlockPrivateKeyInKeyManager(key_manager, passphrase)
 {
-  if (!(key_manager instanceof KeyManager)) {
-    throw new Error("key_manager is no intance of KeyManager");
-  }
-
-  if (typeof passphrase !== "string") {
-    throw new Error("passphrase is not of type string");
-  }
+  assert(util.isKeyManager(key_manager));
+  assert(util.isString(passphrase));
 
   return new Promise((resolve, reject) => {
 
@@ -89,10 +89,7 @@ function unlockPrivateKeyInKeyManager(key_manager, passphrase)
   });
 }
 
-const rsa = config.keys.rsa;
 const rsa_promise = loadKey(rsa.public_key, rsa.private_key, rsa.passphrase);
-
-const ecc = config.keys.ecc;
 const ecc_promise = loadKey(ecc.public_key, ecc.private_key, ecc.passphrase);
 
 let ecc_key = null;

@@ -1,18 +1,22 @@
 "use strict";
 
-import { KeyManager } from "kbpgp"
-import { BigInteger } from "../../node_modules/kbpgp/lib/bn"
+import util, { assert, BigInteger } from "verifyme_utility"
 
-/// TODO
+/**
+ * Signs the given blinded message.
+ *
+ * @param {string} message
+ *    The message to sign.
+ * @param {KeyManager} key_manager
+ *    The {KeyManager} containing the ecc based key
+ *    that will be used to sign the message.
+ * @returns {string}
+ *    The signed message.
+ */
 export default function sign(message, key_manager)
 {
-  if (typeof message !== "string") {
-    throw new Error("message is not of type string");
-  }
-
-  if (!(key_manager instanceof KeyManager)) {
-    throw new Error("key_manager is no intance of KeyManager");
-  }
+  assert(util.isString(message));
+  assert(util.isKeyManagerForRsaSign(key_manager));
 
   const key_pair = key_manager.get_primary_keypair();
 
