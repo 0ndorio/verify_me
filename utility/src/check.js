@@ -1,6 +1,5 @@
 "use strict";
 
-import * as kbpgp from "kbpgp"
 import { BigInteger, Buffer, Curve, KeyManager, Point, Tags } from "./types"
 
 /**
@@ -17,99 +16,6 @@ function assert(condition, message)
   if (!condition) {
     throw new Error(message || "Assertion failed");
   }
-}
-
-/**
- * Converts a given armored key string into a kbpgp {KeyManager} object.
- *
- * @param {string} key_as_string
- *    An ascii armored key string.
- * @returns {Promise}
- *    The promise of a {KeyManager} object.
- */
-function generateKeyFromString(key_as_string)
-{
-  return new Promise((resolve, reject) => {
-
-    assert(isString(key_as_string), "Input parameter is not of type string.");
-
-    KeyManager.import_from_armored_pgp({ armored: key_as_string }, (err, key_manager) => {
-      if (err) { reject(err); }
-      else {
-        resolve(key_manager);
-      }
-    });
-  });
-}
-
-/**
- * Generate two prime numbers with n bits using the rsa.generate()
- * in lack of a real generatePrime() method.
- *
- * @param {number} primeBitLength
- *    The target prime number length in bit.
- * @returns {Promise}
- *    The promise of two prime numbers with the requesterd bit length.
- */
-function generateTwoPrimeNumbers(primeBitLength)
-{
-  return new Promise((resolve, reject) => {
-
-    assert(isInteger(primeBitLength),
-      "The prime bit length is no integer but a '" + primeBitLength + "'");
-    assert((primeBitLength % 8 === 0) && primeBitLength >= 128 && primeBitLength <= 8192,
-      "The prime bit length must be a multiple of 8 bits and >= 128 and <= 8192");
-
-    const key_arguments = {
-      e: 65537,
-      nbits: primeBitLength * 2
-    };
-
-    kbpgp.asym.RSA.generate(key_arguments, (err, key) => {
-      if (err) {
-        reject(err);
-      }
-
-      resolve([key.priv.p, key.priv.q]);
-    });
-  });
-}
-
-/**
- * Generates a blinding factor for the rsa blinding algorithm.
- *
- * @param {number} bitLength
- *    The target blinding factor length in bit.
- * @returns {BigInteger}
- *    the requested blinding factor.
- */
-async function generateRsaBlindingFactor(bitLength)
-{
-  assert(isInteger(bitLength),
-    "The blinding factor bit length is no integer but a '" + bitLength + "'");
-  assert((bitLength % 8 === 0) && bitLength >= 256 && bitLength <= 16384,
-    "The blinding factor bit length must be a multiple of 8 bits and >= 256 and <= 16384");
-
-  const sub_prime_length = Math.floor(bitLength / 2);
-  let primes = await generateTwoPrimeNumbers(sub_prime_length);
-
-  return primes[0].multiply(primes[1]);
-}
-
-/**
- * Hashes the given message with sha512 and returns the digest.
- *
- * @param {string} message
- *    Input parameter to hash.
- * @returns {BigInteger}
- *    Hash digest as {string} or {null} if input message is no string object.
- */
-function hashMessageSha512(message)
-{
-  assert(isString(message));
-
-  const hash_buffer = kbpgp.hash.SHA512(new Buffer(message));
-  return BigInteger.fromBuffer(hash_buffer);
 }
 
 /**
@@ -279,12 +185,8 @@ function isString(object)
   return (typeof object === "string");
 }
 
-const util_api = {
+const check_api = {
   assert,
-  generateRsaBlindingFactor,
-  generateKeyFromString,
-  generateTwoPrimeNumbers,
-  hashMessageSha512,
   isBigInteger,
   isBuffer,
   isCurve,
@@ -298,5 +200,5 @@ const util_api = {
   isString
 };
 
-export default util_api;
+export default check_api;
 export { assert };

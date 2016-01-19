@@ -2,7 +2,7 @@
 
 import fs from "fs"
 
-import { assert, check } from "verifyme_utility"
+import { assert, check, util } from "verifyme_utility"
 import config from "./config"
 const rsa = config.keys.rsa;
 const ecc = config.keys.ecc;
@@ -28,7 +28,7 @@ async function loadKey(public_key_path, private_key_path, passphrase = null)
   const public_key_string = fs.readFileSync(public_key_path, "utf-8");
   const private_key_string = fs.readFileSync(private_key_path, "utf-8");
 
-  const key_manager = await check.generateKeyFromString(public_key_string);
+  const key_manager = await util.generateKeyFromString(public_key_string);
   await mergePrivateKeyIntoKeyManager(key_manager, private_key_string);
 
   if (passphrase) {

@@ -1,7 +1,7 @@
 "use strict";
 
 import { hash } from "kbpgp"
-import { assert, Buffer, check } from "verifyme_utility"
+import { assert, Buffer, check, util } from "verifyme_utility"
 
 import Blinder from "../blinder"
 import BlindSignaturePacket from "../../pgp/blind_signature_packet"
@@ -37,13 +37,13 @@ export default class EcdsaBlinder extends Blinder
 
     const context = EcdsaBlindingContext.fromKey(key_manager);
     context.blinding_factor = {
-      a: await this.generateRandomScalar(context.curve),
-      b: await this.generateRandomScalar(context.curve),
-      c: await this.generateRandomScalar(context.curve),
-      d: await this.generateRandomScalar(context.curve)
+      a: await util.generateRandomScalar(context.curve),
+      b: await util.generateRandomScalar(context.curve),
+      c: await util.generateRandomScalar(context.curve),
+      d: await util.generateRandomScalar(context.curve)
     };
 
-    context.hashed_token = check.hashMessageSha512(token.toRadix());
+    context.hashed_token = util.hashMessageSha512(token.toRadix());
 
     this.context = context;
     this.key_manager = key_manager;
@@ -180,26 +180,5 @@ export default class EcdsaBlinder extends Blinder
     const blinded_message = this.blind(message);
     const signed_blinded_message = await server.requestEcdsaBlinding(blinded_message, this.context);
     return this.unblind(signed_blinded_message);
-  }
-
-  /**
-   * Generate a random scalar k.
-   *
-   * k is in range [1, n-1] where n is the prime number defining
-   * the order of the givens curves base point.
-   *
-   * @param {Curve} curve
-   *    The curve we use to generate the random scalar value.
-   * @returns {Promise}
-   *    The promise of a {BigInteger} scalar [1, n-1]
-   */
-  async generateRandomScalar(curve)
-  {
-    assert(check.isCurve(curve));
-
-    return new Promise((resolve, reject) =>
-      curve.random_scalar(
-        k => resolve(k))
-    );
   }
 }

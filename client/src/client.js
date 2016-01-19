@@ -1,6 +1,6 @@
 "use strict";
 
-import { BigInteger, check } from "verifyme_utility"
+import { BigInteger, check, util } from "verifyme_utility"
 
 /// Constant element ids
 const server_public_key_element_id = "server_public_key";
@@ -21,7 +21,7 @@ function getPublicKey()
     return Promise.reject(new Error("Couldn't read the public key input. Please reload page."));
   }
 
-  return check.generateKeyFromString(public_key_string);
+  return util.generateKeyFromString(public_key_string);
 }
 
 /**
@@ -93,7 +93,7 @@ function getServerPublicKey()
     return Promise.reject(new Error("Couldn't read servers public key. Please reload page."));
   }
 
-  return check.generateKeyFromString(public_key_string);
+  return util.generateKeyFromString(public_key_string);
 }
 
 /**

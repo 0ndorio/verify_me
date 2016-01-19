@@ -1,7 +1,7 @@
 "use strict";
 
 import { assert } from "chai"
-import { BigInteger, Buffer, check } from "verifyme_utility"
+import { BigInteger, Buffer, check, util } from "verifyme_utility"
 
 import EcdsaBlindingContext from "../../../src/blinding/ecdsa/blinding_context_ecdsa"
 
@@ -19,7 +19,7 @@ describe("blinding_context_ecdsa", function() {
   let key_manager = null;
 
   before(async () => {
-    key_manager = await check.generateKeyFromString(sample_keys.ecc.bp[256].pub);
+    key_manager = await util.generateKeyFromString(sample_keys.ecc.bp[256].pub);
   });
 
   beforeEach( () => {
@@ -92,7 +92,7 @@ describe("blinding_context_ecdsa", function() {
     });
 
     it ("should throw if input is not a valid ECDSA {KeyManager}", async () => {
-      const key_manager = await check.generateKeyFromString(sample_keys.rsa[1024].pub);
+      const key_manager = await util.generateKeyFromString(sample_keys.rsa[1024].pub);
       assert.throws(() => EcdsaBlindingContext.fromKey(key_manager));
     });
 

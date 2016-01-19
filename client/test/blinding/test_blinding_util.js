@@ -1,7 +1,7 @@
 "use strict";
 
 import { assert } from "chai"
-import { BigInteger, check, Tags } from "verifyme_utility"
+import { BigInteger, check, Tags, util } from "verifyme_utility"
 
 import blinding_util from "../../src/blinding/blinding_util"
 import EcdsaBlinder from "../../src/blinding/ecdsa/blinder_ecdsa"
@@ -25,8 +25,8 @@ describe("blinding_util", function() {
   });
 
   beforeEach(async () => {
-    rsa_key_manager = await check.generateKeyFromString(sample_keys.rsa[1024].pub);
-    ecc_key_manager = await check.generateKeyFromString(sample_keys.ecc.nist[256].pub);
+    rsa_key_manager = await util.generateKeyFromString(sample_keys.rsa[1024].pub);
+    ecc_key_manager = await util.generateKeyFromString(sample_keys.ecc.nist[256].pub);
     token = new BigInteger("3", 16);
   });
 

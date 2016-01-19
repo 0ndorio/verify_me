@@ -1,7 +1,7 @@
 "use strict";
 
 import { assert } from "chai"
-import { BigInteger, check } from "verifyme_utility"
+import { BigInteger, check, util } from "verifyme_utility"
 
 import RSABlindingContext from "../../../src/blinding/rsa/blinding_context_rsa"
 
@@ -67,7 +67,7 @@ describe("blinding_context_rsa", function() {
     });
 
     it ("should return {RsaBlindingContext} if input is a rsa containing {KeyManager}", async () => {
-      const key = await check.generateKeyFromString(sample_keys.rsa[1024].pub);
+      const key = await util.generateKeyFromString(sample_keys.rsa[1024].pub);
       let context = RSABlindingContext.fromKey(key);
 
       assert.isNotNull(context);

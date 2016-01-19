@@ -4,7 +4,7 @@ BABEL_INSTANBUL=node_modules/.bin/babel-istanbul
 MOCHA=node_modules/.bin/_mocha
 
 default: build
-all: build
+all: clean build test
 
 build: src/check.js
 	$(BABEL) -d dist/ src/

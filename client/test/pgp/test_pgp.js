@@ -1,7 +1,7 @@
 "use strict";
 
 import { assert } from "chai"
-import { check } from "verifyme_utility"
+import { check, util } from "verifyme_utility"
 
 import BlindSignaturePacket from "../../src/pgp/blind_signature_packet"
 import pgp from "../../src/pgp/pgp"
@@ -11,7 +11,7 @@ import sample_keys from "../helper/keys"
 describe("pgp", function() {
 
   before(async () => {
-    this.key_manager = await check.generateKeyFromString(sample_keys.rsa[1024].pub);
+    this.key_manager = await util.generateKeyFromString(sample_keys.rsa[1024].pub);
   });
 
   beforeEach(async () => {
@@ -79,7 +79,7 @@ describe("pgp", function() {
       assert.instanceOf(result, Promise);
 
       return result
-        .then(key_ascii => check.generateKeyFromString(key_ascii))
+        .then(key_ascii => util.generateKeyFromString(key_ascii))
         .then(key_manager => assert.isTrue(check.isKeyManager(key_manager)));
     });
   });

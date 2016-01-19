@@ -1,7 +1,7 @@
 "use strict";
 
 import { assert } from "chai"
-import { BigInteger, check } from "verifyme_utility"
+import { BigInteger, check, util } from "verifyme_utility"
 
 import EcdsaBlinder from "../../../src/blinding/ecdsa/blinder_ecdsa"
 import EcdsaBlindingContext from "../../../src/blinding/ecdsa/blinding_context_ecdsa"
@@ -21,7 +21,7 @@ describe("EcdsaBlinder", function() {
   let key_manager = null;
 
   before(async () => {
-    key_manager = await check.generateKeyFromString(sample_keys.ecc.nist[256].pub);
+    key_manager = await util.generateKeyFromString(sample_keys.ecc.nist[256].pub);
   });
 
   beforeEach(async () => {
@@ -45,7 +45,7 @@ describe("EcdsaBlinder", function() {
     });
 
     it ("should throw if the input {KeyManager} does not contain an ECDSA key", async () => {
-      const key_manager = await check.generateKeyFromString(sample_keys.rsa[1024].pub);
+      const key_manager = await util.generateKeyFromString(sample_keys.rsa[1024].pub);
       return blinder.initContext(key_manager, BigInteger.ONE)
         .catch(error => assert.instanceOf(error, Error));
     });

@@ -1,10 +1,12 @@
 "use strict";
 
 import { assert } from "chai"
-import { Buffer, ecc } from "kbpgp"
+import { ecc } from "kbpgp"
 
-import { BigInteger } from "../src/types"
+import { BigInteger, Buffer } from "../src/types"
 import check from "../src/check"
+import util from "../src/util"
+
 import keys, { public_keys} from "./helper/keys"
 
 describe("check", function() {
@@ -26,147 +28,6 @@ describe("check", function() {
     it("should throw with custom message if condition validates to false", () => {
       const custom_message = "custom message";
       assert.throws(() => assert(false, custom_message), custom_message);
-    });
-  });
-
-  ///---------------------------------
-  /// #generateKeyFromString()
-  ///---------------------------------
-
-  describe("#generateKeyFromString", () => {
-
-    it("should throw if input is not a string", () => {
-      return check.generateKeyFromString(123)
-        .catch(error => assert.instanceOf(error, Error));
-    });
-
-    it("should throw if input string is not an ascii armored key", () => {
-      return check.generateKeyFromString("a broken key")
-        .catch(error => assert.instanceOf(error, Error));
-    });
-
-    for (const id in public_keys) {
-      it("Setting: " + id +" - should return the promise of a {KeyManager} object if input is a pgp key", () => {
-        const promise = check.generateKeyFromString(public_keys[id]);
-        assert.instanceOf(promise, Promise);
-
-        return promise
-          .then(key => assert.isTrue(check.isKeyManager(key)));
-      });
-    }
-  });
-
-  ///---------------------------------
-  /// #generateTwoPrimeNumbers()
-  ///---------------------------------
-
-  describe("#generateTwoPrimeNumbers", () => {
-
-    it("should return a rejected Promise if input parameter is no integer", () => {
-      return check.generateTwoPrimeNumbers(null)
-        .then(() => assert.fail())
-        .catch((error) => assert.include(error.message, "no integer"));
-    });
-
-    it("should return a rejected Promise if input bit size is not multiple of 8", () => {
-      return check.generateTwoPrimeNumbers(15)
-        .then((answer) => assert.fail())
-        .catch((error) => assert.include(error.message, "multiple of 8"));
-    });
-
-    it("should return a rejected Promise if input bit size is smaller than 128", () => {
-      return check.generateTwoPrimeNumbers(127)
-        .then((answer) => assert.fail())
-        .catch((error) => assert.include(error.message, ">= 128"));
-    });
-
-    it("should return a rejected Promise if input bit size is bigger than 8192", () => {
-      return check.generateTwoPrimeNumbers(8193)
-        .then((answer) => assert.fail())
-        .catch((error) => assert.include(error.message, "<= 8192"));
-    });
-
-    it("should return two {BigInteger} prime numbers of given bit length", (done) => {
-      const bitLength = 256;
-
-      return check.generateTwoPrimeNumbers(bitLength)
-        .then((primeNumbers) => {
-
-          assert.equal(2, primeNumbers.length);
-
-          primeNumbers.forEach((prime) => {
-            assert.isTrue(check.isBigInteger(prime));
-            assert.isTrue(prime.isProbablePrime());
-            assert.equal(bitLength, prime.bitLength());
-          });
-          done();
-        })
-    });
-  });
-
-  ///---------------------------------
-  /// #generateRsaBlindingFactor()
-  ///---------------------------------
-
-  describe("#generateRsaBlindingFactor", () => {
-
-    it("should return a rejected Promise if input parameter is no integer", () => {
-      return check.generateRsaBlindingFactor(null)
-        .then(() => assert.fail())
-        .catch((error) => assert.include(error.message, "no integer"));
-    });
-
-    it("should return a rejected Promise if input bit size is not multiple of 8", () => {
-      return check.generateRsaBlindingFactor(15)
-        .then((answer) => assert.fail())
-        .catch((error) => assert.include(error.message, "multiple of 8"));
-    });
-
-    it("should return a rejected Promise if input bit size is smaller than 256", () => {
-      return check.generateRsaBlindingFactor(255)
-        .then((answer) => assert.fail())
-        .catch((error) => assert.include(error.message, ">= 256"));
-    });
-
-    it("should return a rejected Promise if input bit size is bigger than 16384", () => {
-      return check.generateRsaBlindingFactor(16385)
-        .then((answer) => assert.fail())
-        .catch((error) => assert.include(error.message, "<= 16384"));
-    });
-
-    it("should return a {BigInteger} numbers of given bit length", (done) => {
-      const bitLength = 256;
-
-      return check.generateRsaBlindingFactor(bitLength)
-        .then((blinding_factor) => {
-
-          assert.isTrue(check.isBigInteger(blinding_factor));
-          assert.equal(bitLength, blinding_factor.bitLength());
-
-          done();
-        })
-    });
-  });
-
-  ///---------------------------------
-  /// #hashMessageSha512()
-  ///---------------------------------
-
-  describe("#hashMessageSha512()", () => {
-
-    it("should throw if input parameter is no string", () => {
-      assert.throws(() => check.hashMessageSha512(123));
-    });
-
-    it("should return a hash digest with bit length 512", () => {
-      const expected_hex = "ddaf35a193617abacc417349ae20413112e6fa4e89a97ea20a9eeee64b55d39a"
-                         + "2192992a274fc1a836ba3c23a3feebbd454d4423643ce80e2a9ac94fa54ca49f";
-
-      const result = check.hashMessageSha512("abc");
-
-      assert.isTrue(check.isBigInteger(result));
-      assert.equal(512, result.bitLength());
-      assert.equal(expected_hex, result.toString(16));
     });
   });
 
@@ -256,7 +117,7 @@ describe("check", function() {
     });
 
     it("should return true when parameter is a {KeyManager}", async () => {
-      const key_manager = await check.generateKeyFromString(public_keys[0]);
+      const key_manager = await util.generateKeyFromString(public_keys[0]);
       assert.isTrue(check.isKeyManager(key_manager));
     });
   });
@@ -272,7 +133,7 @@ describe("check", function() {
     });
 
     it("should return true when parameter is a {KeyManager}", async () => {
-      const key_manager = await check.generateKeyFromString(keys.ecc.bp[512].pub);
+      const key_manager = await util.generateKeyFromString(keys.ecc.bp[512].pub);
       assert.isTrue(check.isKeyManagerForEcdsaSign(key_manager));
     });
   });
@@ -288,7 +149,7 @@ describe("check", function() {
     });
 
     it("should return true when parameter is a {KeyManager}", async () => {
-      const key_manager = await check.generateKeyFromString(keys.rsa[1024].pub);
+      const key_manager = await util.generateKeyFromString(keys.rsa[1024].pub);
       assert.isTrue(check.isKeyManagerForRsaSign(key_manager));
     });
   });

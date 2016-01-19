@@ -1,7 +1,7 @@
 "use strict";
 
 import { assert } from "chai"
-import { BigInteger, check } from "verifyme_utility"
+import { BigInteger, check, util } from "verifyme_utility"
 
 import RsaBlinder from "../../../src/blinding/rsa/blinder_rsa"
 import RsaBlindingContext from "../../../src/blinding/rsa/blinding_context_rsa"
@@ -21,7 +21,7 @@ describe("RsaBlinder", function() {
   let key_manager = null;
 
   before(async () => {
-    key_manager = await check.generateKeyFromString(sample_keys.rsa[1024].pub);
+    key_manager = await util.generateKeyFromString(sample_keys.rsa[1024].pub);
   });
 
   beforeEach(async () => {
@@ -46,7 +46,7 @@ describe("RsaBlinder", function() {
     });
 
     it ("should throw if the input {KeyManager} does not contain an RSA key", async () => {
-      const key_manager = await check.generateKeyFromString(sample_keys.ecc.bp[256].pub);
+      const key_manager = await util.generateKeyFromString(sample_keys.ecc.bp[256].pub);
       return blinder.initContext(key_manager, BigInteger.ONE)
         .catch(error => assert.instanceOf(error, Error));
     });

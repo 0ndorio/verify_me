@@ -1,6 +1,6 @@
 "use strict";
 
-import { assert, BigInteger, check, Point, KeyManager } from "verifyme_utility"
+import { assert, BigInteger, check, Point, KeyManager, util } from "verifyme_utility"
 
 /**
  * Prepares the ECDSA blinding algorithm through
@@ -23,8 +23,8 @@ async function prepareBlinding(key_manager)
   const n = curve.n;
   const G = curve.G;
 
-  const p = await generateRandomScalar(curve);
-  const q = await generateRandomScalar(curve);
+  const p = await util.generateRandomScalar(curve);
+  const q = await util.generateRandomScalar(curve);
 
   const p_inv = p.modInverse(n);
 
@@ -35,27 +35,6 @@ async function prepareBlinding(key_manager)
   assert(curve.isOnCurve(Q));
 
   return {p, P, q, Q};
-}
-
-/**
- * Generate a random scalar k.
- *
- * k is in range [1, n-1] where n is the prime number defining
- * the order of the givens curves base point.
- *
- * @param {Curve} curve
- *    The curve we use to generate the random scalar value.
- * @returns {Promise}
- *    The promise of a {BigInteger} scalar [1, n-1]
- */
-async function generateRandomScalar(curve)
-{
-  assert(check.isCurve(curve));
-
-  return new Promise((resolve, reject) =>
-    curve.random_scalar(
-      k => resolve(k))
-  );
 }
 
 /**
