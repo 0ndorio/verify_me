@@ -1,7 +1,7 @@
 "use strict";
 
 import { hash } from "kbpgp"
-import { assert, Buffer, check, util } from "verifyme_utility"
+import { assert, BigInteger, Buffer, check, util } from "verifyme_utility"
 
 import Blinder from "../blinder"
 import BlindSignaturePacket from "../../pgp/blind_signature_packet"
@@ -114,6 +114,9 @@ export default class EcdsaBlinder extends Blinder
 
     const { T, r }  = await this.requestFirstSignatureParameter();
     const s = await this.requestSecondSignatureParameter(packet);
+
+    assert(r.compareTo(BigInteger.ZERO) > 0);
+    assert(s.compareTo(BigInteger.ZERO) > 0);
 
     packet.sig = Buffer.concat([r.to_mpi_buffer(), s.to_mpi_buffer()]);
     packet.key.pub.R = T;

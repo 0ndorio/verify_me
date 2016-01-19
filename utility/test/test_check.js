@@ -142,7 +142,7 @@ describe("check", function() {
   /// #isKeyManager()
   ///---------------------------------
 
-  describe("#isKeyManager()", () => {
+  describe("#isKeyManagerForRsaSign()", () => {
 
     it("should return false when parameter is not a {KeyManager}", () => {
       assert.isFalse(check.isKeyManagerForRsaSign({}));
