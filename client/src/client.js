@@ -1,7 +1,6 @@
 "use strict";
 
-import * as kbpgp from "kbpgp"
-import { check } from "verifyme_utility"
+import { BigInteger, check } from "verifyme_utility"
 
 /// Constant element ids
 const server_public_key_element_id = "server_public_key";
@@ -55,7 +54,7 @@ function getToken()
     throw new Error("Couldn't read the token input. Please reload page.");
   }
 
-  const token = new check.BigInteger(token_string, 16);
+  const token = new BigInteger(token_string, 16);
   if (!token.isProbablePrime()) {
     throw new Error("Unsecure Token. Please check your input.");
   }

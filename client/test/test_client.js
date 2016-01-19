@@ -1,10 +1,9 @@
 "use strict";
 
 import { assert } from "chai"
-import * as kbpgp from "kbpgp"
+import { check } from "verifyme_utility"
 
 import client from"../src/client"
-import { check } from "verifyme_utility"
 import RsaBlindingContext from "../src/blinding/rsa/blinding_context_rsa"
 import EcdsaBlindingContext from "../src/blinding/ecdsa/blinding_context_ecdsa"
 
@@ -25,7 +24,7 @@ describe("client", function() {
 
   describe("#getPublicKey()", () => {
 
-    it ("should return users public key as kbpgp.KeyManager", () => {
+    it ("should return users public key as {KeyManager}", () => {
       return client.getPublicKey()
         .then(key => assert.isTrue(check.isKeyManager(key)));
     });
@@ -65,7 +64,7 @@ describe("client", function() {
     ];
 
     for (const test of tests) {
-      it ("should trim the input string", () => {
+      it ("should trim the input {string}", () => {
         controls.userPublicKeyString = test.arg;
         assert.equal(test.expected, client.getPublicKeyString());
       });
@@ -78,7 +77,7 @@ describe("client", function() {
 
   describe("#getToken()", () => {
 
-    it ("should return Token as BigInteger", () => {
+    it ("should return Token as {BigInteger}", () => {
       const token = client.getToken();
       assert.isTrue(check.isBigInteger(token));
     });
@@ -133,7 +132,7 @@ describe("client", function() {
 
   describe("#getServerPublicKey()", () => {
 
-    it ("should return server public key as kbpgp.Key", () => {
+    it ("should return server public key as {KeyManager}", () => {
       return client.getServerPublicKey()
         .then(key => assert.isTrue(check.isKeyManager(key)));
     });

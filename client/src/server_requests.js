@@ -1,7 +1,7 @@
 "use strict";
 
 import BlindingContext from "./blinding/blinding_context"
-import { assert, check } from "verifyme_utility"
+import { assert, BigInteger, check } from "verifyme_utility"
 
 /**
  * Sends a async XMLHttpRequest to the server.
@@ -68,7 +68,7 @@ async function requestRsaBlinding(blinded_message, blinding_context)
       assert(check.isString(response));
 
       const request_result = JSON.parse(response);
-      return new check.BigInteger(request_result.signed_blinded_message, 32);
+      return new BigInteger(request_result.signed_blinded_message, 32);
     });
 }
 
@@ -98,7 +98,7 @@ async function requestEcdsaBlinding(blinded_message, blinding_context)
       assert(check.isString(response));
 
       const request_result = JSON.parse(response);
-      return new check.BigInteger(request_result.signed_blinded_message, 32)
+      return new BigInteger(request_result.signed_blinded_message, 32)
     });
 }
 
@@ -126,13 +126,13 @@ async function requestEcdsaBlindingInitialization(blinding_context)
 
       const request_result = JSON.parse(response);
       const P = blinding_context.curve.mkpoint({
-        x: new check.BigInteger(request_result.px, 32),
-        y: new check.BigInteger(request_result.py, 32)
+        x: new BigInteger(request_result.px, 32),
+        y: new BigInteger(request_result.py, 32)
       });
 
       const Q = blinding_context.curve.mkpoint({
-        x: new check.BigInteger(request_result.qx, 32),
-        y: new check.BigInteger(request_result.qy, 32)
+        x: new BigInteger(request_result.qx, 32),
+        y: new BigInteger(request_result.qy, 32)
       });
 
       return {P, Q};

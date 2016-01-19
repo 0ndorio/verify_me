@@ -1,10 +1,11 @@
 "use strict";
 
+import { assert, BigInteger, check } from "verifyme_utility"
+
 import Blinder from "../blinder"
 import BlindSignaturePacket from "../../pgp/blind_signature_packet"
 import RsaBlindingContext from "./blinding_context_rsa"
 import server  from "../../server_requests"
-import { assert, BigInteger, check } from "verifyme_utility"
 
 /**
  * Representation of the rsa blinding algorithm.

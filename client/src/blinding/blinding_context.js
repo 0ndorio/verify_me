@@ -1,6 +1,6 @@
 "use strict";
 
-import { KeyManager, Buffer } from "kbpgp"
+import { Buffer, KeyManager } from "verifyme_utility"
 
 /**
  * An abstract blinding context object.

@@ -2,10 +2,10 @@
 
 import { assert } from "chai"
 import * as sinon from "sinon"
+import { BigInteger, check } from "verifyme_utility"
 
 import RsaBlindingContext from "../src/blinding/rsa/blinding_context_rsa"
 import server from "../src/server_requests"
-import { check } from "verifyme_utility"
 
 describe("server", function() {
 
@@ -47,9 +47,9 @@ describe("server", function() {
     it("should reject when a network error occurred", async () => {
 
       const context = new RsaBlindingContext();
-      context.hashed_token = check.BigInteger.ZERO;
+      context.hashed_token = BigInteger.ZERO;
 
-      const request_promise = server.requestRsaBlinding(check.BigInteger.ZERO, context)
+      const request_promise = server.requestRsaBlinding(BigInteger.ZERO, context)
         .catch(error => assert.instanceOf(error, Error));
 
       assert.equal(1, this.fake_server.requests.length);
@@ -65,9 +65,9 @@ describe("server", function() {
       this.fake_server.respondWith([expected.code, {"Content-Type": "text/plain"}, ""]);
 
       let context = new RsaBlindingContext();
-      context.hashed_token = check.BigInteger.ZERO;
+      context.hashed_token = BigInteger.ZERO;
 
-      return server.requestRsaBlinding(check.BigInteger.ZERO, context)
+      return server.requestRsaBlinding(BigInteger.ZERO, context)
         .catch(() => done());
     });
 
@@ -78,9 +78,9 @@ describe("server", function() {
       this.fake_server.respondWith([200, {"Content-Type": "text/plain"}, answer]);
 
       let context = new RsaBlindingContext();
-      context.hashed_token = check.BigInteger.ZERO;
+      context.hashed_token = BigInteger.ZERO;
 
-      return server.requestRsaBlinding(check.BigInteger.ZERO, context)
+      return server.requestRsaBlinding(BigInteger.ZERO, context)
         .then(answer => assert.equal(expected, answer.toRadix(32)));
     });
   });

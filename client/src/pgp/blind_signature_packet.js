@@ -1,11 +1,12 @@
 "use strict";
 
 import * as kbpgp from "kbpgp"
-import * as sig from "../../node_modules/kbpgp/lib/openpgp/packet/signature"
 const Constants = kbpgp.const;
 
+import { assert, Buffer, check } from "verifyme_utility"
+import * as sig from "../../node_modules/kbpgp/lib/openpgp/packet/signature"
+
 import BlindingContext from "./../blinding/blinding_context"
-import { assert, check } from "verifyme_utility"
 
 /**
  * A kind of key signature packet where the signer
@@ -128,7 +129,7 @@ export default class BlindSignaturePacket extends sig.Signature
     const user_id_packet = this.target_key.get_userids_mark_primary()[0];
     const userIdData = user_id_packet.to_signature_payload();
 
-    return kbpgp.Buffer.concat([
+    return Buffer.concat([
       pubKeyData, userIdData, this.generateSignatureData()
     ]);
   }
@@ -171,8 +172,8 @@ export default class BlindSignaturePacket extends sig.Signature
   {
     assert(check.isInteger(hash_data_length));
 
-    return kbpgp.Buffer.concat([
-      new kbpgp.Buffer([
+    return Buffer.concat([
+      new Buffer([
         this.version,
         0xff
       ]),
@@ -200,9 +201,9 @@ export default class BlindSignaturePacket extends sig.Signature
   {
     const hashedSubpkts = this.hashed_subpackets
       .map(subpacket => subpacket.to_buffer())
-      .reduce((lhs, rhs) => kbpgp.Buffer.concat([lhs, rhs]));
+      .reduce((lhs, rhs) => Buffer.concat([lhs, rhs]));
 
-    return kbpgp.Buffer.concat([
+    return Buffer.concat([
       new Buffer([
         this.version,
         this.type,
@@ -235,11 +236,11 @@ export default class BlindSignaturePacket extends sig.Signature
   write_unframed()
   {
     const unhashed_packet_data = this.unhashed_subpackets.reduce(
-      (prevValue, subpacket) => { return kbpgp.Buffer.concat([prevValue, subpacket.to_buffer()])},
-      new kbpgp.Buffer({})
+      (prevValue, subpacket) => { return Buffer.concat([prevValue, subpacket.to_buffer()])},
+      new Buffer({})
     );
 
-    return kbpgp.Buffer.concat([
+    return Buffer.concat([
       this.generateSignatureBody(),
       kbpgp.util.uint_to_buffer(16, unhashed_packet_data.length),
       unhashed_packet_data,

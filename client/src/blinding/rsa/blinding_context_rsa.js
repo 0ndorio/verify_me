@@ -1,9 +1,9 @@
 "use strict";
 
-import * as pad from "../../../node_modules/kbpgp/lib/pad"
-
-import BlindingContext from "../blinding_context"
 import { assert, check } from "verifyme_utility"
+
+import * as pad from "../../../node_modules/kbpgp/lib/pad"
+import BlindingContext from "../blinding_context"
 
 /**
  * A rsa based blinding context.

@@ -1,15 +1,13 @@
 "use strict";
 
 import { assert } from "chai"
-import * as kbpgp from "kbpgp"
+import { BigInteger, check, Tags } from "verifyme_utility"
 
 import blinding_util from "../../src/blinding/blinding_util"
 import EcdsaBlinder from "../../src/blinding/ecdsa/blinder_ecdsa"
 import EcdsaBlindingContext from "../../src/blinding/ecdsa/blinding_context_ecdsa"
 import RsaBlinder from "../../src/blinding/rsa/blinder_rsa"
 import RsaBlindingContext from "../../src/blinding/rsa/blinding_context_rsa"
-
-import { check } from "verifyme_utility"
 
 import sample_keys from "../helper/keys"
 
@@ -29,7 +27,7 @@ describe("blinding_util", function() {
   beforeEach(async () => {
     rsa_key_manager = await check.generateKeyFromString(sample_keys.rsa[1024].pub);
     ecc_key_manager = await check.generateKeyFromString(sample_keys.ecc.nist[256].pub);
-    token = new check.BigInteger("3", 16);
+    token = new BigInteger("3", 16);
   });
 
   afterEach(() => {
@@ -47,7 +45,7 @@ describe("blinding_util", function() {
     });
 
     it("should return a rejected promise if key algorithm is encryption only key", () => {
-      rsa_key_manager.primary.key.type = check.public_key_algorithms_tags.RSA_ENCRYPT_ONLY;
+      rsa_key_manager.primary.key.type = Tags.public_key_algorithms.RSA_ENCRYPT_ONLY;
 
       return blinding_util.createBlinderForKeyManager(rsa_key_manager, token)
         .catch(error => assert.instanceOf(error, Error));

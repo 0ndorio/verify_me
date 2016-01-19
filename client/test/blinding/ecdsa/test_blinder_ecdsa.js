@@ -1,11 +1,10 @@
 "use strict";
 
 import { assert } from "chai"
-import * as kbpgp from "kbpgp"
+import { BigInteger, check } from "verifyme_utility"
 
 import EcdsaBlinder from "../../../src/blinding/ecdsa/blinder_ecdsa"
 import EcdsaBlindingContext from "../../../src/blinding/ecdsa/blinding_context_ecdsa"
-import { check } from "verifyme_utility"
 
 import sample_keys from "../../helper/keys"
 
@@ -41,13 +40,13 @@ describe("EcdsaBlinder", function() {
   describe("#initContext()", () => {
 
     it ("should return a rejected promise if the input {KeyManager} is missing", () => {
-      return blinder.initContext(null, check.BigInteger.ONE)
+      return blinder.initContext(null, BigInteger.ONE)
         .catch(error => assert.instanceOf(error, Error));
     });
 
     it ("should throw if the input {KeyManager} does not contain an ECDSA key", async () => {
       const key_manager = await check.generateKeyFromString(sample_keys.rsa[1024].pub);
-      return blinder.initContext(key_manager, check.BigInteger.ONE)
+      return blinder.initContext(key_manager, BigInteger.ONE)
         .catch(error => assert.instanceOf(error, Error));
     });
 
@@ -57,7 +56,7 @@ describe("EcdsaBlinder", function() {
     });
 
     it ("should set the blinder in full prepared state", async () => {
-      await blinder.initContext(key_manager, check.BigInteger.ONE);
+      await blinder.initContext(key_manager, BigInteger.ONE);
 
       assert.isTrue(EcdsaBlindingContext.isValidBlindingContext(blinder.context));
       assert.isTrue(check.isBigInteger(blinder.token));

@@ -1,8 +1,7 @@
 "use strict";
 
-import { BigInteger } from "../node_modules/kbpgp/lib/bn"
-import { Point } from "keybase-ecurve"
 import * as kbpgp from "kbpgp"
+import { BigInteger, Buffer, Curve, KeyManager, Point, Tags } from "./types"
 
 /**
  * Client runtime assert.
@@ -34,7 +33,7 @@ function generateKeyFromString(key_as_string)
 
     assert(isString(key_as_string), "Input parameter is not of type string.");
 
-    kbpgp.KeyManager.import_from_armored_pgp({ armored: key_as_string }, (err, key_manager) => {
+    KeyManager.import_from_armored_pgp({ armored: key_as_string }, (err, key_manager) => {
       if (err) { reject(err); }
       else {
         resolve(key_manager);
@@ -109,7 +108,7 @@ function hashMessageSha512(message)
 {
   assert(isString(message));
 
-  const hash_buffer = kbpgp.hash.SHA512(new kbpgp.Buffer(message));
+  const hash_buffer = kbpgp.hash.SHA512(new Buffer(message));
   return BigInteger.fromBuffer(hash_buffer);
 }
 
@@ -138,7 +137,7 @@ function isBigInteger(object)
  */
 function isBuffer(object)
 {
-  return isObject(object) && (object instanceof kbpgp.Buffer);
+  return isObject(object) && (object instanceof Buffer);
 }
 
 /**
@@ -152,7 +151,7 @@ function isBuffer(object)
  */
 function isCurve(object)
 {
-  return isObject(object) && (object instanceof kbpgp.ecc.curves.Curve);
+  return isObject(object) && (object instanceof Curve);
 }
 
 /**
@@ -208,7 +207,7 @@ function isObject(object)
  */
 function isKeyManager(key_manager)
 {
-  return (key_manager instanceof kbpgp.KeyManager)
+  return (key_manager instanceof KeyManager)
       && (key_manager.get_primary_keypair() !== null);
 }
 
@@ -226,7 +225,7 @@ function isKeyManagerForEcdsaSign(key_manager)
 {
   if (!isKeyManager(key_manager)) { return false; }
 
-  const tags = kbpgp.const.openpgp.public_key_algorithms;
+  const tags = Tags.public_key_algorithms;
   const key_algorithm = key_manager.get_primary_keypair().get_type();
 
   return (key_algorithm === tags.ECDSA);
@@ -247,7 +246,7 @@ function isKeyManagerForRsaSign(key_manager)
   if (!isKeyManager(key_manager)) { return false; }
 
   const key_algorithm = key_manager.get_primary_keypair().get_type();
-  const tags = kbpgp.const.openpgp.public_key_algorithms;
+  const tags = Tags.public_key_algorithms;
 
   return (key_algorithm === tags.RSA) || (key_algorithm === tags.RSA_SIGN_ONLY);
 }
@@ -282,7 +281,6 @@ function isString(object)
 
 const util_api = {
   assert,
-  BigInteger,
   generateRsaBlindingFactor,
   generateKeyFromString,
   generateTwoPrimeNumbers,
@@ -297,10 +295,8 @@ const util_api = {
   isKeyManagerForRsaSign,
   isObject,
   isPoint,
-  isString,
-  Point,
-  public_key_algorithms_tags: kbpgp.const.openpgp.public_key_algorithms
+  isString
 };
 
 export default util_api;
-export { assert, BigInteger, Point };
+export { assert };

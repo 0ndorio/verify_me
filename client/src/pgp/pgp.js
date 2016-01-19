@@ -3,7 +3,7 @@
 import * as kbpgp from "kbpgp"
 
 import BlindSignaturePacket from "./blind_signature_packet"
-import { assert, check } from "verifyme_utility"
+import { assert, Buffer, check } from "verifyme_utility"
 
 /**
  * Exports the given public key (stored in a {KeyManager}) as binary data
@@ -51,7 +51,7 @@ function exportKeyToBinaryAndInjectSignature(key_manager, signature_packet, opts
   }, packets);
 
   kbpgp.util.assert_no_nulls(packets);
-  return kbpgp.Buffer.concat(packets);
+  return Buffer.concat(packets);
 }
 
 /**
@@ -71,7 +71,6 @@ function exportKeyToBinaryAndInjectSignature(key_manager, signature_packet, opts
 function exportKeyToAsciiWithSignature(key_manager, signature_packet)
 {
   assert(check.isKeyManager(key_manager), "No Key Manager");
-  //assert(signature_packet instanceof kbpgp.opkts.Signature, "No Signature");
   assert(signature_packet !== null && signature_packet.constructor.name);
 
   const user_id_packet = [key_manager.get_userids_mark_primary()[0]];

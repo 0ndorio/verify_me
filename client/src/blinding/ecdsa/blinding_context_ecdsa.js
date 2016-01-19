@@ -1,7 +1,8 @@
 "use strict";
 
+import { assert, BigInteger, check } from "verifyme_utility"
+
 import BlindingContext from "../blinding_context"
-import { assert, check } from "verifyme_utility"
 
 /**
  * A ecc blinding context.
@@ -104,6 +105,6 @@ export default class EcdsaBlindingContext extends BlindingContext
   encodeSignaturePayload(data, hasher)
   {
     assert(check.isBuffer(data));
-    return check.BigInteger.fromBuffer(data);
+    return BigInteger.fromBuffer(data);
   }
 }

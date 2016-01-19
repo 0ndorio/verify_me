@@ -1,9 +1,8 @@
 "use strict";
 
 import { assert } from "chai"
-import { Buffer } from "kbpgp"
+import { BigInteger, Buffer, check } from "verifyme_utility"
 
-import { check } from "verifyme_utility"
 import EcdsaBlindingContext from "../../../src/blinding/ecdsa/blinding_context_ecdsa"
 
 import sample_keys from "./../../helper/keys"
@@ -25,11 +24,11 @@ describe("blinding_context_ecdsa", function() {
 
   beforeEach( () => {
     context = EcdsaBlindingContext.fromKey(key_manager);
-    context.hashed_token = check.BigInteger.ONE;
-    context.blinding_factor.a = check.BigInteger.ONE;
-    context.blinding_factor.b = check.BigInteger.ONE;
-    context.blinding_factor.c = check.BigInteger.ONE;
-    context.blinding_factor.d = check.BigInteger.ONE;
+    context.hashed_token = BigInteger.ONE;
+    context.blinding_factor.a = BigInteger.ONE;
+    context.blinding_factor.b = BigInteger.ONE;
+    context.blinding_factor.c = BigInteger.ONE;
+    context.blinding_factor.d = BigInteger.ONE;
   });
 
   afterEach( () => {

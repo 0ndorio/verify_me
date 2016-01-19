@@ -1,11 +1,12 @@
 "use strict";
 
-import { Buffer, hash } from "kbpgp"
+import { hash } from "kbpgp"
+import { assert, Buffer, check } from "verifyme_utility"
+
 import Blinder from "../blinder"
 import BlindSignaturePacket from "../../pgp/blind_signature_packet"
 import EcdsaBlindingContext from "./blinding_context_ecdsa"
 import server from "../../server_requests"
-import { assert, check } from "verifyme_utility"
 
 /**
  * Representation of the ECDSA blinding algorithm presented by Oleg Andreev

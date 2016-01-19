@@ -3,10 +3,11 @@
 import { assert } from "chai"
 import { Buffer, ecc } from "kbpgp"
 
-import { check } from "../src/check"
+import { BigInteger } from "../src/types"
+import check from "../src/check"
 import keys, { public_keys} from "./helper/keys"
 
-describe("util", function() {
+describe("check", function() {
 
   ///---------------------------------
   /// #assert()
@@ -15,16 +16,16 @@ describe("util", function() {
   describe("#assert", () => {
 
     it("nothing should happen when condition validates to true", () => {
-      util.assert(true);
+      assert(true);
     });
 
     it("should throw if condition validates to false", () => {
-      assert.throws(() => util.assert(false));
+      assert.throws(() => assert(false));
     });
 
     it("should throw with custom message if condition validates to false", () => {
       const custom_message = "custom message";
-      assert.throws(() => util.assert(false, custom_message), custom_message);
+      assert.throws(() => assert(false, custom_message), custom_message);
     });
   });
 
@@ -62,25 +63,25 @@ describe("util", function() {
   describe("#generateTwoPrimeNumbers", () => {
 
     it("should return a rejected Promise if input parameter is no integer", () => {
-      return util.generateTwoPrimeNumbers(null)
+      return check.generateTwoPrimeNumbers(null)
         .then(() => assert.fail())
         .catch((error) => assert.include(error.message, "no integer"));
     });
 
     it("should return a rejected Promise if input bit size is not multiple of 8", () => {
-      return util.generateTwoPrimeNumbers(15)
+      return check.generateTwoPrimeNumbers(15)
         .then((answer) => assert.fail())
         .catch((error) => assert.include(error.message, "multiple of 8"));
     });
 
     it("should return a rejected Promise if input bit size is smaller than 128", () => {
-      return util.generateTwoPrimeNumbers(127)
+      return check.generateTwoPrimeNumbers(127)
         .then((answer) => assert.fail())
         .catch((error) => assert.include(error.message, ">= 128"));
     });
 
     it("should return a rejected Promise if input bit size is bigger than 8192", () => {
-      return util.generateTwoPrimeNumbers(8193)
+      return check.generateTwoPrimeNumbers(8193)
         .then((answer) => assert.fail())
         .catch((error) => assert.include(error.message, "<= 8192"));
     });
@@ -88,7 +89,7 @@ describe("util", function() {
     it("should return two {BigInteger} prime numbers of given bit length", (done) => {
       const bitLength = 256;
 
-      return util.generateTwoPrimeNumbers(bitLength)
+      return check.generateTwoPrimeNumbers(bitLength)
         .then((primeNumbers) => {
 
           assert.equal(2, primeNumbers.length);
@@ -110,25 +111,25 @@ describe("util", function() {
   describe("#generateRsaBlindingFactor", () => {
 
     it("should return a rejected Promise if input parameter is no integer", () => {
-      return util.generateRsaBlindingFactor(null)
+      return check.generateRsaBlindingFactor(null)
         .then(() => assert.fail())
         .catch((error) => assert.include(error.message, "no integer"));
     });
 
     it("should return a rejected Promise if input bit size is not multiple of 8", () => {
-      return util.generateRsaBlindingFactor(15)
+      return check.generateRsaBlindingFactor(15)
         .then((answer) => assert.fail())
         .catch((error) => assert.include(error.message, "multiple of 8"));
     });
 
     it("should return a rejected Promise if input bit size is smaller than 256", () => {
-      return util.generateRsaBlindingFactor(255)
+      return check.generateRsaBlindingFactor(255)
         .then((answer) => assert.fail())
         .catch((error) => assert.include(error.message, ">= 256"));
     });
 
     it("should return a rejected Promise if input bit size is bigger than 16384", () => {
-      return util.generateRsaBlindingFactor(16385)
+      return check.generateRsaBlindingFactor(16385)
         .then((answer) => assert.fail())
         .catch((error) => assert.include(error.message, "<= 16384"));
     });
@@ -136,7 +137,7 @@ describe("util", function() {
     it("should return a {BigInteger} numbers of given bit length", (done) => {
       const bitLength = 256;
 
-      return util.generateRsaBlindingFactor(bitLength)
+      return check.generateRsaBlindingFactor(bitLength)
         .then((blinding_factor) => {
 
           assert.isTrue(check.isBigInteger(blinding_factor));
@@ -180,7 +181,7 @@ describe("util", function() {
     });
 
     it ("should return true when input parameter is a valid {BigInteger}", () => {
-      assert.isTrue(check.isBigInteger(check.BigInteger.ZERO));
+      assert.isTrue(check.isBigInteger(BigInteger.ZERO));
     });
   });
 

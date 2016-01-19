@@ -1,8 +1,8 @@
 "use strict";
 
 import { assert } from "chai"
+import { BigInteger, check } from "verifyme_utility"
 
-import { check } from "verifyme_utility"
 import RSABlindingContext from "../../../src/blinding/rsa/blinding_context_rsa"
 
 import sample_keys from "./../../helper/keys"
@@ -34,24 +34,24 @@ describe("blinding_context_rsa", function() {
     });
 
     it ("should return false if blinding factor is missing", () => {
-      context.modulus = new check.BigInteger("1", 10);
-      context.public_exponent = new check.BigInteger("2", 10);
-      context.hashed_token = new check.BigInteger("3", 10);
+      context.modulus = new BigInteger("1", 10);
+      context.public_exponent = new BigInteger("2", 10);
+      context.hashed_token = new BigInteger("3", 10);
       assert.isFalse(context.containsAllBlindingInformation());
     });
 
     it ("should return false if hashed token is missing", () => {
-      context.modulus = new check.BigInteger("1", 10);
-      context.public_exponent = new check.BigInteger("2", 10);
-      context.blinding_factor = new check.BigInteger("3", 10);
+      context.modulus = new BigInteger("1", 10);
+      context.public_exponent = new BigInteger("2", 10);
+      context.blinding_factor = new BigInteger("3", 10);
       assert.isFalse(context.containsAllBlindingInformation());
     });
 
     it ("should return true if all necessary information are present", () => {
-      context.modulus = new check.BigInteger("1", 10);
-      context.public_exponent = new check.BigInteger("2", 10);
-      context.blinding_factor = new check.BigInteger("3", 10);
-      context.hashed_token = new check.BigInteger("4", 10);
+      context.modulus = new BigInteger("1", 10);
+      context.public_exponent = new BigInteger("2", 10);
+      context.blinding_factor = new BigInteger("3", 10);
+      context.hashed_token = new BigInteger("4", 10);
       assert.isTrue(context.containsAllBlindingInformation());
     });
   });
@@ -91,24 +91,24 @@ describe("blinding_context_rsa", function() {
     });
 
     it ("should return false if Blinding factor is missing", () => {
-      context.modulus = new check.BigInteger("1", 10);
-      context.public_exponent = new check.BigInteger("2", 10);
-      context.hashed_token = new check.BigInteger("3", 10);
+      context.modulus = new BigInteger("1", 10);
+      context.public_exponent = new BigInteger("2", 10);
+      context.hashed_token = new BigInteger("3", 10);
       assert.isFalse(RSABlindingContext.isValidBlindingContext(context));
     });
 
     it ("should return false if hashed token is missing", () => {
-      context.modulus = new check.BigInteger("1", 10);
-      context.public_exponent = new check.BigInteger("2", 10);
-      context.blinding_factor = new check.BigInteger("3", 10);
+      context.modulus = new BigInteger("1", 10);
+      context.public_exponent = new BigInteger("2", 10);
+      context.blinding_factor = new BigInteger("3", 10);
       assert.isFalse(RSABlindingContext.isValidBlindingContext(context));
     });
 
     it ("should return true if all necessary information are present", () => {
-      context.modulus = new check.BigInteger("1", 10);
-      context.public_exponent = new check.BigInteger("2", 10);
-      context.blinding_factor = new check.BigInteger("3", 10);
-      context.hashed_token = new check.BigInteger("4", 10);
+      context.modulus = new BigInteger("1", 10);
+      context.public_exponent = new BigInteger("2", 10);
+      context.blinding_factor = new BigInteger("3", 10);
+      context.hashed_token = new BigInteger("4", 10);
       assert.isTrue(RSABlindingContext.isValidBlindingContext(context));
     });
   });

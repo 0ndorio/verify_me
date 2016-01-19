@@ -1,10 +1,6 @@
 "use strict";
 
-import { BigInteger } from "../../node_modules/kbpgp/lib/bn"
-import { KeyManager } from "kbpgp"
-import { Point } from "keybase-ecurve"
-
-import { assert, check } from "verifyme_utility"
+import { assert, BigInteger, check, Point, KeyManager } from "verifyme_utility"
 
 /**
  * Prepares the ECDSA blinding algorithm through

@@ -1,10 +1,10 @@
 "use strict";
 
 import { assert } from "chai"
+import { check } from "verifyme_utility"
 
 import BlindSignaturePacket from "../../src/pgp/blind_signature_packet"
 import pgp from "../../src/pgp/pgp"
-import { check } from "verifyme_utility"
 
 import sample_keys from "../helper/keys"
 
