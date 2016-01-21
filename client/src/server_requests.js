@@ -93,7 +93,7 @@ async function requestEcdsaBlinding(blinded_message, blinding_context)
     hashed_token: blinding_context.hashed_token.toRadix(32)
   });
 
-  return sendRequest(message, "/ecdsa/sign")
+  return sendRequest(message, "/ecdsa/andreev/sign")
     .then(response => {
       assert(check.isString(response));
 
@@ -120,7 +120,7 @@ async function requestEcdsaBlindingInitialization(blinding_context)
     hashed_token: blinding_context.hashed_token.toRadix(32)
   });
 
-  return sendRequest(message, "/ecdsa/init")
+  return sendRequest(message, "/ecdsa/andreev/init")
     .then(response => {
       assert(check.isString(response));
 

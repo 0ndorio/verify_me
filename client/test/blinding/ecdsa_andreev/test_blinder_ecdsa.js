@@ -3,18 +3,18 @@
 import { assert } from "chai"
 import { BigInteger, check, util } from "verifyme_utility"
 
-import EcdsaBlinder from "../../../src/blinding/ecdsa/blinder_ecdsa"
-import EcdsaBlindingContext from "../../../src/blinding/ecdsa/blinding_context_ecdsa"
+import EcdsaBlinder from "../../../src/blinding/ecdsa_andreev/blinder"
+import EcdsaBlindingContext from "../../../src/blinding/ecdsa_andreev/blinding_context"
 
 import sample_keys from "../../helper/keys"
 
-describe("EcdsaBlinder", function() {
+describe("AndreevEcdsaBlinder", function() {
 
   //
   // suite functions
   //
 
-  /** @type{EcdsaBlinder} **/
+  /** @type{AndreevEcdsaBlinder} **/
   let blinder = null;
 
   /** @type{KeyManager} **/

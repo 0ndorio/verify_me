@@ -4,7 +4,7 @@ import { assert, check, KeyManager } from "verifyme_utility"
 
 import client from"../client"
 import BlindSignaturePacket from "../pgp/blind_signature_packet"
-import EcdsaBlinder from "./ecdsa/blinder_ecdsa"
+import EcdsaBlinder from "./ecdsa_andreev/blinder"
 import RsaBlinder from "./rsa/blinder_rsa"
 
 /**

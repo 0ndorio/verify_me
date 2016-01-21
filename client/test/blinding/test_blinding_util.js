@@ -4,8 +4,8 @@ import { assert } from "chai"
 import { BigInteger, check, Tags, util } from "verifyme_utility"
 
 import blinding_util from "../../src/blinding/blinding_util"
-import EcdsaBlinder from "../../src/blinding/ecdsa/blinder_ecdsa"
-import EcdsaBlindingContext from "../../src/blinding/ecdsa/blinding_context_ecdsa"
+import EcdsaBlinder from "../../src/blinding/ecdsa_andreev/blinder"
+import EcdsaBlindingContext from "../../src/blinding/ecdsa_andreev/blinding_context"
 import RsaBlinder from "../../src/blinding/rsa/blinder_rsa"
 import RsaBlindingContext from "../../src/blinding/rsa/blinding_context_rsa"
 
@@ -65,7 +65,7 @@ describe("blinding_util", function() {
       done();
     });
 
-    it("should return an EcdsaBlinder if input is a ecc key", async (done) => {
+    it("should return an AndreevEcdsaBlinder if input is a ecc key", async (done) => {
       const blinder = await blinding_util.createBlinderForKeyManager(ecc_key_manager, token);
 
       assert.instanceOf(blinder, EcdsaBlinder);

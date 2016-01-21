@@ -3,7 +3,7 @@
 import { assert } from "chai"
 import { BigInteger, Buffer, check, util } from "verifyme_utility"
 
-import EcdsaBlindingContext from "../../../src/blinding/ecdsa/blinding_context_ecdsa"
+import EcdsaBlindingContext from "../../../src/blinding/ecdsa_andreev/blinding_context"
 
 import sample_keys from "./../../helper/keys"
 
@@ -13,7 +13,7 @@ describe("blinding_context_ecdsa", function() {
   // suite functions
   //
 
-  /** @type {EcdsaBlindingContext} **/
+  /** @type {AndreevEcdsaBlindingContext} **/
   let context = null;
   /** @type {KeyManager} **/
   let key_manager = null;

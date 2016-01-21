@@ -4,7 +4,7 @@ import { assert, BigInteger, Buffer, check, util } from "verifyme_utility"
 
 import Blinder from "../blinder"
 import BlindSignaturePacket from "../../pgp/blind_signature_packet"
-import EcdsaBlindingContext from "./blinding_context_ecdsa"
+import EcdsaBlindingContext from "./blinding_context"
 import server from "../../server_requests"
 
 /**
@@ -13,7 +13,7 @@ import server from "../../server_requests"
  *
  * The variable naming follows the algorithms notation.
  */
-export default class EcdsaBlinder extends Blinder
+export default class AndreevEcdsaBlinder extends Blinder
 {
   constructor()
   {
@@ -21,7 +21,7 @@ export default class EcdsaBlinder extends Blinder
   };
 
   /**
-   * Initializes the internal {EcdsaBlindingContext}.
+   * Initializes the internal {AndreevEcdsaBlindingContext}.
    *
    * @param {KeyManager} key_manager
    *    A {KeyManager} containing the signers public key which is necessary
@@ -96,7 +96,7 @@ export default class EcdsaBlinder extends Blinder
   }
 
   /**
-   * Forges a ecdsa based blind signature.
+   * Forges a ecdsa_andreev based blind signature.
    *
    * To achieve this the prepared raw signature is blinded and send to the server.
    * The server signs the blinded message and the result is send back.
@@ -177,8 +177,8 @@ export default class EcdsaBlinder extends Blinder
     assert(check.isBigInteger(packet.raw_signature));
     assert(EcdsaBlindingContext.isValidBlindingContext(this.context));
 
-    const message_buffer = util.calculateSha512(packet.raw_signature);
-    const message = packet.key.pub.trunc_hash(message_buffer);
+    const hash = util.calculateSha512(packet.raw_signature);
+    const message = packet.key.pub.trunc_hash(hash.toBuffer());
     const blinded_message = this.blind(message);
     const signed_blinded_message = await server.requestEcdsaBlinding(blinded_message, this.context);
     return this.unblind(signed_blinded_message);

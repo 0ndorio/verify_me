@@ -34,9 +34,9 @@ Promise.all([keys.rsa_promise, keys.ecc_promise])
     app.get("/rsa", routes.rsa.renderIndex);
     app.post("/rsa", routes.rsa.signBlindedMessage);
 
-    app.get("/ecdsa", routes.ecdsa.renderIndex);
-    app.post("/ecdsa/init", routes.ecdsa.initBlindingAlgorithm);
-    app.post("/ecdsa/sign", routes.ecdsa.signBlindedMessage);
+    app.get("/ecdsa/andreev", routes.ecdsa.andreev.renderIndex);
+    app.post("/ecdsa/andreev/init", routes.ecdsa.andreev.initBlindingAlgorithm);
+    app.post("/ecdsa/andreev/sign", routes.ecdsa.andreev.signBlindedMessage);
   })
   .catch((error) => {
     console.log("");

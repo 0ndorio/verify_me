@@ -5,7 +5,7 @@ import { check } from "verifyme_utility"
 
 import client from"../src/client"
 import RsaBlindingContext from "../src/blinding/rsa/blinding_context_rsa"
-import EcdsaBlindingContext from "../src/blinding/ecdsa/blinding_context_ecdsa"
+import EcdsaBlindingContext from "../src/blinding/ecdsa_andreev/blinding_context"
 
 import { controls } from "./helper/client_control"
 import sample_keys from "./helper/keys"

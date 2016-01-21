@@ -43,7 +43,7 @@ export default class RsaBlindingContext extends BlindingContext
    *
    * @param {KeyManager} key_manager
    *    The ECC based public key_manager that belongs to the blind signature issuer.
-   * @return {EcdsaBlindingContext}
+   * @return {AndreevEcdsaBlindingContext}
    *    The generated blinding context.
    */
   static fromKey(key_manager)

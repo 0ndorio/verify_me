@@ -7,7 +7,7 @@ import BlindingContext from "../blinding_context"
 /**
  * A ecc blinding context.
  */
-export default class EcdsaBlindingContext extends BlindingContext
+export default class AndreevEcdsaBlindingContext extends BlindingContext
 {
   constructor()
   {
@@ -33,18 +33,18 @@ export default class EcdsaBlindingContext extends BlindingContext
   }
 
   /**
-   * Checks if a given {object} is a EcdsaBlindingContext which fulfills all requirements
-   * to start the ecdsa blind signature creation.
+   * Checks if a given {object} is a AndreevEcdsaBlindingContext which fulfills all requirements
+   * to start the ecdsa_andreev blind signature creation.
    *
    * @param {*} object
    *
    * @returns {boolean}
-   *    {true} if the object can be used to start the ecdsa blind signature creation
+   *    {true} if the object can be used to start the ecdsa_andreev blind signature creation
    *    else {false}
    */
   static isValidBlindingContext(object)
   {
-    return (object instanceof EcdsaBlindingContext) && object.containsAllBlindingInformation();
+    return (object instanceof AndreevEcdsaBlindingContext) && object.containsAllBlindingInformation();
   }
 
   /**
@@ -53,7 +53,7 @@ export default class EcdsaBlindingContext extends BlindingContext
    *
    * @param {KeyManager} key_manager
    *    The ECC based public key_manager that belongs to the blind signature issuer.
-   * @return {EcdsaBlindingContext}
+   * @return {AndreevEcdsaBlindingContext}
    *    The generated blinding context.
    */
   static fromKey(key_manager)
@@ -62,7 +62,7 @@ export default class EcdsaBlindingContext extends BlindingContext
 
     const public_key_package = key_manager.get_primary_keypair().pub;
 
-    let context = new EcdsaBlindingContext();
+    let context = new AndreevEcdsaBlindingContext();
     context.curve = public_key_package.curve;
 
     return context;

@@ -1,7 +1,7 @@
 "use strict";
 
 import keys from "../keys"
-import Signer from "./signing_ecdsa"
+import Signer from "./signing"
 
 let secret_scalar = {};
 
