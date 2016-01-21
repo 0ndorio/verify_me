@@ -85,10 +85,10 @@ export default class BlindSignaturePacket extends sig.Signature
     // so we have to use a smaller number (2^32 - 1)
     //    - https://tools.ietf.org/html/rfc4880#section-3.5
     if (null === key_expire || 0 >= key_expire) {
-      key_expire = Math.pow(2, 32) - 1;
+      key_expire = Math.pow(2, 32) - lifespan.generated - 1;
     }
 
-    return Math.floor(lifespan.generated + Math.random() * (key_expire - lifespan.generated));
+    return Math.floor(lifespan.generated + Math.random() * key_expire);
   }
 
   /**
