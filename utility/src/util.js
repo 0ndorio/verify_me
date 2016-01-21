@@ -113,16 +113,16 @@ function generateTwoPrimeNumbers(primeBitLength)
 /**
  * Hashes the given message with sha512 and returns the digest.
  *
- * @param {string} message
+ * @param {BigInteger} message
  *    Input parameter to hash.
  * @returns {BigInteger}
  *    Hash digest as {string} or {null} if input message is no string object.
  */
-function hashMessageSha512(message)
+function calculateSha512(message)
 {
-  assert(check.isString(message));
+  assert(check.isBigInteger(message));
 
-  const hash_buffer = kbpgp.hash.SHA512(new Buffer(message));
+  const hash_buffer = kbpgp.hash.SHA512(message.toBuffer());
   return BigInteger.fromBuffer(hash_buffer);
 }
 
@@ -131,7 +131,7 @@ const util_api = {
   generateRandomScalar,
   generateRsaBlindingFactor,
   generateTwoPrimeNumbers,
-  hashMessageSha512
+  calculateSha512
 };
 
 export default util_api;

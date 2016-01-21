@@ -38,7 +38,7 @@ export default class RsaBlinder extends Blinder
 
     const blinding_factor = await util.generateRsaBlindingFactor(context.modulus.bitLength());
     context.blinding_factor = token.multiply(blinding_factor);
-    context.hashed_token = util.hashMessageSha512(token.toRadix());
+    context.hashed_token = util.calculateSha512(token);
 
     this.context = context;
     this.key_manager = key_manager;

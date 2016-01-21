@@ -1,6 +1,5 @@
 "use strict";
 
-import { hash } from "kbpgp"
 import { assert, BigInteger, Buffer, check, util } from "verifyme_utility"
 
 import Blinder from "../blinder"
@@ -43,7 +42,7 @@ export default class EcdsaBlinder extends Blinder
       d: await util.generateRandomScalar(context.curve)
     };
 
-    context.hashed_token = util.hashMessageSha512(token.toRadix());
+    context.hashed_token = util.calculateSha512(token);
 
     this.context = context;
     this.key_manager = key_manager;
@@ -178,7 +177,7 @@ export default class EcdsaBlinder extends Blinder
     assert(check.isBigInteger(packet.raw_signature));
     assert(EcdsaBlindingContext.isValidBlindingContext(this.context));
 
-    const message_buffer = hash.SHA512(packet.raw_signature.toBuffer());
+    const message_buffer = util.calculateSha512(packet.raw_signature);
     const message = packet.key.pub.trunc_hash(message_buffer);
     const blinded_message = this.blind(message);
     const signed_blinded_message = await server.requestEcdsaBlinding(blinded_message, this.context);

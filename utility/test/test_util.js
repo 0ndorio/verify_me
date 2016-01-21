@@ -2,7 +2,7 @@
 
 import { assert } from "chai"
 
-import { BigInteger } from "../src/types"
+import { BigInteger, Buffer } from "../src/types"
 import check from "../src/check"
 import util from "../src/util"
 
@@ -130,20 +130,21 @@ describe("check", function() {
   });
 
   ///---------------------------------
-  /// #hashMessageSha512()
+  /// #calculateSha512()
   ///---------------------------------
 
-  describe("#hashMessageSha512()", () => {
+  describe("#calculateSha512()", () => {
 
-    it("should throw if input parameter is no string", () => {
-      assert.throws(() => util.hashMessageSha512(123));
+    it("should throw if input parameter is no BigInteger", () => {
+      assert.throws(() => util.calculateSha512(123));
     });
 
     it("should return a hash digest with bit length 512", () => {
       const expected_hex = "ddaf35a193617abacc417349ae20413112e6fa4e89a97ea20a9eeee64b55d39a"
                          + "2192992a274fc1a836ba3c23a3feebbd454d4423643ce80e2a9ac94fa54ca49f";
 
-      const result = util.hashMessageSha512("abc");
+      const message = BigInteger.fromBuffer(new Buffer("abc"));
+      const result = util.calculateSha512(message);
 
       assert.isTrue(check.isBigInteger(result));
       assert.equal(512, result.bitLength());
