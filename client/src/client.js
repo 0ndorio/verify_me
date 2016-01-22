@@ -136,7 +136,23 @@ function getTextAreaContent(text_area_name)
   return content;
 }
 
+/**
+ * Returns the requested algorithm implementation.
+ *
+ * @returns {string}
+ */
+function getAlgorithmHints()
+{
+  const path_elements = window.location.pathname.slice(1).split("/");
+
+  return {
+    algorithm: path_elements[0],
+    implementation: path_elements[1]
+  };
+}
+
 const client_api = {
+  getAlgorithmHints,
   getPublicKey,
   getPublicKeyString,
   getServerPublicKey,

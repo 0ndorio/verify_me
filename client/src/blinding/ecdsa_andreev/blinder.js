@@ -96,7 +96,7 @@ export default class AndreevEcdsaBlinder extends Blinder
   }
 
   /**
-   * Forges a ecdsa_andreev based blind signature.
+   * Forges a Andreev ecdsa based blind signature.
    *
    * To achieve this the prepared raw signature is blinded and send to the server.
    * The server signs the blinded message and the result is send back.
@@ -142,7 +142,7 @@ export default class AndreevEcdsaBlinder extends Blinder
     const c = this.context.blinding_factor.c;
     const d = this.context.blinding_factor.d;
 
-    const { P, Q } = await server.requestEcdsaBlindingInitialization(this.context);
+    const { P, Q } = await server.requestAndreevEcdsaInitialization(this.context);
     assert(curve.isOnCurve(P));
     assert(curve.isOnCurve(Q));
 
@@ -180,7 +180,7 @@ export default class AndreevEcdsaBlinder extends Blinder
     const hash = util.calculateSha512(packet.raw_signature);
     const message = packet.key.pub.trunc_hash(hash.toBuffer());
     const blinded_message = this.blind(message);
-    const signed_blinded_message = await server.requestEcdsaBlinding(blinded_message, this.context);
+    const signed_blinded_message = await server.requestAndreevEcdsaBlinding(blinded_message, this.context);
     return this.unblind(signed_blinded_message);
   }
 }

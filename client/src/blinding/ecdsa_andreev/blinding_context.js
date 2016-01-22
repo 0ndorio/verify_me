@@ -15,8 +15,7 @@ export default class AndreevEcdsaBlindingContext extends BlindingContext
 
     /** @type {Curve|null} */
     this.curve = null;
-    /** @type {Point|null} */
-    this.public_point = null;
+
     /** @type {BigInteger|null} */
     this.hashed_token = null;
 
