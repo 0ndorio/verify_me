@@ -82,7 +82,7 @@ async function requestRsaBlinding(blinded_message, blinding_context)
  * @returns {Promise.<string|Error>}
  *    The promise of an ECDSA signed message.
  */
-async function requestEcdsaBlinding(blinded_message, blinding_context)
+async function requestAndreevEcdsaBlinding(blinded_message, blinding_context)
 {
   assert(check.isBigInteger(blinded_message));
   assert((blinding_context instanceof BlindingContext)
@@ -111,7 +111,7 @@ async function requestEcdsaBlinding(blinded_message, blinding_context)
  *    The promise of public information necessary for the
  *    ECDSA blinding algorithm.
  */
-async function requestEcdsaBlindingInitialization(blinding_context)
+async function requestAndreevEcdsaInitialization(blinding_context)
 {
   assert((blinding_context instanceof BlindingContext)
         && blinding_context.hasOwnProperty("hashed_token"));
@@ -139,10 +139,73 @@ async function requestEcdsaBlindingInitialization(blinding_context)
     });
 }
 
+/**
+ * Sends the request for a ECDSA based signature.
+ *
+ * @param {BigInteger} blinded_message
+ *    The message to be signed.
+ * @param {BlindingContext} blinding_context
+ *    The blinding context we use to authenticate our request.
+ * @returns {Promise.<string|Error>}
+ *    The promise of an ECDSA signed message.
+ */
+async function requestButunEcdsaBlinding(blinded_message, blinding_context)
+{
+  assert(check.isBigInteger(blinded_message));
+  assert((blinding_context instanceof BlindingContext)
+    && blinding_context.hasOwnProperty("hashed_token"));
+
+  const message = JSON.stringify({
+    message: blinded_message.toRadix(32),
+    hashed_token: blinding_context.hashed_token.toRadix(32)
+  });
+
+  return sendRequest(message, "/ecdsa/butun/sign")
+    .then(response => {
+      assert(check.isString(response));
+
+      const request_result = JSON.parse(response);
+      return new BigInteger(request_result.signed_blinded_message, 32)
+    });
+}
+
+/**
+ * Sends the request to initialize the ECDSA based blinding process.
+ *
+ * @param {BlindingContext} blinding_context
+ *    The blinding context we use to authenticate our request.
+ * @returns {Promise.<string|Error>}
+ *    The promise of public information necessary for the
+ *    ECDSA blinding algorithm.
+ */
+async function requestButunEcdsaInitialization(blinding_context)
+{
+  assert((blinding_context instanceof BlindingContext)
+    && blinding_context.hasOwnProperty("hashed_token"));
+
+  const message = JSON.stringify({
+    hashed_token: blinding_context.hashed_token.toRadix(32)
+  });
+
+  return sendRequest(message, "/ecdsa/butun/init")
+    .then(response => {
+      assert(check.isString(response));
+
+      const request_result = JSON.parse(response);
+
+      return blinding_context.curve.mkpoint({
+        x: new BigInteger(request_result.Ŕx, 32),
+        y: new BigInteger(request_result.Ŕy, 32)
+      });
+    });
+}
+
 const server_api = {
   sendRequest,
-  requestEcdsaBlinding,
-  requestEcdsaBlindingInitialization,
+  requestAndreevEcdsaBlinding,
+  requestAndreevEcdsaInitialization,
+  requestButunEcdsaBlinding,
+  requestButunEcdsaInitialization,
   requestRsaBlinding
 };
 
