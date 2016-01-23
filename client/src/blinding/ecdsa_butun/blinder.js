@@ -154,13 +154,12 @@ export default class ButunEcdsaBlinder extends Blinder
     const signed_blinded_message = await server.requestButunEcdsaBlinding(blinded_message, this.context);
     const signed_message = this.unblind(signed_blinded_message, message, public_points);
 
-    const signature = {
-      s: signed_message,
-      R: public_points.requester
-    };
+    const signature = Buffer.concat([
+      signed_message.to_mpi_buffer(),
+      public_points.requester.getEncoded(false)
+    ]);
 
-    assert(this.verify(message, signature));
-    packet.sig = Buffer.concat([signature.s.to_mpi_buffer(), signature.R.getEncoded(false)]);
+    packet.sig = signature;
     packet.raw = packet.write_unframed();
   }
 
@@ -199,38 +198,36 @@ export default class ButunEcdsaBlinder extends Blinder
   /**
    * Verifies the given Butun based signature.
    *
-   * @param {BigInteger} message
-   *    The original message contained in the signature.
-   * @param {object.<BigInteger, Point>} signature
-   *    The signature created through the algorithm
-   *    presented by Butun.
+   * @param {BigInteger} data
+   *    The original data contained in the signature.
+   * @param {Buffer} signature
+   *    The signature to verify.
    * @returns {boolean}
    *    {true} if the verification succeeds,
    *    else {false}.
    */
-  verify(message, signature)
+  verify(data, signature)
   {
-    if (!(check.isBigInteger(message)
-        && check.isObject(signature)
-        && (signature.hasOwnProperty("s") && check.isBigInteger(signature.s))
-        && (signature.hasOwnProperty("R") && check.isPoint(signature.R))
-        && ButunEcdsaBlindingContext.isValidBlindingContext(this.context))) {
+    if (!(check.isBigInteger(data)
+      && check.isBuffer(signature)
+      && ButunEcdsaBlindingContext.isValidBlindingContext(this.context))) {
 
       return false;
     }
+
+    const s = null;
+    const R = null;
 
     const curve = this.context.curve;
     const G = this.context.curve.G;
     const n = this.context.curve.n;
     const Q = this.context.signers_public_key;
-    const s = signature.s;
-    const R = signature.R;
 
     const u1 = G.multiply(s);
 
     const r = R.affineX.mod(n);
     const rQ = Q.multiply(r);
-    const mR = R.multiply(message);
+    const mR = R.multiply(data);
     const u2 = rQ.add(mR);
 
     return curve.isOnCurve(Q)

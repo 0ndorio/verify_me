@@ -13,8 +13,7 @@
   "dependencies": {
     "body-parser": "latest",
     "express": "latest",
-    "kbpgp": "latest",
-    "keybase-ecurve": "latest"
+    "kbpgp": "git://github.com/0ndorio/kbpgp#blinding_subpacket"
   },
   
   "devDependencies": {

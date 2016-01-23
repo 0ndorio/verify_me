@@ -6,7 +6,7 @@
   "version": "0.1.0",
   
   "dependencies": {
-    "kbpgp": "latest",
+    "kbpgp": "git://github.com/0ndorio/kbpgp#blinding_subpacket",
     "keybase-ecurve": "latest"
   },
   
