@@ -65,12 +65,6 @@ export default class Blinder
     throw new Error("Not yet implemented");
   }
 
-  // TODO
-  verify()
-  {
-    throw new Error("Not yet implemented");
-  }
-
   /**
    * Forges a blind signature.
    *

@@ -3,7 +3,7 @@ WATCHIFY=node_modules/.bin/watchify
 KARMA=node_modules/.bin/karma
 
 default: build
-all: build
+all: build test
 
 build: src/main.js
 	$(BROWSERIFY) src/main.js -v \

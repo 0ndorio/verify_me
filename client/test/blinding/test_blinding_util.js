@@ -4,10 +4,9 @@ import { assert } from "chai"
 import { BigInteger, check, Tags, util } from "verifyme_utility"
 
 import blinding_util from "../../src/blinding/blinding_util"
-import EcdsaBlinder from "../../src/blinding/ecdsa_andreev/blinder"
-import EcdsaBlindingContext from "../../src/blinding/ecdsa_andreev/blinding_context"
+import AndreevEcdsaBlinder from "../../src/blinding/ecdsa_andreev/blinder"
+import ButunEcdsaBlinder from "../../src/blinding/ecdsa_butun/blinder"
 import RsaBlinder from "../../src/blinding/rsa/blinder_rsa"
-import RsaBlindingContext from "../../src/blinding/rsa/blinding_context_rsa"
 
 import sample_keys from "../helper/keys"
 
@@ -65,10 +64,19 @@ describe("blinding_util", function() {
       done();
     });
 
-    it("should return an AndreevEcdsaBlinder if input is a ecc key", async (done) => {
+    it("should return an ButunEcdsaBlinder if input is a ecc key", async (done) => {
       const blinder = await blinding_util.createBlinderForKeyManager(ecc_key_manager, token);
 
-      assert.instanceOf(blinder, EcdsaBlinder);
+      assert.instanceOf(blinder, ButunEcdsaBlinder);
+      done();
+    });
+
+    it("should return an AndreevEcdsaBlinder if input is a ecc key with andreev hint", async (done) => {
+
+      const hints = { implementation: "andreev" };
+      const blinder = await blinding_util.createBlinderForKeyManager(ecc_key_manager, token, hints);
+
+      assert.instanceOf(blinder, AndreevEcdsaBlinder);
       done();
     });
   });

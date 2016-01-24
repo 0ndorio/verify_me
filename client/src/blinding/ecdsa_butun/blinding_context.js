@@ -1,6 +1,6 @@
 "use strict";
 
-import { assert, BigInteger, check } from "verifyme_utility"
+import { assert, BigInteger, check, Tags } from "verifyme_utility"
 
 import BlindingContext from "../blinding_context"
 
@@ -105,5 +105,17 @@ export default class ButunEcdsaBlindingContext extends BlindingContext
   {
     assert(check.isBuffer(data));
     return BigInteger.fromBuffer(data);
+  }
+
+  /**
+   * Returns the id of the verification algorithm.
+   *
+   * @return {number}
+   *    Id of the butun algorithm to verify a signature
+   *    generated with this blinding context.
+   */
+  verificationAlgorithm()
+  {
+    return Tags.verification_algorithms.butun;
   }
 }

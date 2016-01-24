@@ -194,46 +194,4 @@ export default class ButunEcdsaBlinder extends Blinder
 
     return { signer: Ŕ, requester: R };
   }
-
-  /**
-   * Verifies the given Butun based signature.
-   *
-   * @param {BigInteger} data
-   *    The original data contained in the signature.
-   * @param {Buffer} signature
-   *    The signature to verify.
-   * @returns {boolean}
-   *    {true} if the verification succeeds,
-   *    else {false}.
-   */
-  verify(data, signature)
-  {
-    if (!(check.isBigInteger(data)
-      && check.isBuffer(signature)
-      && ButunEcdsaBlindingContext.isValidBlindingContext(this.context))) {
-
-      return false;
-    }
-
-    const s = null;
-    const R = null;
-
-    const curve = this.context.curve;
-    const G = this.context.curve.G;
-    const n = this.context.curve.n;
-    const Q = this.context.signers_public_key;
-
-    const u1 = G.multiply(s);
-
-    const r = R.affineX.mod(n);
-    const rQ = Q.multiply(r);
-    const mR = R.multiply(data);
-    const u2 = rQ.add(mR);
-
-    return curve.isOnCurve(Q)
-      && curve.isOnCurve(R)
-      && curve.isOnCurve(u1)
-      && curve.isOnCurve(u2)
-      && u1.equals(u2);
-  }
 }

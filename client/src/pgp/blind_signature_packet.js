@@ -40,7 +40,8 @@ export default class BlindSignaturePacket extends sig.Signature
     ];
 
     const unhashed_subpackets = [
-      new sig.Issuer(sig_key.get_pgp_key_id())
+      new sig.Issuer(sig_key.get_pgp_key_id()),
+      new sig.VerificationAlgorithm(context.verificationAlgorithm())
     ];
 
     const ctor_args = {

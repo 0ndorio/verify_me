@@ -1,6 +1,6 @@
 "use strict";
 
-import { Buffer, KeyManager } from "verifyme_utility"
+import { Buffer, KeyManager, Tags } from "verifyme_utility"
 
 /**
  * An abstract blinding context object.
@@ -77,5 +77,17 @@ export default class BlindingContext
   encodeSignaturePayload(data, hasher)
   {
     throw new Error("Not yet implemented.");
+  }
+
+  /**
+   * Returns the id of the verification algorithm.
+   *
+   * @return {number}
+   *    Id of the algorithm to verify a signature
+   *    generated with this blinding context.
+   */
+  verificationAlgorithm()
+  {
+    return Tags.verification_algorithms.default;
   }
 }
