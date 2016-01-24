@@ -156,7 +156,7 @@ export default class ButunEcdsaBlinder extends Blinder
 
     const signature = Buffer.concat([
       signed_message.to_mpi_buffer(),
-      public_points.requester.getEncoded(false)
+      this.context.curve.point_to_mpi_buffer(public_points.requester)
     ]);
 
     packet.sig = signature;
