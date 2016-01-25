@@ -1,21 +1,21 @@
 {
-  "name": "verifyme_server", 
-  "version": "0.1.0",
-  "private": true,
-  
   "author": "Bruno Kirschner <bruno.kirschner@online.de>",
+  "license": "MIT",
+
+  "name": "verifyme_server",
   "homepage": "https://github.com/0ndorio/verify_me", 
-  
-  "license": "UNLICENSED",
+
+  "private": true,
+  "version": "0.1.0",
 
   "main": "src/main.js",
-  
+
   "dependencies": {
     "body-parser": "latest",
     "express": "latest",
     "kbpgp": "git://github.com/0ndorio/kbpgp#blinding_subpacket"
   },
-  
+
   "devDependencies": {
     "babel-polyfill": "latest",
     "babel-cli": "latest",

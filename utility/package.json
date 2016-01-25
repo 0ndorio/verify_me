@@ -1,9 +1,14 @@
 {
   "author": "Bruno Kirschner <bruno.kirschner@online.de>",
-  "license": "UNLICENSED",
+  "license": "MIT",
+  
   "name": "verifyme_utility",
+  "homepage": "https://github.com/0ndorio/verify_me",
+  
   "private": true,
   "version": "0.1.0",
+  
+  "main": "dist/main.js",
   
   "dependencies": {
     "kbpgp": "git://github.com/0ndorio/kbpgp#blinding_subpacket",
@@ -20,8 +25,6 @@
     "mocha": "latest"
   },
 
-  "homepage": "https://github.com/0ndorio/verify_me",
-  
   "repository": {
     "type": "git",
     "url": "https://github.com/0ndorio/verify_me.git"
@@ -29,7 +32,5 @@
 
   "bugs": {
     "url": "https://github.com/0ndorio/verify_me/issues"
-  },
-
-  "main": "dist/main.js"
+  }
 }
