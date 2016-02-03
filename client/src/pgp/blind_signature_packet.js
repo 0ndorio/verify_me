@@ -36,12 +36,12 @@ export default class BlindSignaturePacket extends sig.Signature
     assert(context instanceof BlindingContext);
 
     const hashed_subpackets = [
-      new sig.CreationTime(BlindSignaturePacket.calculateRandomCreationDate(target_key))
+      new sig.CreationTime(BlindSignaturePacket.calculateRandomCreationDate(target_key)),
+      new sig.VerificationAlgorithm(context.verificationAlgorithm())
     ];
 
     const unhashed_subpackets = [
-      new sig.Issuer(sig_key.get_pgp_key_id()),
-      new sig.VerificationAlgorithm(context.verificationAlgorithm())
+      new sig.Issuer(sig_key.get_pgp_key_id())
     ];
 
     const ctor_args = {
