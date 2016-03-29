@@ -5,16 +5,13 @@ MOCHA=node_modules/.bin/_mocha
 NODE=node
 
 default: build run
-all: build test run
+all: clean build run
 
 build: src/main.js
 	$(BABEL) -d dist/ src/
 
 watch: src/main.js
 	$(BABEL) -w -d dist/ src/
-
-test: test/**/*.js
-	$(BABEL_NODE) $(BABEL_INSTANBUL) cover $(MOCHA) -- test/*
 
 run: dist/main.js
 	$(NODE) dist/main.js

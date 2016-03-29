@@ -1,0 +1,37 @@
+==============================
+How to setup and run verifyme
+==============================
+
+------------
+Requirements
+------------
+
+[install] git (>= 2.7.4)
+[install] node.js (>= 5.9.1)
+[install] npm (>= 3.7.3)
+
+git clone https://github.com/0ndorio/verify_me.git [PROJECT_PATH]
+
+-----------------------
+Development environment
+-----------------------
+Use the Makefiles in [PROJECT_PATH]{client, server, utility}
+for actions like setup, build, run, watch ...
+
+---------------------------
+Non Development environment
+---------------------------
+
+#
+# [Server] Setup
+#
+
+cd [PROJECT_PATH]/server
+npm install --production
+
+#
+# [Server] Run
+#
+
+cd [PROJECTPATH]/server
+make run
