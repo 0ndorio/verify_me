@@ -34,6 +34,7 @@
     "mocha": "latest",
     "mocha-sinon": "latest",
     "sinon": "latest",
+    "verifyme_utility": "../utility",
     "watchify": "latest"
   },
 

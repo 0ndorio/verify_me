@@ -1,0 +1,19 @@
+#
+# Intermediate files
+#
+
+.DS_Store
+*.pyc
+
+#
+# Internal directories
+#
+
+.vagrant/
+.idea/
+
+coverage/
+coverages/
+node_modules/
+temp-gnupg-dir/
+virtual_env/

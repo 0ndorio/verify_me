@@ -11,13 +11,14 @@
   "main": "src/main.js",
 
   "dependencies": {
+    "babel-polyfill": "latest",
     "body-parser": "latest",
     "express": "latest",
-    "kbpgp": "git://github.com/0ndorio/kbpgp#blinding_subpacket"
+    "kbpgp": "git://github.com/0ndorio/kbpgp#blinding_subpacket",
+    "verifyme_utility" : "../utility"
   },
 
   "devDependencies": {
-    "babel-polyfill": "latest",
     "babel-cli": "latest",
     "babel-istanbul": "latest",
     "babel-preset-es2015": "latest",
