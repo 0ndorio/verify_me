@@ -4,31 +4,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _keys = require("../keys");
-
-var _keys2 = _interopRequireDefault(_keys);
-
-var _signing = require("./signing");
-
-var _signing2 = _interopRequireDefault(_signing);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
-
-var secret_scalar = {};
-
-/**
- * Render an ECC key into index html.
- *
- * @param {IncomingMessage} request
- *    Received HTTP request to access the handled route & method combination.
- * @param {ServerResponse} response
- *    HTTP server response
- */
-function renderIndex(request, response) {
-  response.render("index", { public_key: _keys2.default.ecc_key.armored_pgp_public });
-}
 
 /**
  * Initializes the ECDSA blind signature algorithm.
@@ -105,7 +80,31 @@ var initBlindingAlgorithm = function () {
  */
 
 
-function signBlindedMessage(request, response) {
+var _keys = require("../keys");
+
+var _keys2 = _interopRequireDefault(_keys);
+
+var _signing = require("./signing");
+
+var _signing2 = _interopRequireDefault(_signing);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
+
+var secret_scalar = {};
+
+/**
+ * Render an ECC key into index html.
+ *
+ * @param {IncomingMessage} request
+ *    Received HTTP request to access the handled route & method combination.
+ * @param {ServerResponse} response
+ *    HTTP server response
+ */
+function renderIndex(request, response) {
+  response.render("index", { public_key: _keys2.default.ecc_key.armored_pgp_public });
+}function signBlindedMessage(request, response) {
   var json = {};
   if (request.hasOwnProperty("body") && request.body.hasOwnProperty("hashed_token")) {
 
