@@ -12,13 +12,16 @@ build: src/check.js
 watch: src/check.js
 	$(BABEL) -w -d dist/ src/
 
-test: test/**/*.js
+test:
 	$(BABEL_NODE) $(BABEL_INSTANBUL) cover $(MOCHA) -- test/*
 
 clean:
 	@rm -rf dist/* coverage/*
 
-setup:
-	@npm install -d
+setup-dev:
+	@npm install
 
-.PHONY: clean setup test watch
+setup-production:
+	@npm install --production
+
+.PHONY: clean setup-dev setup-production test
