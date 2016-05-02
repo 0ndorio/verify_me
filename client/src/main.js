@@ -7,15 +7,14 @@ import blinding_util from "./blinding/blinding_util"
 import client from"./client"
 import pgp from "./pgp/pgp"
 
-async function requestPseudonym()
-{
-  const { blinder, packet } = await blinding_util.prepareBlinding();
-  await blinder.forgeSignature(packet);
-
-  const key_ascii = await pgp.exportKeyToAsciiWithSignature(packet.target_key, packet);
-  console.log(key_ascii);
-}
-
 if (document && document.getElementById("activate_pseudonym_button")) {
-  document.getElementById("activate_pseudonym_button").onclick = requestPseudonym;
+  var button = document.getElementById("activate_pseudonym_button");
+
+  button.onclick = async () => {
+    const { blinder, packet } = await blinding_util.prepareBlinding();
+    await blinder.forgeSignature(packet);
+
+    const key_ascii = await pgp.exportKeyToAsciiWithSignature(packet.target_key, packet);
+    console.log(key_ascii);
+  }
 }

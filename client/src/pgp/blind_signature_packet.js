@@ -238,7 +238,7 @@ export default class BlindSignaturePacket extends sig.Signature
   {
     const unhashed_packet_data = this.unhashed_subpackets.reduce(
       (prevValue, subpacket) => { return Buffer.concat([prevValue, subpacket.to_buffer()])},
-      new Buffer({})
+      new Buffer([])
     );
 
     return Buffer.concat([
