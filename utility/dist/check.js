@@ -32,7 +32,7 @@ function assert(condition, message) {
  *    else {false}
  */
 function isBigInteger(object) {
-  return isObject(object) && object.constructor.name === _types.BigInteger.name;
+  return isObject(object) && object instanceof _types.BigInteger;
 }
 
 /**

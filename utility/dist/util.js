@@ -4,44 +4,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _kbpgp = require("kbpgp");
-
-var kbpgp = _interopRequireWildcard(_kbpgp);
-
-var _check = require("./check");
-
-var _check2 = _interopRequireDefault(_check);
-
-var _types = require("./types");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
-
-/**
- * Converts a given armored key string into a kbpgp {KeyManager} object.
- *
- * @param {string} key_as_string
- *    An ascii armored key string.
- * @returns {Promise}
- *    The promise of a {KeyManager} object.
- */
-function generateKeyFromString(key_as_string) {
-  return new Promise(function (resolve, reject) {
-
-    (0, _check.assert)(_check2.default.isString(key_as_string), "Input parameter is not of type string.");
-
-    _types.KeyManager.import_from_armored_pgp({ armored: key_as_string }, function (err, key_manager) {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(key_manager);
-      }
-    });
-  });
-}
 
 /**
  * Generate a random scalar k.
@@ -139,7 +101,44 @@ var generateRsaBlindingFactor = function () {
  */
 
 
-function generateTwoPrimeNumbers(primeBitLength) {
+var _kbpgp = require("kbpgp");
+
+var kbpgp = _interopRequireWildcard(_kbpgp);
+
+var _check = require("./check");
+
+var _check2 = _interopRequireDefault(_check);
+
+var _types = require("./types");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
+
+/**
+ * Converts a given armored key string into a kbpgp {KeyManager} object.
+ *
+ * @param {string} key_as_string
+ *    An ascii armored key string.
+ * @returns {Promise}
+ *    The promise of a {KeyManager} object.
+ */
+function generateKeyFromString(key_as_string) {
+  return new Promise(function (resolve, reject) {
+
+    (0, _check.assert)(_check2.default.isString(key_as_string), "Input parameter is not of type string.");
+
+    _types.KeyManager.import_from_armored_pgp({ armored: key_as_string }, function (err, key_manager) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(key_manager);
+      }
+    });
+  });
+}function generateTwoPrimeNumbers(primeBitLength) {
   return new Promise(function (resolve, reject) {
 
     (0, _check.assert)(_check2.default.isInteger(primeBitLength), "The prime bit length is no integer but a '" + primeBitLength + "'");

@@ -9,7 +9,7 @@ var _check = require("./check");
 Object.defineProperty(exports, "check", {
   enumerable: true,
   get: function get() {
-    return _check.default;
+    return _interopRequireDefault(_check).default;
   }
 });
 Object.defineProperty(exports, "assert", {
@@ -24,24 +24,20 @@ var _util = require("./util");
 Object.defineProperty(exports, "util", {
   enumerable: true,
   get: function get() {
-    return _util.default;
+    return _interopRequireDefault(_util).default;
   }
 });
 
 var _types = require("./types");
 
-var _loop = function _loop(_key2) {
-  if (_key2 === "default") return "continue";
-  Object.defineProperty(exports, _key2, {
+Object.keys(_types).forEach(function (key) {
+  if (key === "default") return;
+  Object.defineProperty(exports, key, {
     enumerable: true,
     get: function get() {
-      return _types[_key2];
+      return _types[key];
     }
   });
-};
+});
 
-for (var _key2 in _types) {
-  var _ret = _loop(_key2);
-
-  if (_ret === "continue") continue;
-}
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
