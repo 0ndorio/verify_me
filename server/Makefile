@@ -19,7 +19,10 @@ run: dist/main.js
 clean:
 	@rm -rf dist/* coverage/*
 
-setup:
-	@npm install -d
+setup-dev:
+	@npm install
 
-.PHONY: clean setup run test watch
+setup-production:
+	@npm install --production
+
+.PHONY: clean setup-dev setup-production 
