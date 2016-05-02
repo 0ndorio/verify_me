@@ -29,7 +29,7 @@ function assert(condition, message)
  */
 function isBigInteger(object)
 {
-  return isObject(object) && (object.constructor.name === BigInteger.name);
+  return isObject(object) && (object instanceof BigInteger);
 }
 
 /**
