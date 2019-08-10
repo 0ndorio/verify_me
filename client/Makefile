@@ -7,13 +7,15 @@ all: clean build test
 
 build: src/main.js
 	$(BROWSERIFY) src/main.js -v \
-                              -o dist/verifyme.js \
-                              -t [ babelify --presets [ stage-3 es2015 ] ]
+                            -o dist/verifyme.js \
+                            -t [ babelify --presets [ stage-3 es2015 ] ] \
+                            -i sodium
 
 watch: src/main.js
 	$(WATCHIFY) src/main.js -v \
-                            -o dist/verifyme.js \
-                            -t [ babelify --presets [ stage-3 es2015 ] ]
+                          -o dist/verifyme.js \
+                          -t [ babelify --presets [ stage-3 es2015 ] ] \
+                          -i sodium
 
 test: test/*.js
 	$(KARMA) start karma.conf.js

@@ -82,10 +82,17 @@ module.exports = function(config) {
     // add additional browserify configuration properties here
     // such as transform and/or debug=true to generate source maps
     browserify: {
-      //debug: true,
+      debug: true,
+
       transform: [
         ['babelify', {presets: ['stage-3', 'es2015']}]
-        ]//'browserify-babel-istanbul']
+      ],
+
+      configure: (bundle) => {
+        bundle.on('prebundle', () => {
+          bundle.ignore('sodium');
+        })
+      }
     },
 
 
