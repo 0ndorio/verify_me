@@ -10,6 +10,13 @@
 
   "main": "src/main.js",
 
+  "scripts": {
+    "build": "make build",
+    "clean": "make clean",
+    "run": "make run",
+    "watch": "make watch"
+  },
+
   "dependencies": {
     "babel-polyfill": "6.7.4",
     "body-parser": "1.15.0",

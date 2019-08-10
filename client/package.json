@@ -38,6 +38,13 @@
     "watchify": "3.7.0"
   },
 
+  "scripts": {
+    "build": "make build",
+    "clean": "make clean",
+    "test": "make test",
+    "watch": "make watch"
+  },
+
   "repository": {
     "type": "git",
     "url": "https://github.com/0ndorio/verify_me.git"

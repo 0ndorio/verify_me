@@ -21,10 +21,4 @@ test: test/*.js
 clean:
 	@rm -rf dist/* coverage/*
 
-setup-dev:
-	@npm install
-
-setup-production:
-	@npm install --production
-
 .PHONY: clean setup-dev setup-production test

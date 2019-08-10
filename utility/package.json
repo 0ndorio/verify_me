@@ -9,6 +9,13 @@
   "version": "0.1.0",
   
   "main": "dist/main.js",
+
+  "scripts": {
+    "build": "make build",
+    "clean": "make clean",
+    "test": "make test",
+    "watch": "make watch"
+  },
   
   "dependencies": {
     "kbpgp": "git://github.com/0ndorio/kbpgp#blinding_subpacket",
