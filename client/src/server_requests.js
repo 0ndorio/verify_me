@@ -36,7 +36,8 @@ function sendRequest(json_string, path = "/", method = "POST")
       }
     };
 
-    xhttp.onerror = (error) => { reject(new Error("error handler called with: " + error)) };
+    xhttp.onerror = (error) => { reject(error) };
+    xhttp.onabort = () => reject("Request Aborted.");
 
     xhttp.send(json_string);
   });
@@ -59,7 +60,7 @@ async function requestRsaBlinding(blinded_message, blinding_context)
          && blinding_context.hasOwnProperty("hashed_token"));
 
   const message = JSON.stringify({
-    message:    blinded_message.toRadix(32),
+    message: blinded_message.toRadix(32),
     hashed_token: blinding_context.hashed_token.toRadix(32)
   });
 

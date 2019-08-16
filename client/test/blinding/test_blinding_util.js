@@ -16,12 +16,11 @@ describe("blinding_util", function() {
   // suite functions
   //
 
-  let rsa_key_manager = null;
-  let ecc_key_manager = null;
-  let token = null;
+  let rsa_key_manager;
+  let ecc_key_manager;
+  let token;
 
-  before(() => {
-  });
+  before(() => {});
 
   beforeEach(async () => {
     rsa_key_manager = await util.generateKeyFromString(sample_keys.rsa[1024].pub);
@@ -29,8 +28,7 @@ describe("blinding_util", function() {
     token = new BigInteger("3", 16);
   });
 
-  afterEach(() => {
-  });
+  afterEach(() => {});
 
   ///---------------------------------
   /// #createBlinderForKeyManager()
@@ -38,46 +36,43 @@ describe("blinding_util", function() {
 
   describe("#createBlinderForKeyManager()", () => {
 
-    it("should return a rejected promise if input is no {KeyManager} object", () => {
-      return blinding_util.createBlinderForKeyManager(123, token)
-        .catch(error => assert.instanceOf(error, Error));
+    it("should return a rejected promise if input is no {KeyManager} object", (done) => {
+      blinding_util.createBlinderForKeyManager(123, token)
+        .then(() => fail("should never succeed"))
+        .catch(() => done());
     });
 
-    it("should return a rejected promise if key algorithm is encryption only key", () => {
+    it("should return a rejected promise if key algorithm is encryption only key", (done) => {
       rsa_key_manager.primary.key.type = Tags.public_key_algorithms.RSA_ENCRYPT_ONLY;
 
-      return blinding_util.createBlinderForKeyManager(rsa_key_manager, token)
-        .catch(error => assert.instanceOf(error, Error));
+      blinding_util.createBlinderForKeyManager(rsa_key_manager, token)
+        .then(() => fail("should never succeed"))
+        .catch(() => done());
     });
 
-    it("should return a rejected promise if key algorithm is unknown", () => {
+    it("should return a rejected promise if key algorithm is unknown", (done) => {
       rsa_key_manager.primary.key.type = -1;
 
-      return blinding_util.createBlinderForKeyManager(rsa_key_manager, token)
-        .catch(error => assert.instanceOf(error, Error));
+      blinding_util.createBlinderForKeyManager(rsa_key_manager, token)
+        .then(() => fail("should never succeed"))
+        .catch(() => done());
     });
 
-    it("should return a RsaBlinder if input is a rsa key", async (done) => {
+    it("should return a RsaBlinder if input is a rsa key", async () => {
       const blinder = await blinding_util.createBlinderForKeyManager(rsa_key_manager, token);
-
       assert.instanceOf(blinder, RsaBlinder);
-      done();
     });
 
-    it("should return an ButunEcdsaBlinder if input is a ecc key", async (done) => {
+    it("should return an ButunEcdsaBlinder if input is a ecc key", async () => {
       const blinder = await blinding_util.createBlinderForKeyManager(ecc_key_manager, token);
-
       assert.instanceOf(blinder, ButunEcdsaBlinder);
-      done();
     });
 
-    it("should return an AndreevEcdsaBlinder if input is a ecc key with andreev hint", async (done) => {
-
+    it("should return an AndreevEcdsaBlinder if input is a ecc key with andreev hint", async () => {
       const hints = { implementation: "andreev" };
       const blinder = await blinding_util.createBlinderForKeyManager(ecc_key_manager, token, hints);
 
       assert.instanceOf(blinder, AndreevEcdsaBlinder);
-      done();
     });
   });
 });
