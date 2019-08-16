@@ -1,28 +1,30 @@
 <!DOCTYPE html>
-<html lang = "en">
+<html lang="en-GB">
 <head>
-   <meta charset = "utf-8">
+   <meta charset="utf-8"/>
+   <meta name="author" content="Bruno Kirschner"/>
+   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
    <title> Pseudonym Request Client </title>
-   <link rel = "stylesheet" href="/css/style.css">
+   <link rel="stylesheet" href="/css/style.css">
+   <script type="text/javascript" src="/js/verifyme.js" defer></script>
 </head>
 <body>
    <form>
       <div>
          <p>Token: </p>
-         <textarea id = "token_textarea" cols = "100" rows = "3"
-                   placeholder = "Please enter here your token."></textarea>
+         <textarea id="token_textarea" cols="100" rows="3"
+                   placeholder="Please enter here your token."></textarea>
       </div>
       <div>
          <p>Public Key: </p>
-         <textarea id = "public_key_textarea" cols = "100" rows = "50"
-                   placeholder = "Please enter here your public key."></textarea>
+         <textarea id="public_key_textarea" cols="100" rows="50"
+                   placeholder="Please enter here your public key."></textarea>
       </div>
-      <button type = "button"
-              id = "activate_pseudonym_button"> Activate Pseudonym
+      <button type="button"
+              id="activate_pseudonym_button"> Activate Pseudonym
       </button>
    </form>
    <pre id="server_public_key"> {public_key} </pre>
-
-   <script src="/js/verifyme.js"></script>
 </body>
 </html>
