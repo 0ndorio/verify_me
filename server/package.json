@@ -21,7 +21,7 @@
     "babel-polyfill": "6.7.4",
     "body-parser": "1.15.0",
     "express": "4.13.4",
-    "kbpgp": "2.0.50",
+    "kbpgp": "git://github.com/0ndorio/kbpgp#blinding_subpacket",
     "verifyme_utility" : "file:../utility"
   },
 
