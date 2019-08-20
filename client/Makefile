@@ -6,16 +6,10 @@ default: build
 all: clean build test
 
 build: src/main.js
-	$(BROWSERIFY) src/main.js -v \
-                            -o dist/verifyme.js \
-                            -t [ babelify --presets [ stage-3 es2015 ] ] \
-                            -i sodium
+	$(BROWSERIFY) src/main.js -t babelify -i sodium -v -o dist/verifyme.js
 
 watch: src/main.js
-	$(WATCHIFY) src/main.js -v \
-                          -o dist/verifyme.js \
-                          -t [ babelify --presets [ stage-3 es2015 ] ] \
-                          -i sodium
+	$(WATCHIFY) src/main.js -t babelify -i sodium -v -o dist/verifyme.js
 
 test: test/*.js
 	$(KARMA) start karma.conf.js

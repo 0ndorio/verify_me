@@ -15,7 +15,7 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'node_modules/babel-polyfill/dist/polyfill.js',
+      'node_modules/@babel/polyfill/dist/polyfill.js',
       'src/**/*.js',
       'test/**/*.js',
       'test/fixture/*.html'
@@ -86,7 +86,7 @@ module.exports = function(config) {
       debug: true,
 
       transform: [
-        ['babelify', {presets: ['stage-3', 'es2015']}]
+        ['babelify', { presets: ['@babel/preset-env'] }]
       ],
 
       configure: (bundle) => {

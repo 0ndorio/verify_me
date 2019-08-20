@@ -13,7 +13,7 @@ watch: src/check.js
 	$(BABEL) -w -d dist/ src/
 
 test:
-	$(BABEL_NODE) $(BABEL_INSTANBUL) cover $(MOCHA) -- test/*
+	$(MOCHA) --require @babel/register --require @babel/polyfill test/
 
 clean:
 	@rm -rf dist/* coverage/*

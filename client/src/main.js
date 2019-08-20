@@ -1,6 +1,6 @@
 "use strict";
 
-import "babel-polyfill"
+import "@babel/polyfill"
 
 import Blinder from "./blinding/blinder"
 import blinding_util from "./blinding/blinding_util"

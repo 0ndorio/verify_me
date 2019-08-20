@@ -67,7 +67,7 @@ describe("check", function() {
         .catch((error) => assert.include(error.message, "<= 8192"));
     });
 
-    it("should return two {BigInteger} prime numbers of given bit length", (done) => {
+    it("should return two {BigInteger} prime numbers of given bit length", () => {
       const bitLength = 256;
 
       return util.generateTwoPrimeNumbers(bitLength)
@@ -80,8 +80,7 @@ describe("check", function() {
             assert.isTrue(prime.isProbablePrime());
             assert.equal(bitLength, prime.bitLength());
           });
-          done();
-        })
+        });
     });
   });
 
@@ -115,7 +114,7 @@ describe("check", function() {
         .catch((error) => assert.include(error.message, "<= 16384"));
     });
 
-    it("should return a {BigInteger} numbers of given bit length", (done) => {
+    it("should return a {BigInteger} numbers of given bit length", () => {
       const bitLength = 256;
 
       return util.generateRsaBlindingFactor(bitLength)
@@ -123,8 +122,6 @@ describe("check", function() {
 
           assert.isTrue(check.isBigInteger(blinding_factor));
           assert.equal(bitLength, blinding_factor.bitLength());
-
-          done();
         })
     });
   });
